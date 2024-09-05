@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: thespace
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: ture
+    show-sql: true
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: webuser
+    password: webuser
+    url: jdbc:mariadb://localhost:3307/thespace
+
+logging:
+  level:
+    com:
+      thespace:
+        thespace: debug
+        springframework: info
+
