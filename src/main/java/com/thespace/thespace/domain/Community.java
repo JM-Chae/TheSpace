@@ -1,12 +1,13 @@
 package com.thespace.thespace.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
-@ToString
+
+
 @Builder
 @Getter
 @Entity
@@ -15,11 +16,12 @@ import lombok.*;
 public class Community extends BaseEntity
   {
     @Id
-    private Long CommunityId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long communityId;
 
-    @Column(nullable = false)
-    private String path;
+    private String communityName;
 
-    @Column(nullable = false)
-    private String CommunityName;
+    @Builder.Default
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Category> category  = new ArrayList<>();
   }

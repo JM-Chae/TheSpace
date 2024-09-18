@@ -1,7 +1,5 @@
 package com.thespace.thespace.dto;
 
-
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -11,38 +9,27 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardDTO
+public class CategoryDTO
   {
-    private Long bno;
+    private Long categoryId;
 
     @NotNull
     @Size(min = 1, max = 30)
-    private String title;
+    private String categoryName;
 
     @NotNull
-    private String content;
+    private String categoryType;
 
     private String path;
 
-    @NotEmpty
-    private String writer;
+    private LocalDateTime categoryDate;
 
-    private LocalDateTime createDate;
-
-    private LocalDateTime modDate;
-
-    private Long viewCount;
-
-    private Long vote;
-
-    private Long replyCount;
+    private LocalDateTime modifiedDate;
 
     @NotNull
-    private Long categoryId;
+    private Long communityId;
   }
-
-

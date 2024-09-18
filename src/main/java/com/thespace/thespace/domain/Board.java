@@ -14,21 +14,29 @@ public class Board extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bno;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 30)
     private String title;
 
-    @Column(nullable = false)
     private String path;
 
-    @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
     private String writer;
+
+    @ManyToOne
+    @JoinColumn(name = "Category_Id")
+    private Category category;
 
     private Long viewCount;
 
     private Long vote;
 
     //파일 첨부 나중에 구현
+
+
+    public void change(String title, String content)
+      {
+        this.title = title;
+        this.content = content;
+      }
   }

@@ -16,14 +16,14 @@ public class Reply extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rno;
 
-    @Column(nullable = false)
     private String path;
 
-    @Column(nullable = false)
     private String replyContent;
 
-    @Column(nullable = false)
     private String replyWriter;
 
     private Long vote;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Board board;
   }
