@@ -6,11 +6,11 @@ import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.dto.BoardDTO;
 import com.thespace.thespace.dto.PageReqDTO;
 import com.thespace.thespace.dto.PageResDTO;
+import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.binding.BindingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -74,13 +74,13 @@ public class BoardServiceImpl implements BoardService
             return boardDTO;
           }
 
-        throw new BindingException("Board not found");
+        throw new PostNotFound();
       }
 
     public void modify(BoardDTO boardDTO)
       {
         Optional<Board> result = boardRepository.findById(boardDTO.getBno());
-        Board board = result.orElseThrow();
+        Board board = result.orElseThrow(PostNotFound::new);
         board.change(boardDTO.getTitle(), boardDTO.getContent());
         boardRepository.save(board);
       }
@@ -92,7 +92,7 @@ public class BoardServiceImpl implements BoardService
             boardRepository.deleteById(bno);
             return;
           }
-        throw new BindingException("Board not found");
+        throw new PostNotFound();
       }
 
     public PageResDTO<BoardDTO> list(PageReqDTO pageReqDTO)

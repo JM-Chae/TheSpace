@@ -1,7 +1,7 @@
 package com.thespace.thespace.dto;
 
 
-import jakarta.validation.constraints.NotEmpty;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,16 +19,15 @@ public class BoardDTO
   {
     private Long bno;
 
-    @NotNull
-    @Size(min = 1, max = 30)
+    @NotNull(message = "제목을 입력해 주세요.")
+    @Size(min = 1, max = 30, message = "제목 길이는 최소 1글자, 최대 30글자입니다.")
     private String title;
 
-    @NotNull
+    @NotNull(message = "게시글을 입력해 주세요.")
     private String content;
 
     private String path;
 
-    @NotEmpty
     private String writer;
 
     private LocalDateTime createDate;
@@ -41,7 +40,7 @@ public class BoardDTO
 
     private Long replyCount;
 
-    @NotNull
+    @NotNull(message = "카테고리를 선택해 주세요.")
     private Long categoryId;
   }
 

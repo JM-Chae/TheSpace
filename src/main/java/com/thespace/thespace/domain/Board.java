@@ -14,7 +14,6 @@ public class Board extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bno;
 
-    @Column(length = 30)
     private String title;
 
     private String path;

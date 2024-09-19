@@ -45,6 +45,7 @@ public class BoardController
       {
         BoardDTO boardDTO = boardService.read(bno);
         model.addAttribute("dtoList", boardDTO);
+
         return boardDTO;
       }
 

@@ -59,6 +59,7 @@ public class BoardControllerTests
             testModify(); //testReadAndModify
             testDelete();
             testList();
+            testBoardNotFoundException();
           }
 
     BoardDTO boardDTO = new BoardDTO();
@@ -172,4 +173,28 @@ public class BoardControllerTests
             .andExpect(MockMvcResultMatchers.jsonPath("$.dtoList[0].writer").value("tester 1"))
             .andDo(MockMvcResultHandlers.print());
       }
+
+    public void testBoardNotFoundException() throws Exception
+      {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/board/delete/{bno}", 111111L))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andDo(MockMvcResultHandlers.print());
+
+        boardDTO = BoardDTO.builder().bno(111111L).title("modify").content("modify").build();
+        content = gson.toJson(boardDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/board/modify")
+                .header("boardDTO", boardDTO)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andDo(MockMvcResultHandlers.print());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/board/read/{bno}", 111111L)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+           .andDo(MockMvcResultHandlers.print());
+
+      }
+
   }
