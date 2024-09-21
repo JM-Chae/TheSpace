@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.QBoard;
+import com.thespace.thespace.domain.QReply;
 import com.thespace.thespace.dto.BoardDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
     public Page<BoardDTO> getList(String[] types, String keyword, Pageable pageable)
     {
       QBoard board = QBoard.board;
+      QReply reply = QReply.reply;
 
       JPQLQuery<Board> boardJPQLQuery = from(board);
       if ((types != null && types.length > 0) && keyword != null)
@@ -42,10 +44,14 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                   case "w":
                     booleanBuilder.or(board.writer.contains(keyword));
                     break;
+                  case "r":
+                    booleanBuilder.or(reply.replyContent.contains(keyword));
+                    break;
                 }
             }
           boardJPQLQuery.where(booleanBuilder);
         }
+      boardJPQLQuery.distinct();
       boardJPQLQuery.groupBy(board);
       getQuerydsl().applyPagination(pageable, boardJPQLQuery);
       JPQLQuery<Board> selectQuery = boardJPQLQuery.select(board);

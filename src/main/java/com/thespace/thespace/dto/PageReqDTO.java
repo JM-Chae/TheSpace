@@ -9,8 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @Data
 @Builder
@@ -39,7 +40,11 @@ public class PageReqDTO
 
     public Pageable getPageable(String...props)
       {
-        return PageRequest.of(this.page-1, this.size, Sort.by(props).descending());
+          if((Arrays.toString(props)).contains("rno"))
+            {
+              return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());
+            }
+        return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
       }
 
     private String link;
@@ -57,10 +62,7 @@ public class PageReqDTO
               }
             if(keyword != null && keyword.length() > 0)
               {
-                try
-                  {
-                    builder.append("&keyword=" + URLEncoder.encode(keyword, "UTF-8"));
-                  } catch (UnsupportedEncodingException e){}
+                builder.append("&keyword=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8));
               }
             link = builder.toString();
           }

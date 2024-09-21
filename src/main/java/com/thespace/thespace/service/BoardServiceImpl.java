@@ -96,17 +96,20 @@ public class BoardServiceImpl implements BoardService
       }
 
     public PageResDTO<BoardDTO> list(PageReqDTO pageReqDTO)
-      {
-        String[] types = pageReqDTO.getTypes();
-        String keyword = pageReqDTO.getKeyword();
-        Pageable pageable = pageReqDTO.getPageable("bno");
-        Page<BoardDTO> list = boardRepository.getList(types, keyword, pageable);
-        PageResDTO<BoardDTO> pageResDTO = PageResDTO.<BoardDTO>PageResDTO()
-            .pageReqDTO(pageReqDTO)
-            .dtoList(list.getContent())
-            .total((int) list.getTotalElements())
-            .build();
+    {
+      String[] types = pageReqDTO.getTypes();
+      String keyword = pageReqDTO.getKeyword();
 
-        return pageResDTO;
-      }
+      Pageable pageable = pageReqDTO.getPageable("bno");
+
+      Page<BoardDTO> list = boardRepository.getList(types, keyword, pageable);
+
+      PageResDTO<BoardDTO> pageResDTO = PageResDTO.<BoardDTO>PageResDTO()
+          .pageReqDTO(pageReqDTO)
+          .dtoList(list.getContent())
+          .total((int) list.getTotalElements())
+          .build();
+
+      return pageResDTO;
+    }
   }
