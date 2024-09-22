@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,11 +20,11 @@ public class BoardDTO
   {
     private Long bno;
 
-    @NotNull(message = "제목을 입력해 주세요.")
-    @Size(min = 1, max = 30, message = "제목 길이는 최소 1글자, 최대 30글자입니다.")
+    @NotNull(message = "Title is a required field.")
+    @Size(min = 1, max = 30, message = "Title length is min 1 letter, max 30 letter.")
     private String title;
 
-    @NotNull(message = "게시글을 입력해 주세요.")
+    @NotNull(message = "Content is a required field.")
     private String content;
 
     private String path;
@@ -40,7 +41,9 @@ public class BoardDTO
 
     private Long replyCount;
 
-    @NotNull(message = "카테고리를 선택해 주세요.")
+    private List<String> fileNames;
+
+    @NotNull(message = "Choose category.")
     private Long categoryId;
   }
 

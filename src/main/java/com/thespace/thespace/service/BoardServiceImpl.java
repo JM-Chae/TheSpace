@@ -36,20 +36,42 @@ public class BoardServiceImpl implements BoardService
         this.modelMapper = modelMapper;
       }
 
+    public Board dtoToEntity(BoardDTO boardDTO)
+      {
+        Optional<Category> category = categoryRepository.findById(boardDTO.getCategoryId());
+          Board board = Board.builder()
+              .bno(boardDTO.getBno())
+              .title(boardDTO.getTitle())
+              .content(boardDTO.getContent())
+              .writer(boardDTO.getWriter())
+              .category(category.orElseThrow())
+              .path(category.get().getPath())
+              .build();
+
+          if(boardDTO.getFileNames() != null)
+            {
+              boardDTO.getFileNames().forEach(fileName ->{
+                String[] array = fileName.split("_");
+                board.addFile(array[0], array[1]);
+              });
+            }
+        return board;
+      }
+
     public Long post(BoardDTO boardDTO)
       {
-        Long categoryId = boardDTO.getCategoryId();
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-
-        Board board = Board.builder().category(category.orElseThrow())
-            .bno(boardDTO.getBno())
-            .title(boardDTO.getTitle())
-            .content(boardDTO.getContent())
-            .writer(boardDTO.getWriter())
-            .path(category.get().getCategoryName())
-            .build();
-
+//        Long categoryId = boardDTO.getCategoryId();
+//        Optional<Category> category = categoryRepository.findById(categoryId);
+//
+//
+//        Board board = Board.builder().category(category.orElseThrow())
+//            .bno(boardDTO.getBno())
+//            .title(boardDTO.getTitle())
+//            .content(boardDTO.getContent())
+//            .writer(boardDTO.getWriter())
+//            .path(category.get().getCategoryName())
+//            .build();
+        Board board = dtoToEntity(boardDTO);
         Long bno = boardRepository.save(board).getBno();
         return bno;
       }

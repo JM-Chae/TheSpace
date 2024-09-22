@@ -2,10 +2,12 @@ spring:
   application:
     name: thespace
 
-#  data:
-#    web:
-#      pageable:
-#        one-indexed-parameters: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: "100MB"
+      max-request-size: "300MB"
+      location: "/static/files/"
 
   jpa:
     hibernate:
@@ -29,3 +31,7 @@ logging:
         springframework: trace
 
 
+com:
+  thespace:
+    upload:
+      path: C:\upload

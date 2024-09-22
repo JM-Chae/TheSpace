@@ -33,6 +33,8 @@ public class QBoard extends EntityPathBase<Board> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
 
+    public final SetPath<BoardFile, QBoardFile> fileSet = this.<BoardFile, QBoardFile>createSet("fileSet", BoardFile.class, QBoardFile.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
