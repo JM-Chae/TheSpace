@@ -5,6 +5,7 @@ import com.thespace.thespace.repository.getList.GetListBoard;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,5 +15,5 @@ public interface BoardRepository extends JpaRepository<Board, Long>, GetListBoar
   {
     @EntityGraph(attributePaths = {"fileSet"})
     @Query("select b from Board b where b.bno =:bno")
-    Optional<Board> findByIdWithFiles(Long bno);
+    Optional<Board> findByIdWithFiles(@Param("bno") Long bno);
   }

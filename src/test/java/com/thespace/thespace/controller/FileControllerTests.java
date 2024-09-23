@@ -64,12 +64,14 @@ class FileControllerTests
       {
         creatToTestDB();
         testFileUpload();
+        testFileGet();
       }
 
     BoardDTO boardDTO = new BoardDTO();
     Long bno;
     String content;
     Long categoryId;
+
 
     public void creatToTestDB()
       {
@@ -98,14 +100,14 @@ class FileControllerTests
         Resource resource = resourceLoader.getResource("classpath:/static/" + fileName);
         MockMultipartFile file = new MockMultipartFile("fileList", fileName, MediaType.IMAGE_PNG_VALUE, resource.getInputStream());
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+        MvcResult result1 = mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
         .file(file).contentType(MediaType.MULTIPART_FORM_DATA))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andDo(MockMvcResultHandlers.print())
             .andReturn();
 
-        String res = result.getResponse().getContentAsString();
-        JsonArray jsonArray = new JsonParser().parse(res).getAsJsonArray();
+        String res1 = result1.getResponse().getContentAsString();
+        JsonArray jsonArray = new JsonParser().parse(res1).getAsJsonArray();
         JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
         String name = jsonObject.get("fileId").getAsString().replace("\"","")+"_"+fileName;
 
@@ -121,9 +123,32 @@ class FileControllerTests
 
         content = gson.toJson(boardDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/board/post")
+        MvcResult result2 = mockMvc.perform(MockMvcRequestBuilders.post("/board/post")
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andDo(MockMvcResultHandlers.print())
+            .andReturn();
+
+        String res2 = result2.getResponse().getContentAsString();
+        bno = Long.valueOf(res2.replace("redirect:/board/read/", ""));
+      }
+
+    public void testFileGet() throws Exception
+      {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/board/read/{bno}", bno)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andDo(MockMvcResultHandlers.print())
+            .andReturn();
+
+        String res1 = result.getResponse().getContentAsString();
+        JsonObject jsonObject = new JsonParser().parse(res1).getAsJsonObject();
+        String filename = jsonObject.get("fileNames").getAsString().replace("\"","");
+
+        log.info(filename);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/get/{filename}", filename))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andDo(MockMvcResultHandlers.print());
       }

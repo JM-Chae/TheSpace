@@ -19,4 +19,10 @@ public interface BoardService
         Board board = new Board();
         return board;
       }
+
+    default  BoardDTO entityToDTO(Board board)
+      {
+        BoardDTO boardDTO = new BoardDTO();
+        return boardDTO;
+      }
   }

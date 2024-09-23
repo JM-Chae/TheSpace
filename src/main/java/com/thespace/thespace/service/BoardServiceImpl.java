@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,6 +59,29 @@ public class BoardServiceImpl implements BoardService
         return board;
       }
 
+    public BoardDTO entityToDTO(Board board)
+      {
+        Long categoryId = board.getCategory().getCategoryId();
+        BoardDTO boardDTO = BoardDTO.builder()
+            .bno(board.getBno())
+            .title(board.getTitle())
+            .content(board.getContent())
+            .writer(board.getWriter())
+            .path(board.getPath())
+            .categoryId(categoryId)
+            .vote(board.getVote())
+            .viewCount(board.getViewCount())
+            .modDate(board.getModDate())
+            .createDate(board.getCreateDate())
+            .build();
+
+        List<String> fileNames = board.getFileSet().stream().sorted().map(boardFile ->
+            boardFile.getFileId()+"_"+boardFile.getFileName()).toList();
+
+        boardDTO.setFileNames(fileNames);
+        return boardDTO;
+      }
+
     public Long post(BoardDTO boardDTO)
       {
 //        Long categoryId = boardDTO.getCategoryId();
@@ -78,10 +102,9 @@ public class BoardServiceImpl implements BoardService
 
     public BoardDTO read(Long bno)
       {
-        Optional<Board> board = boardRepository.findById(bno);
-        if(board.isPresent())
-          {
-            BoardDTO boardDTO = modelMapper.map(board.get(), BoardDTO.class);
+        Optional<Board> result = boardRepository.findByIdWithFiles(bno);
+        Board board = result.orElseThrow(PostNotFound::new);
+            BoardDTO boardDTO = entityToDTO(board);
 //            boardDTO.setBno(board.get().getBno());
 //            boardDTO.setTitle(board.get().getTitle());
 //            boardDTO.setContent(board.get().getContent());
@@ -94,9 +117,6 @@ public class BoardServiceImpl implements BoardService
 //            boardDTO.setCategoryId(board.get().getCategory().getCategoryId());
 
             return boardDTO;
-          }
-
-        throw new PostNotFound();
       }
 
     public void modify(BoardDTO boardDTO)
