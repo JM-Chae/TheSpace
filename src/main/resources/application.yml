@@ -34,4 +34,4 @@ logging:
 com:
   thespace:
     upload:
-      path: C:\upload
+      path: src/main/resources/static/files
