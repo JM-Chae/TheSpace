@@ -4,13 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.thespace.thespace.domain.Board;
+import com.thespace.thespace.domain.BoardFile;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.dto.BoardDTO;
+import com.thespace.thespace.repository.BoardFileRepository;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
-import com.thespace.thespace.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +23,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +46,7 @@ class FileControllerTests
     @Autowired
     private CommunityRepository communityRepository;
     @Autowired
-    private BoardService boardService;
+    private BoardFileRepository boardFileRepository;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -60,18 +64,21 @@ class FileControllerTests
 
 
     @Test
+    @Transactional
+    @Rollback(false)
     public void runAllTest() throws Exception
       {
         creatToTestDB();
         testFileUpload();
         testFileGet();
+        testFileDelete();
       }
 
     BoardDTO boardDTO = new BoardDTO();
     Long bno;
     String content;
     Long categoryId;
-
+    String filename;
 
     public void creatToTestDB()
       {
@@ -144,7 +151,7 @@ class FileControllerTests
 
         String res1 = result.getResponse().getContentAsString();
         JsonObject jsonObject = new JsonParser().parse(res1).getAsJsonObject();
-        String filename = jsonObject.get("fileNames").getAsString().replace("\"","");
+        filename = jsonObject.get("fileNames").getAsString().replace("\"","");
 
         log.info(filename);
 
@@ -152,4 +159,21 @@ class FileControllerTests
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andDo(MockMvcResultHandlers.print());
       }
+
+    public void testFileDelete() throws Exception
+    {
+      mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{filename}", filename))
+          .andExpect(MockMvcResultMatchers.status().isOk())
+          .andDo(MockMvcResultHandlers.print());
+
+      Optional<Board> boardOptional = boardRepository.findById(bno);
+      String fileId = filename.substring(0,8);
+      Optional<BoardFile> boardFile = boardFileRepository.findById(fileId);
+      if (boardOptional.isPresent())
+        {
+
+          boolean result = !boardOptional.get().getFileSet().contains(boardFile);
+              log.info(result ? "Successfully deleted" : "Failed to deleted");
+        }
+    }
   }

@@ -7,6 +7,7 @@ import com.thespace.thespace.dto.BoardDTO;
 import com.thespace.thespace.dto.PageReqDTO;
 import com.thespace.thespace.dto.PageResDTO;
 import com.thespace.thespace.exception.PostNotFound;
+import com.thespace.thespace.repository.BoardFileRepository;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,15 @@ public class BoardServiceImpl implements BoardService
     private BoardRepository boardRepository;
     private CategoryRepository categoryRepository;
     private ModelMapper modelMapper;
+    private BoardFileRepository boardFileRepository;
 
     @Autowired
-    public void setBoardRepository(BoardRepository boardRepository,  CategoryRepository categoryRepository, ModelMapper modelMapper)
+    public void setBoardRepository(BoardRepository boardRepository,  CategoryRepository categoryRepository, ModelMapper modelMapper, BoardFileRepository boardFileRepository)
       {
         this.boardRepository = boardRepository;
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
+        this.boardFileRepository = boardFileRepository;
       }
 
     public Board dtoToEntity(BoardDTO boardDTO)
@@ -121,9 +124,21 @@ public class BoardServiceImpl implements BoardService
 
     public void modify(BoardDTO boardDTO)
       {
-        Optional<Board> result = boardRepository.findById(boardDTO.getBno());
+        Long bno = boardDTO.getBno();
+        Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
         board.change(boardDTO.getTitle(), boardDTO.getContent());
+        boardFileRepository.deleteByBoard_bno(bno);
+
+
+        if(boardDTO.getFileNames() != null)
+          {
+            boardDTO.getFileNames().forEach(fileName ->{
+              String[] array = fileName.split("_");
+              board.addFile(array[0], array[1]);
+            });
+          }
+
         boardRepository.save(board);
       }
 
