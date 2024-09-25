@@ -128,6 +128,8 @@ public class BoardControllerTests
             .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(boardDTO.getContent()))
             .andDo(MockMvcResultHandlers.print());
 
+        log.info(boardDTO.getViewCount().toString());
+
       }
 
     public void testModify() throws Exception

@@ -3,11 +3,13 @@ package com.thespace.thespace.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Builder
+@Setter
 @Getter
 @Entity
 @AllArgsConstructor
@@ -30,9 +32,17 @@ public class Board extends BaseEntity
     @JoinColumn(name = "Category_Id")
     private Category category;
 
-    private Long viewCount;
+    @Builder.Default
+    @ColumnDefault("0")
+    private Long viewCount= 0L;
 
-    private Long vote;
+    @Builder.Default
+    @ColumnDefault("0")
+    private Long vote= 0L;
+
+    @Builder.Default
+    @ColumnDefault("0")
+    private Long rCount = 0L;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

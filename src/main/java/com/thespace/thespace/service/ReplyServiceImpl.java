@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -34,9 +35,14 @@ public class ReplyServiceImpl implements ReplyService
         this.boardRepository = boardRepository;
       }
 
+    @Transactional
     public Long register(Long bno, ReplyDTO replyDTO)
       {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
+
+        Long replyCount = board.getRCount()+1L;
+        board.setRCount(replyCount);
+        boardRepository.save(board);
 
         replyDTO.setBno(bno);
         Reply reply =  modelMapper.map(replyDTO, Reply.class);
@@ -45,14 +51,18 @@ public class ReplyServiceImpl implements ReplyService
         return rno;
       }
 
-    public void delete(Long rno)
+    @Transactional
+    public void delete(Long bno, Long rno)
       {
         if(!replyRepository.existsById(rno))
           {
             throw new ReplyNotFound();
           }
+        Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
         replyRepository.deleteById(rno);
-
+        Long replyCount = board.getRCount()-1L;
+        board.setRCount(replyCount);
+        boardRepository.save(board);
       }
 
     public PageResDTO<ReplyDTO> getListReply(Long bno, PageReqDTO pageReqDTO)

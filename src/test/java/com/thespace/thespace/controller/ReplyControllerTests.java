@@ -62,7 +62,9 @@ class ReplyControllerTests
       {
         creatToTestDB();
         testRegister();
+        testCount();
         testDelete();
+        testCount();
         testGetList();
       }
 
@@ -146,6 +148,7 @@ class ReplyControllerTests
     public void testDelete() throws Exception
       {
         mockMvc.perform(MockMvcRequestBuilders.delete("/reply/{rno}", rno)
+                .param("bno", String.valueOf(bno))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andDo(MockMvcResultHandlers.print());
@@ -171,5 +174,16 @@ class ReplyControllerTests
             .andExpect(MockMvcResultMatchers.jsonPath("$.dtoList[20].replyWriter").value("tester "+ 51))
             .andExpect(MockMvcResultMatchers.jsonPath("$.dtoList[29].replyWriter").value("tester "+ 60))
             .andDo(MockMvcResultHandlers.print());
+      }
+
+    public void testCount()
+      {
+        Optional<Board> board = boardRepository.findById(bno);
+        if (board.isPresent())
+          {
+            Long count = board.get().getRCount();
+            log.info("Count reply {} !!!!!!!!!!!!!!!!!!!!!!!!", count.toString());
+          }
+
       }
   }

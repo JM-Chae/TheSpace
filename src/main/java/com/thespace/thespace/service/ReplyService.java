@@ -7,6 +7,6 @@ import com.thespace.thespace.dto.ReplyDTO;
 public interface ReplyService
   {
     Long register(Long bno, ReplyDTO replyDTO);
-    void delete(Long rno);
+    void delete(Long bno, Long rno);
     PageResDTO<ReplyDTO> getListReply(Long bno, PageReqDTO pageReqDTO);
   }

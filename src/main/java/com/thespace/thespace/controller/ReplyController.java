@@ -23,9 +23,9 @@ public class ReplyController
       }
 
     @DeleteMapping("/reply/{rno}")
-    public void delete(@PathVariable("rno")Long rno)
+    public void delete(@PathVariable("rno")Long rno, @RequestParam("bno") Long bno)
       {
-        replyService.delete(rno);
+        replyService.delete(bno, rno);
       }
 
     @GetMapping("/board/{bno}/reply")

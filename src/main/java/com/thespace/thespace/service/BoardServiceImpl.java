@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -103,21 +104,14 @@ public class BoardServiceImpl implements BoardService
         return bno;
       }
 
+    @Transactional
     public BoardDTO read(Long bno)
       {
         Optional<Board> result = boardRepository.findByIdWithFiles(bno);
         Board board = result.orElseThrow(PostNotFound::new);
+        board.setViewCount(board.getViewCount()+1L);
+        boardRepository.save(board);
             BoardDTO boardDTO = entityToDTO(board);
-//            boardDTO.setBno(board.get().getBno());
-//            boardDTO.setTitle(board.get().getTitle());
-//            boardDTO.setContent(board.get().getContent());
-//            boardDTO.setWriter(board.get().getWriter());
-//            boardDTO.setCreateDate(board.get().getCreateDate());
-//            boardDTO.setModDate(board.get().getModDate());
-//            boardDTO.setViewCount(board.get().getViewCount());
-//            boardDTO.setVote(board.get().getVote());
-//            boardDTO.setPath(board.get().getPath());
-//            boardDTO.setCategoryId(board.get().getCategory().getCategoryId());
 
             return boardDTO;
       }
