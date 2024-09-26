@@ -39,7 +39,7 @@ public class BoardDTO
 
     private Long vote;
 
-    private Long replyCount;
+    private Long rCount;
 
     private List<String> fileNames;
 
