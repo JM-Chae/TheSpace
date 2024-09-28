@@ -22,12 +22,12 @@ public class UserServiceImpl implements UserService
 
     public void register(UserDTO userDTO, boolean check) throws Exception
       {
-        if(check)
+        if(!check)
           {
-            User user = modelMapper.map(userDTO, User.class);
-            userRepository.save(user);
+            throw new Exception(); // Implement duplicateId Exception later
           }
-        throw new Exception(); // Implement duplicateId Exception later
+        User user = modelMapper.map(userDTO, User.class);
+        userRepository.save(user);
       }
 
     public boolean checkUuid(String uuid)
