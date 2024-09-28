@@ -3,10 +3,13 @@ package com.thespace.thespace.controller;
 
 import com.thespace.thespace.dto.UserDTO;
 import com.thespace.thespace.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,8 +44,13 @@ public class UserController
       }
 
     @PostMapping
-    public void register(@RequestBody UserDTO userDTO, @RequestParam("checkd") boolean check) throws Exception
+    public void register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult, @RequestParam("checkid") boolean check, RedirectAttributes redirectAttributes) throws Exception
       {
+        if(bindingResult.hasErrors())
+          {
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            throw new BindException(bindingResult);
+          }
         String uuid;
         do
           {
