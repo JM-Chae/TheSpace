@@ -40,7 +40,7 @@ public class GeneralConfig
     public GsonHttpMessageConverter gsonHttpMessageConverter()
       {
       GsonHttpMessageConverter gsonConverter = new GsonHttpMessageConverter();
-      gsonConverter.setGson(new Gson());
+      gsonConverter.setGson(gson());
       return gsonConverter;
     }
   }
