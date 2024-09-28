@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 
+import java.time.LocalDateTime;
+
 
 @Configuration
 public class GeneralConfig
@@ -28,6 +30,7 @@ public class GeneralConfig
     public Gson gson() {
 
       return new GsonBuilder()
+          .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
           .disableHtmlEscaping()
           .setLenient()
           .create();
