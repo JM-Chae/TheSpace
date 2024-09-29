@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 @Getter
 @Entity
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Reply extends BaseEntity
@@ -21,7 +22,8 @@ public class Reply extends BaseEntity
 
     private String replyWriter;
 
-    private Long vote;
+    @Builder.Default
+    private Long vote = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
