@@ -1,9 +1,10 @@
 package com.thespace.thespace.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Setter
@@ -28,6 +29,11 @@ public class User extends BaseEntity
 
     @Column(nullable = false)
     private String password;
+
+    @ManyToMany
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
+    private List<UserRole> roles = new ArrayList<>();
 
     //implement user profile page, more detail intro, and share status setter later
   }
