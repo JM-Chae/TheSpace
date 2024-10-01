@@ -29,7 +29,7 @@ public class SecurityConfig
             .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
-//            .formLogin(formLogin -> formLogin.loginPage("/user/login"))
+            .formLogin(formLogin -> formLogin.loginPage("/user/login"))
 //            .exceptionHandling((exceptionHandling) -> exceptionHandling
 //                .accessDeniedHandler())
 //        .oauth2Login((oauth2Login) ->oauth2Login.loginPage("/user/login"));

@@ -43,6 +43,12 @@ public class UserController
         return check;
       }
 
+    @GetMapping("/login")
+    public void login()
+      {
+
+      }
+
     @PostMapping
     public void register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult, @RequestParam("checkid") boolean check, RedirectAttributes redirectAttributes) throws Exception
       {
