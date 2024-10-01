@@ -25,17 +25,14 @@ public class CommunityController
       }
 
     @PostMapping("/createCommunity")
-    public String createCommunity(@Valid CommunityDTO communityDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+    public void createCommunity(@Valid CommunityDTO communityDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
       {
         if(bindingResult.hasErrors())
           {
             Long CommunityId = communityService.createCommunity(communityDTO);
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            return "redirect:/createCommunity";
           }
         Long CommunityId = communityService.createCommunity(communityDTO);
         redirectAttributes.addFlashAttribute("result", "Community created successfully");
-        return "redirect:/"+communityDTO.getCommunityName();
       }
-
   }

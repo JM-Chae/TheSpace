@@ -2,15 +2,13 @@ package com.thespace.thespace.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Data
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDTO
@@ -21,7 +19,6 @@ public class CategoryDTO
     @Size(min = 1, max = 30)
     private String categoryName;
 
-    @NotNull
     private String categoryType;
 
     private String path;

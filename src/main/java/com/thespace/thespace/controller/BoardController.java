@@ -26,7 +26,7 @@ public class BoardController
       }
 
     @PostMapping("/post")
-    public String postPost(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+    public String post(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
       {
         if(bindingResult.hasErrors())
           {
