@@ -7,7 +7,10 @@ const pw = ref("")
 
 const login = function ()
 {
-  axios.post("/user/login")
+  axios.post("http://localhost:8080/user/login",
+      {id: id.value, password: pw.value})
+      .then(res => {console.log(res.data)}).catch (error => {
+    console.error(error)})
 }
 </script>
 

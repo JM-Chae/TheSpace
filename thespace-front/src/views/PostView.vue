@@ -8,11 +8,11 @@ const path = "aaa"
 const categories = ref([])
 const selectedCategory = ref("")
 
-onMounted(() => axios.get(`/getcategory`, {params:{path}}).then(response => {categories.value = response.data; console.log(categories.value);}).catch(error => console.error(error)))
+onMounted(() => axios.get('http://localhost:8080/getcategory', {params:{path}}).then(response => {categories.value = response.data; console.log(categories.value);}).catch(error => console.error(error)))
 
 const post = function ()
 {
-  axios.post("/board/post", {title: title.value, content: content.value})
+  axios.post("http://localhost:8080/board/post", {title: title.value, content: content.value})
 }
 </script>
 
