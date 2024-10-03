@@ -23,8 +23,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 class UserControllerTests
   {
     @Autowired
-    private UserService userService;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
@@ -60,8 +58,8 @@ class UserControllerTests
     void testRegister() throws Exception
       {
         UserDTO userDTO = UserDTO.builder()
-            .id("testID")
-            .password("testPassword")
+            .id("123456")
+            .password("123456")
             .name("testName")
             .email("test@test.com")
             .build();
