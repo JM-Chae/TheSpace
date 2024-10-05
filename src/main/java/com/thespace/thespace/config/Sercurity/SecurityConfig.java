@@ -17,10 +17,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -43,13 +46,13 @@ public class SecurityConfig implements UserDetailsService
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
       CorsConfiguration configuration = new CorsConfiguration();
-      configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // 허용할 출처
-      configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE")); // 허용할 메서드
-      configuration.setAllowCredentials(true); // 인증 정보 전송 허용
-      configuration.setAllowedHeaders(Collections.singletonList("*")); // 허용할 헤더
+      configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+      configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+      configuration.setAllowCredentials(true);
+      configuration.setAllowedHeaders(Collections.singletonList("*"));
 
       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      source.registerCorsConfiguration("/**", configuration); // 모든 경로에 CORS 설정 적용
+      source.registerCorsConfiguration("/**", configuration);
       return source;
     }
 
@@ -77,16 +80,18 @@ public class SecurityConfig implements UserDetailsService
         return http.build();
       }
 
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository(DataSource dataSource)
+      {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+      }
+
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException
       {
         log.info(id);
         User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found"+id));
         return user;
       }
-
-//    @Bean
-//    public AccessDeniedHandler accessDeniedHandler()
-//      {
-//        return new ();
-//      }
   }

@@ -6,19 +6,50 @@ const router = createRouter({
     {
       path: '/space',
       name: 'home',
-      component:  () => import('../views/HomeView.vue')
+      component:  () => import('../views/HomeView.vue'),
     },
     {
       path: '/post',
       name: 'post',
-      component: () => import('../views/PostView.vue')
+      component: () => import('../views/PostView.vue'),
+      meta: { roles: ["ROLE_USER"] }
     },
     {
       path: '/user/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/user/logout',
+      name: 'logout',
+      component: () => import('../views/LogoutView.vue')
     }
   ]
 })
 
 export default router
+
+const userInfo = sessionStorage.getItem("userInfo")
+const roles = JSON.parse(userInfo)
+
+
+router.beforeEach((to, from, next) =>
+    {
+
+      if (to.meta.roles && userInfo == null)
+      {
+        alert('You must to login')
+          next('/user/login')
+      }else {
+          next()
+        }
+
+      // if (to.meta.roles && !to.meta.roles.some(item => roles.roles.includes(item)))
+      // {
+      //   alert('')
+      //   next('')
+      // } else {
+      //   next()
+      // }
+    }
+)

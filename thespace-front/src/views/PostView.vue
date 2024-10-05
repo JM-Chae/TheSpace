@@ -7,6 +7,10 @@ const content = ref("")
 const path = "aaa"
 const categories = ref([])
 const selectedCategory = ref("")
+const user = ref("")
+
+const getInfo = sessionStorage.getItem("userInfo");
+if(getInfo) { user.value = JSON.parse(getInfo) }
 
 onMounted(() => axios.get('http://localhost:8080/getcategory', {params:{path}}).then(response => {categories.value = response.data; console.log(categories.value);}).catch(error => console.error(error)))
 
