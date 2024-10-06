@@ -6,18 +6,24 @@ const id = ref("")
 const pw = ref("")
 const remember = ref(false)
 
-
 const login = function ()
 {
   axios.post("http://localhost:8080/user/login",
       {id: id.value, password: pw.value, remember: remember.value},
       {headers: {"Content-Type": "multipart/form-data"}, withCredentials: true})
-      .then(res => {window.location.href = res.data.redirectUrl})
+      .then(res => {getInfo().then(() =>{ window.location.href = res.data.redirectUrl})})
       .catch (error => {console.error(error)})
 
-  axios.get("http://localhost:8080/user/info", { withCredentials: true })
-    .then(res =>sessionStorage.setItem("userInfo", JSON.stringify(res.data)))
-    .catch(error => console.error("Error fetching user info"+error))
+
+ async function getInfo()
+ {
+   try {
+     let res = await axios.get("http://localhost:8080/user/info", {withCredentials: true});
+     return sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+   } catch (error) {
+     return console.error("Error fetching user info" + error);
+   }
+ }
 
   localStorage.setItem("login", "true")
 }

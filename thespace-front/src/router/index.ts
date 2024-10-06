@@ -29,7 +29,7 @@ const router = createRouter({
 
 export default router
 
-const userInfo = sessionStorage.getItem("userInfo")
+const userInfo = sessionStorage.getItem("userInfo") || ""
 const roles = JSON.parse(userInfo)
 
 
@@ -43,13 +43,5 @@ router.beforeEach((to, from, next) =>
       }else {
           next()
         }
-
-      // if (to.meta.roles && !to.meta.roles.some(item => roles.roles.includes(item)))
-      // {
-      //   alert('')
-      //   next('')
-      // } else {
-      //   next()
-      // }
     }
 )
