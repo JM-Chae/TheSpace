@@ -34,7 +34,7 @@ const login = function ()
     <div class="pb-3"><h2>Welcome to Your Space!</h2></div>
 
   <div class="mt-2"><el-input type="text" v-model="id" placeholder="Enter ID"></el-input></div>
-  <div class="mt-2"><el-input type="password" v-model="pw" placeholder="Enter Password"></el-input></div>
+  <div class="mt-2"><el-input @keydown.enter="login" type="password" v-model="pw" placeholder="Enter Password"></el-input></div>
   <div class="mt-2 pt-2">
     <el-checkbox type="primary" v-model="remember">Remember Me</el-checkbox>
     <el-button class="float-end" type="primary" @click="login">Login</el-button>

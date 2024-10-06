@@ -29,14 +29,14 @@ const router = createRouter({
 
 export default router
 
-const userInfo = sessionStorage.getItem("userInfo") || ""
+const userInfo = sessionStorage.getItem("userInfo") || "{}"
 const roles = JSON.parse(userInfo)
 
 
 router.beforeEach((to, from, next) =>
     {
 
-      if (to.meta.roles && userInfo == null)
+      if (to.meta.roles && userInfo == "{}")
       {
         alert('You must to login')
           next('/user/login')

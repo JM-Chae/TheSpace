@@ -2,11 +2,12 @@
 import { RouterLink, RouterView } from 'vue-router'
 import {computed} from "vue";
 const login =  computed(()=>  localStorage.getItem('login') === "true" )
+
 </script>
 
 <template>
   <header>
-    <div class="wrapper">
+    <div class="wrapper pb-5">
       <nav>
         <RouterLink to="/space">Home</RouterLink>
         <RouterLink to="/post">POST</RouterLink>

@@ -1,6 +1,7 @@
 package com.thespace.thespace.config.Sercurity;
 
 import com.thespace.thespace.config.Sercurity.handler.AuthSuccessHandler;
+import com.thespace.thespace.config.Sercurity.handler.LogoutSuccessHandler;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class SecurityConfig implements UserDetailsService
   {
 
     private final AuthSuccessHandler authSuccessHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
     private final UserRepository userRepository;
 
     @Bean
@@ -74,7 +76,7 @@ public class SecurityConfig implements UserDetailsService
                 .rememberMeParameter("remember")
                 .tokenValiditySeconds(60*60*24*7)
                 .authenticationSuccessHandler(authSuccessHandler))
-            .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessUrl("/").invalidateHttpSession(true));
+            .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true));
 //        .oauth2Login((oauth2Login) ->oauth2Login.loginPage("/user/login"));
 
         return http.build();
