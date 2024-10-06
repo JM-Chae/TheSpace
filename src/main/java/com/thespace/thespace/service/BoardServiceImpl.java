@@ -43,14 +43,15 @@ public class BoardServiceImpl implements BoardService
 
     public Board dtoToEntity(BoardDTO boardDTO)
       {
-        Optional<Category> category = categoryRepository.findById(boardDTO.getCategoryId());
+        Category category = categoryRepository.findByCategoryName(boardDTO.getCategoryName());
           Board board = Board.builder()
               .bno(boardDTO.getBno())
               .title(boardDTO.getTitle())
               .content(boardDTO.getContent())
               .writer(boardDTO.getWriter())
-              .category(category.orElseThrow())
-              .path(category.get().getPath())
+              .writerUuid(boardDTO.getWriterUuid())
+              .category(category)
+              .path(category.getPath())
               .build();
 
           if(boardDTO.getFileNames() != null)
@@ -65,14 +66,15 @@ public class BoardServiceImpl implements BoardService
 
     public BoardDTO entityToDTO(Board board)
       {
-        Long categoryId = board.getCategory().getCategoryId();
+        String categoryName = board.getCategory().getCategoryName();
         BoardDTO boardDTO = BoardDTO.builder()
             .bno(board.getBno())
             .title(board.getTitle())
             .content(board.getContent())
             .writer(board.getWriter())
+            .writerUuid(board.getWriterUuid())
             .path(board.getPath())
-            .categoryId(categoryId)
+            .categoryName(categoryName)
             .vote(board.getVote())
             .viewCount(board.getViewCount())
             .modDate(board.getModDate())

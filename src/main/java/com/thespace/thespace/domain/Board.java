@@ -28,6 +28,8 @@ public class Board extends BaseEntity
 
     private String writer;
 
+    private String writerUuid;
+
     @ManyToOne
     @JoinColumn(name = "Category_Id")
     private Category category;

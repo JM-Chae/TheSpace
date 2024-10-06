@@ -31,6 +31,8 @@ public class BoardDTO
 
     private String writer;
 
+    private String writerUuid;
+
     private LocalDateTime createDate;
 
     private LocalDateTime modDate;
@@ -44,7 +46,7 @@ public class BoardDTO
     private List<String> fileNames;
 
     @NotNull(message = "Choose category.")
-    private Long categoryId;
+    private String categoryName;
   }
 
 

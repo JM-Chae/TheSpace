@@ -50,6 +50,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final StringPath writer = createString("writer");
 
+    public final StringPath writerUuid = createString("writerUuid");
+
     public QBoard(String variable) {
         this(Board.class, forVariable(variable), INITS);
     }

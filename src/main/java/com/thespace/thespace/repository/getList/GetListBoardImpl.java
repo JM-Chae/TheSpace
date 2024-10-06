@@ -44,6 +44,9 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                   case "w":
                     booleanBuilder.or(board.writer.contains(keyword));
                     break;
+                  case "u":
+                    booleanBuilder.or(board.writerUuid.contains(keyword));
+                    break;
                   case "r":
                     booleanBuilder.or(reply.replyContent.contains(keyword));
                     break;
@@ -64,7 +67,7 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
               .title(board1.getTitle())
               .content(board1.getContent())
               .writer(board1.getWriter())
-              .categoryId(board1.getCategory().getCategoryId())
+              .categoryName(board1.getCategory().getCategoryName())
               .path(board1.getPath())
               .createDate(board1.getCreateDate())
               .modDate(board1.getModDate())

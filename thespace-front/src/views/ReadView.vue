@@ -29,14 +29,14 @@ const post = function ()
     <div>
       <el-row :gutter="10">
         <el-col :span="12">
-            <el-select size="large" id="select-category" class="form-control" placeholder="Choose category" v-model="categoryName">
-              <el-option v-for="category in categories" :key="category.categoryId" :value="category.categoryName">
-                {{category.categoryName}}
-              </el-option>
-            </el-select>
+          <el-select size="large" id="select-category" class="form-control" placeholder="Choose category" v-model="categoryName">
+            <el-option v-for="category in categories" :key="category.categoryId" :value="category.categoryName">
+              {{category.categoryName}}
+            </el-option>
+          </el-select>
         </el-col>
         <el-col :span="12">
-            <el-input size="large" class readonly v-model="path">{{path}}</el-input>
+          <el-input size="large" class readonly v-model="path">{{path}}</el-input>
         </el-col>
       </el-row>
     </div>
@@ -55,7 +55,7 @@ const post = function ()
       </el-col>
     </el-row>
     <div class="mt-3"><el-input size="large" v-model="title" placeholder="Enter title"/> </div>
-    <div class="mt-3"><el-input size="large" type="textarea" v-model="content" placeholder="Enter content" :autosize="{minRows: 10}"/></div>
+    <div class="mt-3"><el-input size="large" type="textarea" v-model="content" placeholder="Enter content"  :autosize="{minRows: 10}"/></div>
     <div class="mt-3"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
 
   </main>
