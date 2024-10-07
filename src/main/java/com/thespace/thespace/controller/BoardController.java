@@ -26,18 +26,18 @@ public class BoardController
       }
 
     @PostMapping("/post")
-    public String post(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+    public Long post(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
       {
         if(bindingResult.hasErrors())
           {
             Long bno = boardService.post(boardDTO);
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            return "redirect:/board/post";
+            return null;
           }
 
         Long bno = boardService.post(boardDTO);
 
-        return "redirect:/board/read" + "/" + bno;
+        return bno;
       }
 
     @GetMapping({"/read/{bno}", "/modify/{bno}"})
