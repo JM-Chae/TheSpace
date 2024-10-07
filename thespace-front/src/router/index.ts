@@ -3,6 +3,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+
     {
       path: '/space',
       name: 'home',
@@ -13,6 +14,12 @@ const router = createRouter({
       name: 'post',
       component: () => import('../views/PostView.vue'),
       meta: { roles: ["ROLE_USER"] }
+    },
+    {
+      path: '/read',
+      name: 'read',
+      component:  () => import('../views/ReadView.vue'),
+      props: true
     },
     {
       path: '/user/login',

@@ -1,17 +1,22 @@
 <script setup lang = "ts">
 import {ref} from "vue";
 import axios from "axios";
+import router from "@/router";
 
 const title = ref("")
 const content = ref("")
 const categoryName = ref("")
+const bno = ref("")
+
+
 
 const path = "aaa" // Community name -> Switch to reactive when after implementing the Community page.
 const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 
-axios.get('http://localhost:8080/getcategory', {params:{path}}).then(res => categories.value = res.data).catch(error => console.error(error))
+
+axios.get(`http://localhost:8080/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const post = function ()
 {
@@ -20,7 +25,9 @@ const post = function ()
         content: content.value,
         writer: user.name,
         writerUuid: user.uuid,
-        categoryName: categoryName.value})//then -> redirection read page
+        categoryName: categoryName.value})
+      .then(res => {bno.value = res.data}).catch(error => {alert(error);})
+      .then(() => router.push({name: "read", state: { bno: bno.value }}))
 }
 </script>
 

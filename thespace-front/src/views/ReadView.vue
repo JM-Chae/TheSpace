@@ -1,27 +1,19 @@
 <script setup lang = "ts">
-import {ref} from "vue";
+import {ref, onMounted} from "vue";
 import axios from "axios";
 
-const title = ref("")
-const content = ref("")
-const categoryName = ref("")
-
-const path = "aaa" // Community name -> Switch to reactive when after implementing the Community page.
-const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
+const getDto = ref([])
 
-axios.get('http://localhost:8080/getcategory', {params:{path}}).then(res => categories.value = res.data).catch(error => console.error(error))
+onMounted(()=> {
+  const bno = window.history.state.bno;
+  axios.get(`http://localhost:8080/board/read/${bno}`)
+      .then(res => {getDto.value = res.data;})
+      .catch(error => console.error(error));
+})
 
-const post = function ()
-{
-  axios.post("http://localhost:8080/board/post",
-      {title: title.value,
-        content: content.value,
-        writer: user.name,
-        writerUuid: user.uuid,
-        categoryName: categoryName.value})//then -> redirection read page
-}
+
 </script>
 
 <template>
