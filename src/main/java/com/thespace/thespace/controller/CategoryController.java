@@ -18,8 +18,8 @@ public class CategoryController
   {
     private final CategoryService categoryService;
 
-    @GetMapping("/getcategory")
-    public List<CategoryDTO> getCategory(@RequestParam(name = "path") String path)
+    @GetMapping("/getcategory/{path}")
+    public List<CategoryDTO> getCategory(@PathVariable(name = "path") String path)
       {
         return categoryService.getAllCategories(path);
       }
