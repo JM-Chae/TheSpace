@@ -25,7 +25,7 @@ const login = function ()
    }
  }
 
-  localStorage.setItem("login", "true")
+  sessionStorage.setItem("login", "true")
 }
 </script>
 
