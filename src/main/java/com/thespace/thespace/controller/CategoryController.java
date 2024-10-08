@@ -6,7 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -23,15 +26,16 @@ public class CategoryController
       {
         return categoryService.getAllCategories(path);
       }
+
     @GetMapping("/{community}/createCategory")
     public void createCategory()
       {
       }
 
     @PostMapping("/{community}/createCategory")
-    public void createCategory(@Valid CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community")String communityName)
+    public void createCategory(@Valid CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community") String communityName)
       {
-        if(bindingResult.hasErrors())
+        if (bindingResult.hasErrors())
           {
             Long CategoryId = categoryService.createCategory(categoryDTO);
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());

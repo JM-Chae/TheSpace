@@ -1,10 +1,28 @@
 <script setup lang = "ts">
-import {ref, onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import axios from "axios";
+
+interface dto
+{
+  bno: number,
+  categoryName: string,
+  content: string,
+  createDate: string,
+  fileNames: [],
+  modDate: string,
+  path: string,
+  title: string,
+  viewCount: number,
+  vote: number,
+  writer: string,
+  writerUuid: string,
+}
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
-const getDto = ref([])
+const getDto = ref<dto|null>(null)
+
+const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
 
 onMounted(()=> {
   const bno = window.history.state.bno;
@@ -13,46 +31,58 @@ onMounted(()=> {
       .catch(error => console.error(error));
 })
 
+const formatDate = (dateString: string) =>
+{
+  const date = new Date(dateString);
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+}
 
 </script>
 
 <template>
   <main>
     <div>
-      <el-row :gutter="10">
-        <el-col :span="12">
-          <el-select size="large" id="select-category" class="form-control" placeholder="Choose category" v-model="categoryName">
-            <el-option v-for="category in categories" :key="category.categoryId" :value="category.categoryName">
-              {{category.categoryName}}
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-input size="large" class readonly v-model="path">{{path}}</el-input>
-        </el-col>
-      </el-row>
+      <H2 class="communityName">{{path}}</H2>
     </div>
-
-    <el-row :gutter="10">
-      <el-col :span="12"/>
-      <el-col :span="3">
-        <div class="mt-3" style="text-align-last: center">
-          <el-input :value="user.uuid" readonly >{{user.uuid}}</el-input>
+    <hr class="mb-2 mt-2" style="background: #25394a; height: 2px; border: 0">
+    <el-row>
+      <el-col :span="16">
+         <div class="mt-3">
+           <H3 class="text" v-if="getDto">{{ getDto.title }}</H3>
+         </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="mt-4" style="text-align: end">
+          <el-text class="name" v-if="getDto">{{ formatDate(getDto.createDate) }}</el-text>
         </div>
       </el-col>
-      <el-col :span="9">
-        <div class="mt-3">
-          <el-input :value="user.name" readonly >{{user.name}}</el-input>
+      <el-col :span="16">
+        <div>
+            <el-text class="name" v-if="getDto">{{getDto.writerUuid}}</el-text>
+          <el-text>&nbsp/&nbsp</el-text>
+            <el-text class="name" v-if="getDto">{{getDto.writer}}</el-text>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div style="text-align: end">
+          <el-text class="name" v-if="getDto">Like {{getDto.vote}}</el-text>
+          <el-text>&nbsp/&nbsp</el-text>
+          <el-text class="name" v-if="getDto">View {{getDto.viewCount}}</el-text>
         </div>
       </el-col>
     </el-row>
-    <div class="mt-3"><el-input size="large" v-model="title" placeholder="Enter title"/> </div>
-    <div class="mt-3"><el-input size="large" type="textarea" v-model="content" placeholder="Enter content"  :autosize="{minRows: 10}"/></div>
-    <div class="mt-3"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
-
+    <hr class="mb-2 mt-2" style="background: rgba(70,130,180,0.17); height: 1px; border: 0;">
+    <div class="mt-3" style="min-height: 15em"><el-text v-if="getDto">{{getDto.content}}</el-text></div>
+    <hr class="mb-2 mt-2" style="background: rgba(70,130,180,0.17); height: 1px; border: 0;">
+    <el-row><el-col>
+      <div class="mt-3" style="text-align: end"><el-button size="large" type="warning" @click="">Modify</el-button></div>
+    </el-col></el-row>
   </main>
 </template>
 
 <style scoped>
-
+.text{ color: white }
+H2{font-size: 2.5em}
+H3{font-size: 1.5em}
+.name{color: #979797}
 </style>

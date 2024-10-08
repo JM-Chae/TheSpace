@@ -10,7 +10,7 @@ const bno = ref("")
 
 
 
-const path = "aaa" // Community name -> Switch to reactive when after implementing the Community page.
+const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
 const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
@@ -34,36 +34,34 @@ const post = function ()
 <template>
   <main>
     <div>
+      <H2 class="communityName">{{path}}</H2>
+    </div>
+    <hr class="mb-2 mt-2" style="background: #25394a; height: 2px; border: 0">
+    <div>
       <el-row :gutter="10">
         <el-col :span="12">
-            <el-select size="large" id="select-category" class="form-control" placeholder="Choose category" v-model="categoryName">
+            <el-select id="select-category" class="form-control mt-3" placeholder="Choose category" v-model="categoryName">
               <el-option v-for="category in categories" :key="category.categoryId" :value="category.categoryName">
                 {{category.categoryName}}
               </el-option>
             </el-select>
         </el-col>
-        <el-col :span="12">
-            <el-input size="large" class readonly v-model="path">{{path}}</el-input>
+        <el-col :span="3">
+          <div class="mt-3" style="text-align-last: center">
+            <el-input :value="user.uuid" readonly >{{user.uuid}}</el-input>
+          </div>
+        </el-col>
+        <el-col :span="9">
+          <div class="mt-3">
+            <el-input :value="user.name" readonly >{{user.name}}</el-input>
+          </div>
         </el-col>
       </el-row>
     </div>
 
-    <el-row :gutter="10">
-      <el-col :span="12"/>
-      <el-col :span="3">
-        <div class="mt-3" style="text-align-last: center">
-          <el-input :value="user.uuid" readonly >{{user.uuid}}</el-input>
-        </div>
-      </el-col>
-      <el-col :span="9">
-        <div class="mt-3">
-          <el-input :value="user.name" readonly >{{user.name}}</el-input>
-        </div>
-      </el-col>
-    </el-row>
     <div class="mt-3"><el-input size="large" v-model="title" placeholder="Enter title"/> </div>
     <div class="mt-3"><el-input size="large" type="textarea" v-model="content" placeholder="Enter content" :autosize="{minRows: 10}"/></div>
-    <div class="mt-3"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
+    <div class="mt-3" style="text-align: end"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
 
   </main>
 </template>
