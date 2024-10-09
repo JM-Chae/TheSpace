@@ -79,6 +79,7 @@ public class BoardServiceImpl implements BoardService
             .viewCount(board.getViewCount())
             .modDate(board.getModDate())
             .createDate(board.getCreateDate())
+            .rCount(board.getRCount())
             .build();
 
         List<String> fileNames = board.getFileSet().stream().sorted().map(boardFile ->
