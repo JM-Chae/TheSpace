@@ -38,6 +38,8 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final StringPath replyWriter = createString("replyWriter");
 
+    public final StringPath replyWriterUuid = createString("replyWriterUuid");
+
     public final NumberPath<Long> rno = createNumber("rno", Long.class);
 
     public final NumberPath<Long> vote = createNumber("vote", Long.class);

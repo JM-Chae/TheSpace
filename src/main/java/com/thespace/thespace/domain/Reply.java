@@ -2,6 +2,7 @@ package com.thespace.thespace.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 
 @Builder
@@ -22,7 +23,10 @@ public class Reply extends BaseEntity
 
     private String replyWriter;
 
+    private String replyWriterUuid;
+
     @Builder.Default
+    @ColumnDefault("0")
     private Long vote = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)

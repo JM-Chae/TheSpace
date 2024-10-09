@@ -24,6 +24,8 @@ public class ReplyDTO
 
     private String replyWriter;
 
+    private String replyWriterUuid;
+
     private LocalDateTime replyDate;
 
     private String path;
