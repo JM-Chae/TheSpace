@@ -18,10 +18,12 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
         super(Reply.class);
       }
 
-    public Page<ReplyDTO> getListReply(String[] types, String keyword, Pageable pageable)
+    public Page<ReplyDTO> getListReply(Long bno, String[] types, String keyword, Pageable pageable)
       {
         QReply reply = QReply.reply;
         JPQLQuery<Reply> replyJPQLQuery = from(reply);
+
+        replyJPQLQuery.where(reply.board.bno.eq(bno));
 
         replyJPQLQuery.groupBy(reply);
 
@@ -34,6 +36,8 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
           {
             ReplyDTO rdto = ReplyDTO.builder()
                 .rno(reply1.getRno())
+                .bno(reply1.getBoard().getBno())
+                .replyWriterUuid(reply1.getReplyWriterUuid())
                 .replyContent(reply1.getReplyContent())
                 .replyWriter(reply1.getReplyWriter())
                 .path(reply1.getPath())

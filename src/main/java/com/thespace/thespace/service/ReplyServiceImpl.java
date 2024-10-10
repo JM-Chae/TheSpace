@@ -80,7 +80,7 @@ public class ReplyServiceImpl implements ReplyService
         Pageable pageable = pageReqDTO.getPageable("rno");
 
 
-        Page<ReplyDTO> list = replyRepository.getListReply(types, keyword, pageable);
+        Page<ReplyDTO> list = replyRepository.getListReply(bno, types, keyword, pageable);
 
         PageResDTO<ReplyDTO> pageResDTO = PageResDTO.<ReplyDTO>PageResDTO()
             .pageReqDTO(pageReqDTO)
