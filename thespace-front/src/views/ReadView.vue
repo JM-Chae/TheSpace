@@ -1,7 +1,20 @@
 <script lang = "ts" setup>
-import {onMounted, ref, unref, watch} from "vue";
-import {ClickOutside as vClickOutside} from 'element-plus'
+import {onMounted, ref, watch} from "vue";
 import axios from "axios";
+
+function getRead()
+  {
+    axios.get(`http://localhost:8080/board/read/${bno}`)
+      .then(res => getDto.value = res.data)
+      .catch(error => console.error(error))
+  }
+
+function getReply()
+  {
+    axios.get(`http://localhost:8080/board/${bno}/reply`)
+      .then(res => rDtoList.value = res.data)
+      .catch(error => console.error(error));
+  }
 
 interface dto
   {
@@ -47,21 +60,9 @@ const path = "Test Community Name" // Community name -> Switch to reactive when 
 const bno = window.history.state.bno;
 onMounted(() =>
 {
-  axios.get(`http://localhost:8080/board/read/${bno}`)
-    .then(res =>
-    {
-      getDto.value = res.data;
-    })
-    .catch(error => console.error(error));
-
-  axios.get(`http://localhost:8080/board/${bno}/reply`)
-    .then(res =>
-    {
-      rDtoList.value = res.data
-    })
-    .catch(error => console.error(error));
+  getRead()
+  getReply()
 })
-
 const replyContent = ref("")
 const nestedReply = ref("")
 const reply = function ()
@@ -75,8 +76,16 @@ const reply = function ()
         path: bno + "/" + nestedReply.value
       })
       .then(() => replyContent.value = "")
+      .then(() =>
+      {
+        getReply();
+        if (getDto.value && getDto.value.rCount != undefined)
+          {
+            getDto.value.rCount += 1;
+          }
+      })
   }
-
+// let likeCheck = axios.get
 const like = function ()
   {
     const rno = 0 // If click like button then return rno value
@@ -86,6 +95,20 @@ const like = function ()
         rno: rno,
         bno: bno
       })
+    // .then(() =>
+    // {
+    //
+    //   if (getDto.value && getDto.value.vote != undefined && likeCheck == 0)
+    //     {
+    //       getDto.value.vote += 1;
+    //       likeCheck = 1;
+    //     }
+    //   if (getDto.value && getDto.value.vote != undefined && likeCheck == 1)
+    //     {
+    //       getDto.value.vote += 1;
+    //       likeCheck = 0;
+    //     }
+    //)
   }
 
 
@@ -163,22 +186,31 @@ const formatDate = (dateString: string) =>
 			<div class = "p-3 m-3 pb-2 pt-2"
 					 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 				
+				
 				<el-space :size = "10" fill = "fill">
-					<li v-for = "rDto in rDtoList?.dtoList" key = "rDto.rno" class = "list">
-								<span>
-									<el-popover :width = "10" effect = "dark" placement = "top-start" title = "UUID" trigger = "hover">
-											<template #reference>
-												<el-button class = "name" style = "color: white" type = "text">{{ rDto.replyWriter }}</el-button>
-											</template>
-										{{ rDto.replyWriterUuid }}
-									</el-popover>
-								</span>
-								<span class="m-3">
-									<el-text>{{ rDto.replyContent }}</el-text>
-								</span>
-					</li>
+					<ul v-for = "rDto in rDtoList?.dtoList" key = "rDto.rno" class = "list" style="list-style-type: none">
+						<li style = "width: 100%; display: flex; justify-content: space-between; align-items: center;">
+							<div style = "flex: 1">
+								<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+									<template #reference>
+										<el-button class = "name" style = "color: white" type = "text">{{ rDto.replyWriter }}</el-button>
+									</template>
+									{{ rDto.replyWriterUuid }}
+								</el-popover>
+							</div>
+							<div style = "flex: 6; text-align: left; margin-left: auto">
+								<el-text class = "text">{{ rDto.replyContent }}</el-text>
+							</div>
+							<div style = "flex: 3; margin-left: auto; text-align: right">
+								<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
+							</div>
+						</li>
+						
+						<li>
+<!--						nestedReply-->
+						</li>
+					</ul>
 				</el-space>
-			
 			</div>
 			<hr style = "background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
 		</div>
@@ -197,8 +229,9 @@ const formatDate = (dateString: string) =>
 
 <style scoped>
 .text {
-    color: white;
-    font-size: 1em
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 1em;
+    font-weight: lighter;
 }
 
 h2 {
