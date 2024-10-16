@@ -63,7 +63,7 @@ onMounted(() =>
   getRead()
   getReply()
 })
-const replyContent = ref("")
+const replyContent = ref<string>()
 const nestedReply = ref("")
 const reply = function ()
   {
@@ -128,6 +128,13 @@ const formatDate = (dateString: string) =>
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString('en-US', {hour12: true});
   }
 
+const isVisible = ref<boolean[]>([]);
+if(rDtoList.value != null)
+  {
+    isVisible.value = new Array(rDtoList.value.dtoList.length).fill(false);
+  }
+const toggleNested = (index: number) =>{replyContent.value = ''; isVisible.value[index] = !isVisible.value[index]; isVisible.value = isVisible.value.map((_, i) => i === index);}
+
 </script>
 
 <template>
@@ -187,26 +194,39 @@ const formatDate = (dateString: string) =>
 					 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 				
 				
-				<el-space :size = "10" fill = "fill">
-					<ul v-for = "rDto in rDtoList?.dtoList" key = "rDto.rno" class = "list" style="list-style-type: none">
-						<li style = "width: 100%; display: flex; justify-content: space-between; align-items: center;">
-							<div style = "flex: 1">
-								<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
-									<template #reference>
-										<el-button class = "name" style = "color: white" type = "text">{{ rDto.replyWriter }}</el-button>
-									</template>
-									{{ rDto.replyWriterUuid }}
-								</el-popover>
-							</div>
-							<div style = "flex: 6; text-align: left; margin-left: auto">
-								<el-text class = "text">{{ rDto.replyContent }}</el-text>
-							</div>
-							<div style = "flex: 3; margin-left: auto; text-align: right">
-								<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
+				<el-space :size = "20" fill = "fill" style="display: flex;" >
+					<ul v-for = "(rDto, index) in rDtoList?.dtoList" key = "rDto.rno" class = "list">
+						<li @click="toggleNested(index)" style="list-style-type: none; border-bottom: 1px dashed rgba(70,130,180,0.17); padding-bottom: 10px;">
+							<div style="display: grid;" >
+								<div style="display: flex; justify-content: space-between; align-items: center; ">
+									<div style="flex-grow: 1; min-width: 90px">
+										<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+											<template #reference>
+												<el-button class = "name" style = "color: white" type = "text">{{ rDto.replyWriter }}</el-button>
+											</template>
+											{{ rDto.replyWriterUuid }}
+										</el-popover>
+									</div>
+									<div style = "text-align: left; margin-left: auto; flex-grow: 20">
+										<el-text class = "text">{{ rDto.replyContent }}</el-text>
+									</div>
+									<div style = "margin-left: auto; text-align: right; flex-grow: 1; min-width: 160px">
+										<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
+									</div>
+								</div>
+								
+								<div v-show="isVisible[index]" class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
+										 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
+									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
+									<div style = "text-align: end">
+										<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
+									</div>
+								</div>
 							</div>
 						</li>
 						
-						<li>
+						<li style="list-style-type: none;">
 <!--						nestedReply-->
 						</li>
 					</ul>
