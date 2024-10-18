@@ -16,6 +16,13 @@ function getReply()
       .catch(error => console.error(error));
   }
 
+function getNestedReply(rno: number)
+  {
+    axios.get(`http://localhost:8080/board/${bno}/reply/${rno}`)
+      .then(res => nrDtoList.value = res.data)
+      .catch(error => console.error(error));
+  }
+
 interface dto
   {
     bno: number,
@@ -51,6 +58,7 @@ interface rDtos
   }
 
 const rDtoList = ref<rDtos | null>(null)
+const nrDtoList = ref<rDtos | null>(null)
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
@@ -58,9 +66,9 @@ const getDto = ref<dto | null>(null)
 
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
 const bno = window.history.state.bno;
+const rno = ref<number[]>([])
 
 const replyContent = ref<string>()
-const nestedReply = ref("")
 const reply = function ()
   {
     axios.post(`http://localhost:8080/board/${bno}/reply`,
@@ -75,7 +83,7 @@ const reply = function ()
       .then(() =>
       {
         getReply();
-        if (getDto.value && getDto.value.rCount != undefined)
+				if (getDto.value && getDto.value.rCount != undefined)
           {
             getDto.value.rCount += 1;
           }
@@ -126,6 +134,8 @@ const formatDate = (dateString: string) =>
 
 const isVisible = ref<boolean[]>([]);
 const focused = ref<boolean>(true)
+const nestedReply = ref<number|string>('')
+const isNested = ref<boolean[]>([])
 
 const closeAllNestedReplies = () =>
   {
@@ -147,12 +157,23 @@ const handleOutsideClick = (event: MouseEvent) =>
 if (rDtoList.value != null)
   {
     isVisible.value = new Array(rDtoList.value.dtoList.length).fill(false);
+    isNested.value = new Array(rDtoList.value.dtoList.length).fill(false);
   }
 const toggleNested = (index: number) =>
   {
-    replyContent.value = '';
     isVisible.value[index] = !isVisible.value[index];
     isVisible.value = isVisible.value.map((_, i) => i === index);
+    replyContent.value = '';
+    focused.value = false;
+    console.log(nestedReply)
+  }
+
+const handleLoad = (index: number, rnoValue: number) =>
+  {
+    rno.value[index] = rnoValue;
+    getNestedReply(rno.value[index])
+		// if(nrDtoList.)
+		// isNested.value[index] =
   }
 
 const listEnd = ref<boolean[]>([])
@@ -245,7 +266,7 @@ onBeforeUnmount(() =>
 				
 				<el-space :size = "20" fill = "fill" style = "display: flex;">
 					<ul v-for = "(rDto, index) in rDtoList?.dtoList" key = "rDto.rno" class = "list" style = "padding-left: 0">
-						<li style = "list-style-type: none;" @click = "toggleNested(index); focused = false;">
+						<li style = "list-style-type: none;" @click = "toggleNested(index); nestedReply = rDto.rno" @load="handleLoad(index, rDto.rno)">
 							<div style = "display: grid;">
 								<div style = "display: flex; justify-content: space-between; align-items: center; ">
 									<div style = "flex-grow: 1; min-width: 90px">
@@ -264,7 +285,7 @@ onBeforeUnmount(() =>
 									</div>
 								</div>
 								
-								<div v-show = "isVisible[index]" class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
+								<div v-show = "isVisible[index]" @click.stop class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
 										 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
 									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
@@ -277,8 +298,35 @@ onBeforeUnmount(() =>
 							<div v-if = "listEnd && listEnd[index]" style = "border-bottom: 1px dashed rgba(70,130,180,0.17);"></div>
 						</li>
 						
-						<li style = "list-style-type: none;">
-							<!--						nestedReply-->
+						<li v-show="isNested[index]" style = "list-style-type: none;" v-for = "(nrDto) in nrDtoList?.dtoList" key = "nrDto.rno" class = "nestedList">
+							<div style = "display: grid;">
+								ㄴ
+								<div style = "display: flex; justify-content: space-between; align-items: center; ">
+									<div style = "flex-grow: 1; min-width: 90px">
+										<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+											<template #reference>
+												<el-button class = "name" style = "color: white" type = "text">{{ nrDto.replyWriter }}</el-button>
+											</template>
+											{{ nrDto.replyWriterUuid }}
+										</el-popover>
+									</div>
+									<div style = "text-align: left; margin-left: auto; flex-grow: 20">
+										<el-text class = "text">{{ nrDto.replyContent }}</el-text>
+									</div>
+									<div style = "margin-left: auto; text-align: right; flex-grow: 1; min-width: 160px">
+										<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
+									</div>
+								</div>
+								
+								<div v-show = "isVisible[index]" @click.stop class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
+										 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
+									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
+									<div style = "text-align: end">
+										<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
+									</div>
+								</div>
+							</div>
 						</li>
 					</ul>
 				</el-space>

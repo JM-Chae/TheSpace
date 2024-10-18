@@ -75,12 +75,38 @@ public class ReplyServiceImpl implements ReplyService
         String[] types = pageReqDTO.getTypes();
         String keyword = pageReqDTO.getKeyword();
 
-        pageReqDTO.setSize(30);
+        pageReqDTO.setSize(10000);
 
         Pageable pageable = pageReqDTO.getPageable("rno");
 
 
         Page<ReplyDTO> list = replyRepository.getListReply(bno, types, keyword, pageable);
+
+        PageResDTO<ReplyDTO> pageResDTO = PageResDTO.<ReplyDTO>PageResDTO()
+            .pageReqDTO(pageReqDTO)
+            .dtoList(list.getContent())
+            .total((int) list.getTotalElements())
+            .build();
+
+        return pageResDTO;
+      }
+
+    public PageResDTO<ReplyDTO> getListNestedReply(Long rno, Long bno, PageReqDTO pageReqDTO)
+      {
+        if (!boardRepository.existsById(bno))
+          {
+            throw new PostNotFound();
+          }
+
+        String[] types = pageReqDTO.getTypes();
+        String keyword = pageReqDTO.getKeyword();
+
+        pageReqDTO.setSize(10000);
+
+        Pageable pageable = pageReqDTO.getPageable("rno");
+
+
+        Page<ReplyDTO> list = replyRepository.getListNestedReply(rno, bno, types, keyword, pageable);
 
         PageResDTO<ReplyDTO> pageResDTO = PageResDTO.<ReplyDTO>PageResDTO()
             .pageReqDTO(pageReqDTO)

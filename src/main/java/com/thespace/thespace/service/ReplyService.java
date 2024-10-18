@@ -9,4 +9,5 @@ public interface ReplyService
     Long register(Long bno, ReplyDTO replyDTO);
     void delete(Long bno, Long rno);
     PageResDTO<ReplyDTO> getListReply(Long bno, PageReqDTO pageReqDTO);
+    PageResDTO<ReplyDTO> getListNestedReply(Long rno, Long bno, PageReqDTO pageReqDTO);
   }

@@ -24,6 +24,42 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
         JPQLQuery<Reply> replyJPQLQuery = from(reply);
 
         replyJPQLQuery.where(reply.board.bno.eq(bno));
+        replyJPQLQuery.where(reply.path.eq(String.valueOf(bno)+'/'));
+
+        replyJPQLQuery.groupBy(reply);
+
+        getQuerydsl().applyPagination(pageable, replyJPQLQuery);
+
+        JPQLQuery<Reply> selectQuery = replyJPQLQuery.select(reply);
+        List<Reply> replyList = selectQuery.fetch();
+
+        List<ReplyDTO> rdtoList = replyList.stream().map(reply1 ->
+          {
+            ReplyDTO rdto = ReplyDTO.builder()
+                .rno(reply1.getRno())
+                .bno(reply1.getBoard().getBno())
+                .replyWriterUuid(reply1.getReplyWriterUuid())
+                .replyContent(reply1.getReplyContent())
+                .replyWriter(reply1.getReplyWriter())
+                .path(reply1.getPath())
+                .replyDate(reply1.getCreateDate())
+                .build();
+
+            return rdto;
+          }).toList();
+
+        long totalCount = selectQuery.fetchCount();
+
+        return new PageImpl<>(rdtoList, pageable, totalCount);
+      }
+
+    public Page<ReplyDTO> getListNestedReply(Long rno, Long bno, String[] types, String keyword, Pageable pageable)
+      {
+        QReply reply = QReply.reply;
+        JPQLQuery<Reply> replyJPQLQuery = from(reply);
+
+        replyJPQLQuery.where(reply.board.bno.eq(bno));
+        replyJPQLQuery.where(reply.path.eq(String.valueOf(bno)+'/'+String.valueOf(rno)));
 
         replyJPQLQuery.groupBy(reply);
 

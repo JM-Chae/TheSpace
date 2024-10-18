@@ -36,4 +36,13 @@ public class ReplyController
 
         return rdtoList;
       }
+
+    @GetMapping("/board/{bno}/reply/{rno}")
+    public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno, @PathVariable("bno") Long bno, PageReqDTO pageReqDTO, Model model)
+      {
+        PageResDTO<ReplyDTO> nrdtoList = replyService.getListNestedReply(rno, bno, pageReqDTO);
+        model.addAttribute("nrdtoList", nrdtoList);
+
+        return nrdtoList;
+      }
   }

@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface GetListReply
   {
     Page<ReplyDTO> getListReply(Long bno, String[] types, String keyword, Pageable pageable);
+    Page<ReplyDTO> getListNestedReply(Long rno, Long bno, String[] types, String keyword, Pageable pageable);
   }
