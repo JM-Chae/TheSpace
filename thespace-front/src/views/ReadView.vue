@@ -13,15 +13,39 @@ function getReply()
   {
     axios.get(`http://localhost:8080/board/${bno}/reply`)
       .then(res => rDtoList.value = res.data)
+			.then(res =>
+        {
+              rno.value = res.dtoList.map((rnoV: rdto) => rnoV.rno)
+					
+        }
+			)
+			.then(()=> getNestedReplyFunction())
       .catch(error => console.error(error));
   }
 
-function getNestedReply(rno: number)
+function getNestedReplyFunction()
+  {
+    for (let i=0; i<rno.value.length; i++)
+      {
+        getNestedReply(rno.value[i], i)
+      }
+  }
+
+function getNestedReply(rno: number, i: number)
   {
     axios.get(`http://localhost:8080/board/${bno}/reply/${rno}`)
-      .then(res => nrDtoList.value = res.data)
+      .then(res => nrDtoList.value[i] = res.data)
+			.then(()=>
+      {
+        if (nrDtoList.value[i].total != 0 && nrDtoList.value[i].total != undefined)
+          {
+            isNested.value[i] = true
+          }
+      })
       .catch(error => console.error(error));
   }
+
+
 
 interface dto
   {
@@ -54,11 +78,12 @@ interface rdto
 
 interface rDtos
   {
+    total: number,
     dtoList: Array<rdto>
   }
 
 const rDtoList = ref<rDtos | null>(null)
-const nrDtoList = ref<rDtos | null>(null)
+const nrDtoList = ref<rDtos[]>([{dtoList: [], total: 0}])
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
@@ -129,7 +154,7 @@ watch(getDto, (newValue) =>
 const formatDate = (dateString: string) =>
   {
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString('en-US', {hour12: true});
+    return date.toLocaleDateString('ko-KR', {timeZone: "UTC"}) + ' ' + date.toLocaleTimeString( 'en-US',{hour12: true, timeZone: "UTC"});
   }
 
 const isVisible = ref<boolean[]>([]);
@@ -142,6 +167,7 @@ const closeAllNestedReplies = () =>
     isVisible.value = isVisible.value.map(() => false);
     focused.value = true;
     replyContent.value = '';
+    nestedReply.value = ''
   };
 
 const handleOutsideClick = (event: MouseEvent) =>
@@ -165,15 +191,6 @@ const toggleNested = (index: number) =>
     isVisible.value = isVisible.value.map((_, i) => i === index);
     replyContent.value = '';
     focused.value = false;
-    console.log(nestedReply)
-  }
-
-const handleLoad = (index: number, rnoValue: number) =>
-  {
-    rno.value[index] = rnoValue;
-    getNestedReply(rno.value[index])
-		// if(nrDtoList.)
-		// isNested.value[index] =
   }
 
 const listEnd = ref<boolean[]>([])
@@ -181,17 +198,20 @@ watch(rDtoList, (newValue) =>
 {
   if (newValue != null)
     {
-      listEnd.value = new Array(newValue.dtoList.length).fill(true);
+      listEnd.value = new Array(newValue.dtoList?.length).fill(true);
     }
-  newValue?.dtoList.forEach((_, index) =>
+  if(newValue?.dtoList != undefined)
     {
-      const listEndCheck = () =>
-        {
-          listEnd.value[index] = index != newValue?.dtoList?.length - 1;
-        }
-      listEndCheck();
+  		newValue?.dtoList.forEach((_, index) =>
+				{
+					const listEndCheck = () =>
+						{
+							listEnd.value[index] = index != newValue?.dtoList?.length - 1;
+						}
+					
+					listEndCheck();
+				})
     }
-  )
 })
 
 onMounted(() =>
@@ -263,16 +283,15 @@ onBeforeUnmount(() =>
 			<div class = "p-3 m-3 pb-2 pt-4"
 					 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 				
-				
 				<el-space :size = "20" fill = "fill" style = "display: flex;">
 					<ul v-for = "(rDto, index) in rDtoList?.dtoList" key = "rDto.rno" class = "list" style = "padding-left: 0">
-						<li style = "list-style-type: none;" @click = "toggleNested(index); nestedReply = rDto.rno" @load="handleLoad(index, rDto.rno)">
+						<li style = "list-style-type: none;" @click = "toggleNested(index); nestedReply = rDto.rno" class="list">
 							<div style = "display: grid;">
 								<div style = "display: flex; justify-content: space-between; align-items: center; ">
 									<div style = "flex-grow: 1; min-width: 90px">
 										<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
 											<template #reference>
-												<el-button class = "name" style = "color: white" type = "text">{{ rDto.replyWriter }}</el-button>
+												<el-button class = "name" style = "color: white" link>{{ rDto.replyWriter }}</el-button>
 											</template>
 											{{ rDto.replyWriterUuid }}
 										</el-popover>
@@ -280,12 +299,35 @@ onBeforeUnmount(() =>
 									<div style = "text-align: left; margin-left: auto; flex-grow: 20">
 										<el-text class = "text">{{ rDto.replyContent }}</el-text>
 									</div>
-									<div style = "margin-left: auto; text-align: right; flex-grow: 1; min-width: 160px">
+									<div style = "margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
 										<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
 									</div>
 								</div>
 								
-								<div v-show = "isVisible[index]" @click.stop class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
+								<ul v-if="nrDtoList[index]?.dtoList" v-for = "(nrDto) in nrDtoList[index].dtoList" key = "nrDto.rno" style = "border-radius: 0.5em; border: 0.1em solid #494949; padding-left: 0; background-color: rgb(46,46,46)" class="p-2 m-3 mt-2 mb-0">
+									<li v-show="isNested[index]" style = "list-style-type: none;" class = "nestedList">
+										<div style = "display: grid;">
+											<div style = "display: flex; justify-content: space-between; align-items: center; ">
+												<div style = "flex-grow: 1; min-width: 90px">
+													<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+														<template #reference>
+															<el-button class = "name" style = "color: white" link>{{ nrDto.replyWriter }}</el-button>
+														</template>
+														{{ nrDto.replyWriterUuid }}
+													</el-popover>
+												</div>
+												<div style = "text-align: left; margin-left: auto; flex-grow: 20">
+													<el-text class = "text">{{ nrDto.replyContent }}</el-text>
+												</div>
+												<div style = "margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
+													<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+								
+								<div v-show = "isVisible[index]" @click.stop class = "nestedReplyPost p-3 m-3 pb-2 pt-2 mt-2"
 										 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
 									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
@@ -295,41 +337,11 @@ onBeforeUnmount(() =>
 								</div>
 							</div>
 							
-							<div v-if = "listEnd && listEnd[index]" style = "border-bottom: 1px dashed rgba(70,130,180,0.17);"></div>
-						</li>
-						
-						<li v-show="isNested[index]" style = "list-style-type: none;" v-for = "(nrDto) in nrDtoList?.dtoList" key = "nrDto.rno" class = "nestedList">
-							<div style = "display: grid;">
-								ㄴ
-								<div style = "display: flex; justify-content: space-between; align-items: center; ">
-									<div style = "flex-grow: 1; min-width: 90px">
-										<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
-											<template #reference>
-												<el-button class = "name" style = "color: white" type = "text">{{ nrDto.replyWriter }}</el-button>
-											</template>
-											{{ nrDto.replyWriterUuid }}
-										</el-popover>
-									</div>
-									<div style = "text-align: left; margin-left: auto; flex-grow: 20">
-										<el-text class = "text">{{ nrDto.replyContent }}</el-text>
-									</div>
-									<div style = "margin-left: auto; text-align: right; flex-grow: 1; min-width: 160px">
-										<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
-									</div>
-								</div>
-								
-								<div v-show = "isVisible[index]" @click.stop class = "nestedReplyPost p-3 m-3 pb-2 pt-2"
-										 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
-									<div style = "text-align: end">
-										<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
-									</div>
-								</div>
-							</div>
+							<div v-if = "listEnd && listEnd[index]" style = "border-bottom: 1px dashed rgba(70,130,180,0.17);" class="mt-2"></div>
 						</li>
 					</ul>
 				</el-space>
+				
 			</div>
 			<hr style = "background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
 		</div>
@@ -337,7 +349,7 @@ onBeforeUnmount(() =>
 		<div v-if = "focused" class = "replyPost p-3 m-3 pb-2 pt-2"
 				 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 			<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-			<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
+			<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" @click.stop/>
 			<div style = "text-align: end">
 				<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
 			</div>
