@@ -42,6 +42,7 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
                 .replyContent(reply1.getReplyContent())
                 .replyWriter(reply1.getReplyWriter())
                 .path(reply1.getPath())
+                .tag(reply1.getTag())
                 .replyDate(reply1.getCreateDate())
                 .build();
 
@@ -77,6 +78,7 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
                 .replyContent(reply1.getReplyContent())
                 .replyWriter(reply1.getReplyWriter())
                 .path(reply1.getPath())
+                .tag(reply1.getTag())
                 .replyDate(reply1.getCreateDate())
                 .build();
 

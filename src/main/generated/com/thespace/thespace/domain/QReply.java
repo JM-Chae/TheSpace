@@ -42,6 +42,8 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final NumberPath<Long> rno = createNumber("rno", Long.class);
 
+    public final StringPath tag = createString("tag");
+
     public final NumberPath<Long> vote = createNumber("vote", Long.class);
 
     public QReply(String variable) {

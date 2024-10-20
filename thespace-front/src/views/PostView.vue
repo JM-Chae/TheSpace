@@ -34,7 +34,7 @@ const post = function ()
 <template>
   <main>
     <div>
-      <H2 class="communityName">{{path}}</H2>
+      <h2 class="communityName">{{path}}</h2>
     </div>
     <hr class="mb-2 mt-2" style="background: #25394a; height: 2px; border: 0">
     <div>

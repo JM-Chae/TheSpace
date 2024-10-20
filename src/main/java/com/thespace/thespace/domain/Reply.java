@@ -25,6 +25,8 @@ public class Reply extends BaseEntity
 
     private String replyWriterUuid;
 
+    private String tag;
+
     @Builder.Default
     @ColumnDefault("0")
     private Long vote = 0L;
