@@ -40,11 +40,14 @@ function getNestedReply(rno: number, i: number)
         if (nrDtoList.value[i].total != 0 && nrDtoList.value[i].total != undefined)
           {
             isNested.value[i] = true
-            if (nrDtoList.value[i].dtoList[0].rno != null && nrDtoList.value[i].dtoList != undefined)
+						nrWriterCheck.value[i] = new Array(nrDtoList.value.length).fill(false)
+						for (let n=0; n<nrDtoList.value[i].dtoList.length; n++)
               {
-                tagName.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[0])
-                tagUuid.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[1])
-              }
+                nrWriterCheck.value[i][n] = user.uuid == nrDtoList.value[i].dtoList[n].replyWriterUuid;
+							}
+						console.log(nrWriterCheck)
+						tagName.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[0])
+						tagUuid.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[1])
           }
       })
       .catch(error => console.error(error));
@@ -150,9 +153,8 @@ const like = function ()
 
 const writerCheck = ref(false)
 const rWriterCheck = ref<boolean[]>([])
-const nrWriterCheck = ref<[[]]>([])
+const nrWriterCheck = ref<boolean[][]>([])
 
-nrWriterCheck[0[0]] = false
 
 watch(getDto, (newValue) =>
 {
@@ -359,6 +361,9 @@ onBeforeUnmount(() =>
 												<div style = "margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
 													<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
 												</div>
+												<div @click.stop>
+													<el-button v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "">Delete</el-button>
+												</div>
 											</div>
 										</div>
 									</li>
@@ -367,7 +372,7 @@ onBeforeUnmount(() =>
 								<div v-show = "isVisible[index]" class = "nestedReplyPost p-3 m-3 pb-2 pt-2 mt-2" style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)"
 										 @click.stop>
 									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea"/>
+									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" v-if="tag != ''" :placeholder="'To ' + tag.split(' ')[0]"/>
 									<div style = "text-align: end">
 										<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
 									</div>
