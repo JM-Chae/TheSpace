@@ -1,6 +1,7 @@
 <script lang = "ts" setup>
 import {onMounted, ref, watch, onBeforeUnmount} from "vue";
 import axios from "axios";
+import {ElMessageBox} from "element-plus";
 
 function getRead()
   {
@@ -40,17 +41,47 @@ function getNestedReply(rno: number, i: number)
         if (nrDtoList.value[i].total != 0 && nrDtoList.value[i].total != undefined)
           {
             isNested.value[i] = true
-						nrWriterCheck.value[i] = new Array(nrDtoList.value.length).fill(false)
-						for (let n=0; n<nrDtoList.value[i].dtoList.length; n++)
+            nrWriterCheck.value[i] = new Array(nrDtoList.value.length).fill(false)
+            for (let n = 0; n < nrDtoList.value[i].dtoList.length; n++)
               {
                 nrWriterCheck.value[i][n] = user.uuid == nrDtoList.value[i].dtoList[n].replyWriterUuid;
-							}
-						console.log(nrWriterCheck)
-						tagName.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[0])
-						tagUuid.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[1])
+              }
+            tagName.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[0])
+            tagUuid.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[1])
           }
       })
       .catch(error => console.error(error));
+  }
+
+function deleteReply(rno: number, isNR: number)
+  {
+    if (isNR == 0)
+      {
+        axios.delete(`http://localhost:8080/reply/${rno}`, {params: {bno: bno}})
+          .then(() => getReply())
+      } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.', 'Delete Confirmation', // The goal is to prevent comment deletion, but instead, to add an API that allows for arbitrary modification of the comment's information.
+      {
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true
+      })
+  }
+
+const deleteReplyAlert = (rno: number, isNR: number) =>
+  {
+    ElMessageBox.confirm('Are you sure you want to delete this reply?', 'Delete Confirmation',
+      {
+        cancelButtonText: 'NO',
+        confirmButtonText: 'OK',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+				center: true,
+        customClass: '.el-message-box'
+      })
+      .then(() =>
+      {
+        deleteReply(rno, isNR);
+      }).catch(()=>{console.log('')})
   }
 
 interface dto
@@ -80,7 +111,8 @@ interface rdto
     replyDate: string,
     path: string,
     vote: number,
-    tag: string
+    tag: string,
+    isNested: number
   }
 
 interface rDtos
@@ -98,7 +130,7 @@ const getDto = ref<dto | null>(null)
 
 const tag = ref<string>('')
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
-const bno = window.history.state.bno;
+const bno: number = window.history.state.bno;
 const rno = ref<number[]>([])
 const tagName = ref<Array<string[]>>([])
 const tagUuid = ref<Array<string[]>>([])
@@ -221,17 +253,17 @@ watch(rDtoList, (newValue) =>
 
     }
   if (newValue?.dtoList != undefined)
-  {
-    newValue?.dtoList.forEach((_, index) =>
     {
-      rWriterCheck.value[index] = user.uuid == newValue?.dtoList[index].replyWriterUuid;
-      const listEndCheck = () =>
-        {
-          listEnd.value[index] = index != newValue?.dtoList?.length - 1;
-        }
-      listEndCheck();
-    })
-  }
+      newValue?.dtoList.forEach((_, index) =>
+      {
+        rWriterCheck.value[index] = user.uuid == newValue?.dtoList[index].replyWriterUuid;
+        const listEndCheck = () =>
+          {
+            listEnd.value[index] = index != newValue?.dtoList?.length - 1;
+          }
+        listEndCheck();
+      })
+    }
 })
 
 onMounted(() =>
@@ -326,12 +358,12 @@ onBeforeUnmount(() =>
 										<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
 									</div>
 									<div @click.stop>
-										<el-button v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "">Delete</el-button>
+										<el-button v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(rDto.rno, rDto.isNested)">Delete</el-button>
 									</div>
 								</div>
 								
 								<ul v-for = "(nrDto, i) in nrDtoList[index].dtoList" v-if = "nrDtoList[index]?.dtoList" key = "nrDto.rno" class = "p-2 m-3 mt-2 mb-0" style = "border-radius: 0.5em; border: 0.1em solid #494949; padding-left: 0; background-color: rgb(46,46,46)">
-									<li v-show = "isNested[index]" class = "nestedList" style = "list-style-type: none;" @click = "tag = nrDto.replyWriter + ' ' + nrDto.replyWriterUuid">
+									<li v-show = "isNested[index]" class = "nestedList" style = "list-style-type: none;" @click = "tag = nrDto.replyWriter + ' ' + nrDto.replyWriterUuid + ' ' + 'To'">
 										<div style = "display: grid;">
 											<div style = "display: flex; justify-content: space-between; align-items: center; ">
 												<div style = "flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
@@ -362,7 +394,7 @@ onBeforeUnmount(() =>
 													<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
 												</div>
 												<div @click.stop>
-													<el-button v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "">Delete</el-button>
+													<el-button v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(nrDto.rno, nrDto.isNested)">Delete</el-button>
 												</div>
 											</div>
 										</div>
@@ -372,7 +404,7 @@ onBeforeUnmount(() =>
 								<div v-show = "isVisible[index]" class = "nestedReplyPost p-3 m-3 pb-2 pt-2 mt-2" style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)"
 										 @click.stop>
 									<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" v-if="tag != ''" :placeholder="'To ' + tag.split(' ')[0]"/>
+									<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" v-bind = "{ placeholder: tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined }"/>
 									<div style = "text-align: end">
 										<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
 									</div>
@@ -415,4 +447,5 @@ h3 {
     font-size: 1.5em;
     color: rgba(248, 248, 248, 0.89);
 }
+
 </style>

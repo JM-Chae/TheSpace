@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -39,12 +41,18 @@ public class ReplyServiceImpl implements ReplyService
     public Long register(Long bno, ReplyDTO replyDTO)
       {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
-
         Long replyCount = board.getRCount()+1L;
         board.setRCount(replyCount);
         boardRepository.save(board);
 
         replyDTO.setBno(bno);
+        if(!Objects.equals(replyDTO.getPath(), bno.toString() + '/'))
+          {
+            Reply R = replyRepository.findById(Long.valueOf(replyDTO.getPath().split("/")[1])).orElseThrow(ReplyNotFound::new);
+            Long isNested = R.getIsNested()+1L;
+            R.setIsNested(isNested);
+            replyRepository.save(R);
+          }
         Reply reply =  modelMapper.map(replyDTO, Reply.class);
         Long rno = replyRepository.save(reply).getRno();
 

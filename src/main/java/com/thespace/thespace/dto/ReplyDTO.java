@@ -30,6 +30,8 @@ public class ReplyDTO
 
     private LocalDateTime replyDate;
 
+    private Long isNested;
+
     private String path;
 
     private Long vote;

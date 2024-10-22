@@ -29,6 +29,8 @@ public class QReply extends EntityPathBase<Reply> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
 
+    public final NumberPath<Long> isNested = createNumber("isNested", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 

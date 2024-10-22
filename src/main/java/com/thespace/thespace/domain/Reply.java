@@ -31,6 +31,10 @@ public class Reply extends BaseEntity
     @ColumnDefault("0")
     private Long vote = 0L;
 
+    @Builder.Default
+    @ColumnDefault("0")
+    private Long isNested = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
   }
