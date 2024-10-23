@@ -45,6 +45,7 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
                 .tag(reply1.getTag())
                 .replyDate(reply1.getCreateDate())
                 .isNested(reply1.getIsNested())
+                .vote(reply1.getVote())
                 .build();
 
             return rdto;
@@ -82,6 +83,7 @@ public class GetListReplyImpl extends QuerydslRepositorySupport implements GetLi
                 .tag(reply1.getTag())
                 .replyDate(reply1.getCreateDate())
                 .isNested(reply1.getIsNested())
+                .vote(reply1.getVote())
                 .build();
 
             return rdto;
