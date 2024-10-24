@@ -1,7 +1,9 @@
 <script lang = "ts" setup>
 import {onMounted, ref, watch, onBeforeUnmount} from "vue";
+import { Delete, Edit, Hide, View } from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
+
 
 function getRead()
   {
@@ -31,6 +33,7 @@ function getNestedReplyFunction()
         getNestedReply(rno.value[i], i)
       }
   }
+
 
 function getNestedReply(rno: number, i: number)
   {
@@ -160,8 +163,8 @@ const reply = function ()
           }
       })
   }
-// let likeCheck = axios.get
-const like = function (no: number)
+
+async function like(no: number)
   {
     if (no == 0)
       {
@@ -171,29 +174,31 @@ const like = function (no: number)
             rno: 0,
             bno: bno
           }
-        )
-      } else
-      axios.put(`http://localhost:8080/like`,
+        ).then(res =>
         {
-          userId: <string>user.id,
-          rno: no,
-          bno: 0
+          if (getDto.value != null && getDto.value.vote != null)
+            {
+              getDto.value.vote += res.data
+            }
         })
+      } else
+      {
+        const response = await axios.put(`http://localhost:8080/like`,
+          {
+            userId: <string>user.id,
+            rno: no,
+            bno: 0
+          }
+        );
+        return response.data;
+      }
   }
-// .then(() =>
-// {
-//
-//   if (getDto.value && getDto.value.vote != undefined && likeCheck == 0)
-//     {
-//       getDto.value.vote += 1;
-//       likeCheck = 1;
-//     }
-//   if (getDto.value && getDto.value.vote != undefined && likeCheck == 1)
-//     {
-//       getDto.value.vote += 1;
-//       likeCheck = 0;
-//     }
-//)
+
+async function rLikeCount(rno: number, Dto: any)
+  {
+    const result = await like(rno)
+    Dto.vote += result;
+  }
 
 const writerCheck = ref(false)
 const rWriterCheck = ref<boolean[]>([])
@@ -334,12 +339,10 @@ onBeforeUnmount(() =>
 				<el-text v-if = "getDto" class = "text">{{ getDto.content }}</el-text>
 			</div>
 			<div class = "mt-3 mb-2" style = "text-align: end">
-				<el-button class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em" @click = "like(0)">
-					Like!
-				</el-button>
-				<el-button round size = "small" style = "margin-left: 0.5em" type = "primary" @click = "replyClose = !replyClose">Close Reply</el-button>
-				<el-button v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "warning" @click = "">Modify</el-button>
-				<el-button v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "">Delete</el-button>
+				<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em" @click = "like(0)">❤</el-button>
+				<el-button v-bind:title="replyClose ? 'ReplyHide' : 'ReplyView'" placeholder="Close Reply" round size = "small" style = "margin-left: 0.5em" type = "primary" @click = "replyClose = !replyClose"><el-icon size="15"><Hide v-if="replyClose"/><View v-if="!replyClose"/></el-icon></el-button>
+				<el-button title="Modify" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "warning" @click = ""><el-icon size="15"><Edit/></el-icon></el-button>
+				<el-button title="Delete" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = ""><el-icon size="15"><Delete/></el-icon></el-button>
 			</div>
 		</div>
 		
@@ -375,8 +378,8 @@ onBeforeUnmount(() =>
 									<div class="pt-1" style="display: flex; justify-content: space-between; align-items: center; " @click.stop>
 										<div style="margin-left: 10.5em; display: inline-block;"><el-text>Like: {{rDto.vote}}</el-text></div>
 										<div style="display: inline-block;">
-											<el-button v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(rDto.rno, rDto.isNested)">Delete</el-button>
-											<el-button class = "button" color = "#ff25cf" round size = "small" style = "width: 4em; margin-left: 0.5em;" @click = "like(rDto.rno)">Like!</el-button>
+											<el-button title="Delete" v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(rDto.rno, rDto.isNested)"><el-icon size="15"><Delete/></el-icon></el-button>
+											<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" @click = "rLikeCount(rDto.rno, rDto);">❤</el-button>
 										</div>
 									</div>
 									<ul v-for = "(nrDto, i) in nrDtoList[index].dtoList" v-if = "nrDtoList[index]?.dtoList" key = "nrDto.rno" class = "p-2 m-3 mt-2 mb-0" style = "border-radius: 0.5em; border: 0.1em solid #494949; padding-left: 0; background-color: rgb(46,46,46)">
@@ -414,8 +417,8 @@ onBeforeUnmount(() =>
 												<div class="pt-1" style="display: flex; justify-content: space-between; align-items: center; " @click.stop>
 													<div style="margin-left: 12.5em; display: inline-block;"><el-text>Like: {{nrDto.vote}}</el-text></div>
 													<div style="display: inline-block;">
-														<el-button v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(nrDto.rno, nrDto.isNested)">Delete</el-button>
-														<el-button class = "button" color = "#ff25cf" round size = "small" style = "width: 4em; margin-left: 0.5em;" @click = "like(nrDto.rno)">Like!</el-button>
+														<el-button title="Delete" v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(nrDto.rno, nrDto.isNested)"><el-icon size="15"><Delete/></el-icon></el-button>
+														<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" @click = "rLikeCount(nrDto.rno, nrDto);">❤</el-button>
 													</div>
 												</div>
 											</div>

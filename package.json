@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "unplugin-auto-import": "^0.18.3",
-    "unplugin-vue-components": "^0.27.4"
+    "unplugin-vue-components": "^0.27.4",
+    "vue-svg-loader": "^0.16.0"
   }
 }

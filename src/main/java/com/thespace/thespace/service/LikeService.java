@@ -4,5 +4,5 @@ import com.thespace.thespace.dto.LikeDTO;
 
 public interface LikeService
   {
-    void like(LikeDTO likeDTO);
+    int like(LikeDTO likeDTO);
   }

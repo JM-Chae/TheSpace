@@ -24,8 +24,8 @@ public class LikeController
       }
 
     @PutMapping
-    public void like(@RequestBody LikeDTO likeDTO)
+    public int like(@RequestBody LikeDTO likeDTO)
       {
-        likeService.like(likeDTO);
+        return likeService.like(likeDTO);
       }
   }

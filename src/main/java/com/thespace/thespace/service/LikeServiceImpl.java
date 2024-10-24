@@ -34,11 +34,12 @@ public class LikeServiceImpl implements LikeService
       }
 
     @Transactional
-    public void like(LikeDTO likeDTO)
+    public int like(LikeDTO likeDTO)
       {
         String result = likeDTO.getBno() > 0L ? "bno" : likeDTO.getRno() > 0L ? "rno" : "fail";
         String userId = likeDTO.getUserId();
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        int res =0;
 
         switch (result)
           {
@@ -52,6 +53,8 @@ public class LikeServiceImpl implements LikeService
                   likeRepository.deleteByBoardAndUser(board, user);
                   board.setVote(board.getVote() - 1L);
                   boardRepository.save(board);
+                  res = -1;
+
                   break;
                 }
 
@@ -62,8 +65,11 @@ public class LikeServiceImpl implements LikeService
               board.setVote(board.getVote() + 1L);
               boardRepository.save(board);
               likeRepository.save(like);
+              res = 1;
+
               break;
             }
+
             case "rno":
             {
               Reply reply = replyRepository.findById(likeDTO.getRno()).orElseThrow(ReplyNotFound::new);
@@ -74,6 +80,8 @@ public class LikeServiceImpl implements LikeService
                   likeRepository.deleteByReplyAndUser(reply, user);
                   reply.setVote(reply.getVote() - 1L);
                   replyRepository.save(reply);
+                  res = -1;
+
                   break;
                 }
 
@@ -84,10 +92,13 @@ public class LikeServiceImpl implements LikeService
               reply.setVote(reply.getVote() + 1L);
               replyRepository.save(reply);
               likeRepository.save(like);
+              res = 1;
+
               break;
             }
             case "fail":
               break; //Exception ?
           }
+        return res;
       }
   }
