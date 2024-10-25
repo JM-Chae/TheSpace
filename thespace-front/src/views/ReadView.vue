@@ -70,6 +70,42 @@ function deleteReply(rno: number, isNR: number)
       })
   }
 
+function boardDelete(isR: number)
+  {
+    if(isR==0)
+      {
+        axios.delete(`http:localhost:8080/board/delete/${bno}`)
+      } else
+      {
+        ElMessageBox.alert('You cannot delete a board that has a reply.', 'Delete Confirmation',
+          {
+            type: 'warning',
+            dangerouslyUseHTMLString: true,
+            center: true
+          })
+      }
+  }
+
+const deleteBoardAlert = (isR: number) =>
+  {
+    ElMessageBox.confirm('Are you sure you want to delete this Board?', 'Delete Confirmation',
+      {
+        cancelButtonText: 'NO',
+        confirmButtonText: 'OK',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true,
+        customClass: '.el-message-box'
+      })
+      .then(() =>
+      {
+        boardDelete(isR)
+      }).catch(() =>
+    {
+      console.log('')
+    })
+  }
+
 const deleteReplyAlert = (rno: number, isNR: number) =>
   {
     ElMessageBox.confirm('Are you sure you want to delete this reply?', 'Delete Confirmation',
@@ -342,7 +378,7 @@ onBeforeUnmount(() =>
 				<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em" @click = "like(0)">❤</el-button>
 				<el-button v-bind:title="replyClose ? 'ReplyHide' : 'ReplyView'" placeholder="Close Reply" round size = "small" style = "margin-left: 0.5em" type = "primary" @click = "replyClose = !replyClose"><el-icon size="15"><Hide v-if="replyClose"/><View v-if="!replyClose"/></el-icon></el-button>
 				<el-button title="Modify" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "warning" @click = ""><el-icon size="15"><Edit/></el-icon></el-button>
-				<el-button title="Delete" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = ""><el-icon size="15"><Delete/></el-icon></el-button>
+				<el-button title="Delete" v-if = "writerCheck && getDto" round size = "small" style = "margin-left: 0.5em" type = "danger" @click ="deleteBoardAlert(getDto.rCount)"><el-icon size="15"><Delete/></el-icon></el-button>
 			</div>
 		</div>
 		
