@@ -40,7 +40,7 @@ public class BoardController
         return bno;
       }
 
-    @GetMapping({"/read/{bno}", "/modify/{bno}"})
+    @GetMapping("/read/{bno}")
     public BoardDTO readGet(@PathVariable("bno") Long bno, Model model)
       {
         BoardDTO boardDTO = boardService.read(bno);
@@ -58,18 +58,14 @@ public class BoardController
       }
 
     @PutMapping("/modify")
-        public String modifyPost(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+        public void modifyPost(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
         {
           if(bindingResult.hasErrors())
             {
               boardService.modify(boardDTO);
               redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-              return "redirect:/board/read" + "/" + boardDTO.getBno();
-
             }
           boardService.modify(boardDTO);
-          return "redirect:/board/read" + "/" + boardDTO.getBno();
-
       }
 
     @DeleteMapping("/delete/{bno}")

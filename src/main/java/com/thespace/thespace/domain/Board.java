@@ -51,10 +51,11 @@ public class Board extends BaseEntity
     @BatchSize(size = 20)
     private Set<BoardFile> fileSet = new HashSet<>();
 
-    public void change(String title, String content)
+    public void change(String title, String content, Category category)
       {
         this.title = title;
         this.content = content;
+        this.category = category;
       }
 
     public void addFile(String fileId, String fileName)

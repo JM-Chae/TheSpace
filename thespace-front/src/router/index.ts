@@ -13,7 +13,15 @@ const router = createRouter({
       path: '/post',
       name: 'post',
       component: () => import('../views/PostView.vue'),
-      meta: { roles: ["ROLE_USER"] }
+      meta: { roles: ["ROLE_USER"] },
+      props: true
+    },
+    {
+      path: '/modify',
+      name: 'modify',
+      component: () => import('../views/ModifyView.vue'),
+      meta: { roles: ["ROLE_USER"] },
+      props: true
     },
     {
       path: '/read',

@@ -3,28 +3,28 @@ import {ref} from "vue";
 import axios from "axios";
 import router from "@/router";
 
-const title = ref("")
-const content = ref("")
-const categoryName = ref("")
-const bno = ref("")
+const categories = ref()
+const title = ref(window.history.state.title)
+const content = ref(window.history.state.content)
+const categoryName = ref(window.history.state.categoryName)
+const bno = ref(window.history.state.bno)
 
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
-const categories = ref()
+axios.get(`http://localhost:8080/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 
-
-axios.get(`http://localhost:8080/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
-
 const post = function ()
 {
-  axios.post("http://localhost:8080/board/post",
-      {title: title.value,
+  axios.put("http://localhost:8080/board/modify",
+      {
+        bno: bno.value,
+        title: title.value,
         content: content.value,
         writer: user.name,
         writerUuid: user.uuid,
         categoryName: categoryName.value})
-      .then(res => {bno.value = res.data}).catch(error => {alert(error);})
       .then(() => router.push({name: "read", state: { bno: bno.value }}))
 }
 </script>

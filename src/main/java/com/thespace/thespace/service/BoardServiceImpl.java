@@ -124,7 +124,7 @@ public class BoardServiceImpl implements BoardService
         Long bno = boardDTO.getBno();
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
-        board.change(boardDTO.getTitle(), boardDTO.getContent());
+        board.change(boardDTO.getTitle(), boardDTO.getContent(), categoryRepository.findByCategoryName(boardDTO.getCategoryName()));
         boardFileRepository.deleteByBoard_bno(bno);
 
 
