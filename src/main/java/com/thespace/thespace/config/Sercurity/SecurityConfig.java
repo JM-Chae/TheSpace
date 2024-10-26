@@ -38,6 +38,7 @@ public class SecurityConfig implements UserDetailsService
     private final AuthSuccessHandler authSuccessHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final UserRepository userRepository;
+    private final DataSource dataSource;
 
     @Bean
     public PasswordEncoder passwordEncoder()
@@ -75,6 +76,8 @@ public class SecurityConfig implements UserDetailsService
                 .key("13TGT3gr@%g21$")
                 .rememberMeParameter("remember")
                 .tokenValiditySeconds(60*60*24*7)
+                .tokenRepository(persistentTokenRepository())
+                .useSecureCookie(false)
                 .authenticationSuccessHandler(authSuccessHandler))
             .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true));
 //        .oauth2Login((oauth2Login) ->oauth2Login.loginPage("/user/login"));
@@ -83,7 +86,7 @@ public class SecurityConfig implements UserDetailsService
       }
 
     @Bean
-    public PersistentTokenRepository persistentTokenRepository(DataSource dataSource)
+    public PersistentTokenRepository persistentTokenRepository()
       {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);

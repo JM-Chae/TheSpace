@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @SpringBootTest
 @Log4j2
 @AutoConfigureMockMvc
+@WithMockUser(username = "123456")
 public class BoardControllerTests
   {
     @Autowired
@@ -41,13 +43,13 @@ public class BoardControllerTests
     @Autowired
     private Gson gson;
 
-    @BeforeEach
-    public void clean()
-      {
-        boardRepository.deleteAll();
-        categoryRepository.deleteAll();
-        communityRepository.deleteAll();
-      }
+//    @BeforeEach
+//    public void clean()
+//      {
+//        boardRepository.deleteAll();
+//        categoryRepository.deleteAll();
+//        communityRepository.deleteAll();
+//      }
 
 
         @Test
@@ -71,25 +73,25 @@ public class BoardControllerTests
       {
         //Create Test Commu
         Community community = Community.builder()
-            .communityName("commu")
+            .communityName("commu12134")
             .build();
         Long communityId = communityRepository.save(community).getCommunityId();
         Optional<Community> communityOptional = communityRepository.findById(communityId);
 
         //Create Test Cate
         Category category = Category.builder()
-            .categoryName("cate")
-            .categoryType("open")
+            .categoryName("cat11e")
+            .categoryType("open11")
             .community(communityOptional.orElseThrow())
             .path(communityOptional.get().getCommunityName())
             .build();
-        Long categoryId = categoryRepository.save(category).getCategoryId();
+        String categoryName = categoryRepository.save(category).getCategoryName();
 
         boardDTO = BoardDTO.builder()
             .title("haha")
             .content("hihi")
             .writer("hoho")
-            .categoryId(categoryId)
+            .categoryName(categoryName)
             .build();
 
         content = gson.toJson(boardDTO);
@@ -103,7 +105,7 @@ public class BoardControllerTests
                 .title("testList "+i)
                 .content("testContent "+i)
                 .writer("tester "+i)
-                .categoryId(categoryId)
+                .categoryName(categoryName)
                 .build();
             boardService.post(boardDTO2);
           }
@@ -115,7 +117,7 @@ public class BoardControllerTests
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().string("redirect:/board/read/" + (bno + (21L))))
+            .andExpect(MockMvcResultMatchers.content().string(String.valueOf((bno + (21L)))))
             .andDo(MockMvcResultHandlers.print());
       }
 
@@ -127,9 +129,6 @@ public class BoardControllerTests
             .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(boardDTO.getTitle()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(boardDTO.getContent()))
             .andDo(MockMvcResultHandlers.print());
-
-        log.info(boardDTO.getViewCount().toString());
-
       }
 
     public void testModify() throws Exception

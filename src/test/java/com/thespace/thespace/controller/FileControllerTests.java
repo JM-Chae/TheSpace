@@ -77,7 +77,7 @@ class FileControllerTests
     BoardDTO boardDTO = new BoardDTO();
     Long bno;
     String content;
-    Long categoryId;
+    String categoryName;
     String filename;
 
     public void creatToTestDB()
@@ -96,7 +96,7 @@ class FileControllerTests
             .community(communityOptional.orElseThrow())
             .path(communityOptional.get().getCommunityName())
             .build();
-        categoryId = categoryRepository.save(category).getCategoryId();
+        categoryName = categoryRepository.save(category).getCategoryName();
 
 
       }
@@ -114,7 +114,7 @@ class FileControllerTests
             .andReturn();
 
         String res1 = result1.getResponse().getContentAsString();
-        JsonArray jsonArray = new JsonParser().parse(res1).getAsJsonArray();
+        JsonArray jsonArray = JsonParser.parseString(res1).getAsJsonArray();
         JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
         String name = jsonObject.get("fileId").getAsString().replace("\"","")+"_"+fileName;
 
@@ -124,7 +124,7 @@ class FileControllerTests
             .title("haha")
             .content("hihi")
             .writer("hoho")
-            .categoryId(categoryId)
+            .categoryName(categoryName)
             .fileNames(fileNames)
             .build();
 
@@ -150,7 +150,7 @@ class FileControllerTests
             .andReturn();
 
         String res1 = result.getResponse().getContentAsString();
-        JsonObject jsonObject = new JsonParser().parse(res1).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(res1).getAsJsonObject();
         filename = jsonObject.get("fileNames").getAsString().replace("\"","");
 
         log.info(filename);

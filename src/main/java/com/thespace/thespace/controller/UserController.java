@@ -39,7 +39,7 @@ public class UserController
     public boolean check(@RequestParam("id") String id, RedirectAttributes redirectAttributes)
       {
         boolean check = userService.checkId(id);
-        if(!check)
+        if (!check)
           {
             redirectAttributes.addFlashAttribute("This ID already exists.");
           }
@@ -47,20 +47,28 @@ public class UserController
         return check;
       }
 
+    @GetMapping
+      public void getLogin()
+      {
+      }
+
     @GetMapping("/info")
     public ResponseEntity<UserInfoDTO> getUserInfo(Authentication authentication)
       {
-        if (authentication == null) {
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        if (authentication == null)
+          {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+          }
 
         return ResponseEntity.ok(userService.getUserinfoDTO(authentication));
       }
 
+
+
     @PostMapping
     public void register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult, @RequestParam("checkid") boolean check, RedirectAttributes redirectAttributes) throws Exception
       {
-        if(bindingResult.hasErrors())
+        if (bindingResult.hasErrors())
           {
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
             throw new BindException(bindingResult);
