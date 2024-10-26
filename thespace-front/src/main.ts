@@ -1,11 +1,15 @@
 import './assets/main.css'
 import { createPinia } from 'pinia'
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import 'bootstrap/dist/css/bootstrap-utilities.css'
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+
 
 const app = createApp(App)
 app.use(createPinia())
