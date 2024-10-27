@@ -85,11 +85,16 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                 .bno(board1.getBno())
                 .title(board1.getTitle())
                 .content(board1.getContent())
-                .writer(board1.getWriter())
-                .categoryName(board1.getCategory().getCategoryName())
                 .path(board1.getPath())
+                .writer(board1.getWriter())
+                .writerUuid(board1.getWriterUuid())
                 .createDate(board1.getCreateDate())
                 .modDate(board1.getModDate())
+                .viewCount(board1.getViewCount())
+                .vote(board1.getVote())
+                .fileNames(board1.getFileSet().stream().map(BoardFile::getFileName).toList())
+                .categoryName(board1.getCategory().getCategoryName())
+                .rCount(board1.getRCount())
                 .build();
 
             return dto;
