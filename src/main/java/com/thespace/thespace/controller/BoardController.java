@@ -28,7 +28,7 @@ public class BoardController
     @PostMapping("/post")
     public Long post(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
       {
-        if(bindingResult.hasErrors())
+        if (bindingResult.hasErrors())
           {
             Long bno = boardService.post(boardDTO);
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
@@ -50,22 +50,29 @@ public class BoardController
       }
 
     @GetMapping("/list")
-    public PageResDTO<BoardDTO> listGet(PageReqDTO pageReqDTO, Model model)
+    public PageResDTO<BoardDTO> listGet(@RequestParam("path") String path, @RequestParam("category") String category, @RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type, Model model)
       {
+        PageReqDTO pageReqDTO = PageReqDTO.builder()
+            .page(page)
+            .keyword(keyword)
+            .type(type)
+            .category(category)
+            .path(path)
+            .build();
         PageResDTO<BoardDTO> getList = boardService.list(pageReqDTO);
         model.addAttribute("getList", getList);
         return getList;
       }
 
     @PutMapping("/modify")
-        public void modifyPost(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
-        {
-          if(bindingResult.hasErrors())
-            {
-              boardService.modify(boardDTO);
-              redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            }
-          boardService.modify(boardDTO);
+    public void modifyPost(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+      {
+        if (bindingResult.hasErrors())
+          {
+            boardService.modify(boardDTO);
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+          }
+        boardService.modify(boardDTO);
       }
 
     @DeleteMapping("/delete/{bno}")

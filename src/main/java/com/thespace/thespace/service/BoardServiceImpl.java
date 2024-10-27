@@ -153,10 +153,12 @@ public class BoardServiceImpl implements BoardService
     {
       String[] types = pageReqDTO.getTypes();
       String keyword = pageReqDTO.getKeyword();
+      String path = pageReqDTO.getPath();
+      String category = pageReqDTO.getCategory();
 
       Pageable pageable = pageReqDTO.getPageable("bno");
 
-      Page<BoardDTO> list = boardRepository.getList(types, keyword, pageable);
+      Page<BoardDTO> list = boardRepository.getList(types, keyword, pageable, path, category);
 
       PageResDTO<BoardDTO> pageResDTO = PageResDTO.<BoardDTO>PageResDTO()
           .pageReqDTO(pageReqDTO)
