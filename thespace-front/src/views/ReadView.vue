@@ -268,9 +268,9 @@ watch(getDto, (newValue) =>
 const formatDate = (dateString: string) =>
   {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {timeZone: "UTC"}) + ' ' + date.toLocaleTimeString('en-US', {
-      hour12: true,
-      timeZone: "UTC"
+    date.setHours(date.getHours()-9);
+    return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {
+      hour12: true
     });
   }
 
@@ -379,7 +379,7 @@ onBeforeUnmount(() =>
 					<div style = "text-align: end">
 						<el-text v-if = "getDto" class = "name">Like {{ getDto.vote }}</el-text>
 						<el-text>&nbsp/&nbsp</el-text>
-						<el-text v-if = "getDto" class = "name">View {{ getDto.viewCount }}</el-text>
+						<el-text v-if = "getDto" class = "name">Viewed {{ getDto.viewCount }}</el-text>
 						<el-text>&nbsp/&nbsp</el-text>
 						<el-text v-if = "getDto" class = "name">Reply {{ getDto.rCount }}</el-text>
 					</div>
