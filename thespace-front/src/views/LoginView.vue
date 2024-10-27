@@ -15,7 +15,7 @@ const login = function ()
       {
         if(remember.value == true)
           {
-            document.cookie = 'isRemember=true'
+            document.cookie = 'isRemember=true; max-age=604800'
           }
         getInfo().then(() =>
         {

@@ -8,9 +8,13 @@ async function getInfo()
   {
     try
       {
-        let res = await axios.get("http://localhost:8080/user/info", {withCredentials: true});
+        await axios.get("http://localhost:8080/user/info", {withCredentials: true})
+					.then(res =>
+          {
+            sessionStorage.setItem('login', 'true');
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+          });
         login.value = sessionStorage.getItem('login') == 'true';
-        return sessionStorage.setItem("userInfo", JSON.stringify(res.data));
       } catch (error)
       {
         return console.error("Error fetching user info" + error);
