@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap-utilities.css'
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-
+axios.defaults.baseURL = `http://localhost:8080`
 
 const app = createApp(App)
 app.use(createPinia())

@@ -8,7 +8,7 @@ const remember = ref(false)
 
 const login = function ()
   {
-    axios.post("http://localhost:8080/user/login",
+    axios.post("user/login",
       {id: id.value, password: pw.value, remember: remember.value},
       {headers: {"Content-Type": "multipart/form-data"}, withCredentials: true})
       .then(res =>
@@ -32,7 +32,7 @@ const login = function ()
       {
         try
           {
-            let res = await axios.get("http://localhost:8080/user/info", {withCredentials: true});
+            let res = await axios.get("/user/info", {withCredentials: true});
             return sessionStorage.setItem("userInfo", JSON.stringify(res.data));
           } catch (error)
           {

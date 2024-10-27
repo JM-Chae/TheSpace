@@ -8,7 +8,7 @@ async function getInfo()
   {
     try
       {
-        await axios.get("http://localhost:8080/user/info", {withCredentials: true})
+        await axios.get("/user/info", {withCredentials: true})
 					.then(res =>
           {
             sessionStorage.setItem('login', 'true');
@@ -26,7 +26,7 @@ onMounted(()=>
     const isRemember = window.document.cookie.split(';').find(cookie=>cookie.startsWith('isRemember='))?.split('=')[1]
 		if(isRemember == 'true' && sessionStorage.getItem('login') != 'ture')
       {
-        axios.get(`http://localhost:8080/user`, {withCredentials: true})
+        axios.get(`/user`, {withCredentials: true})
           .then(() =>
           {
             getInfo();
@@ -44,7 +44,8 @@ const login =  ref(false);
       <nav>
         <RouterLink to="/space">Home</RouterLink>
         <RouterLink to="/post">POST</RouterLink>
-        <RouterLink v-if="login" to="/user/logout">LOGOUT</RouterLink>
+				<RouterLink to="/list">LIST</RouterLink>
+				<RouterLink v-if="login" to="/user/logout">LOGOUT</RouterLink>
         <RouterLink v-else to="/user/login">LOGIN</RouterLink>
       </nav>
     </div>

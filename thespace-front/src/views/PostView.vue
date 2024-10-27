@@ -14,11 +14,11 @@ const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 
 
-axios.get(`http://localhost:8080/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+axios.get(`/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const post = function ()
 {
-  axios.post("http://localhost:8080/board/post",
+  axios.post("/board/post",
       {title: title.value,
         content: content.value,
         writer: user.name,

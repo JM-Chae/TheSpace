@@ -8,7 +8,7 @@ import router from "@/router";
 
 function getRead()
   {
-    axios.get(`http://localhost:8080/board/read/${bno}`)
+    axios.get(`/board/read/${bno}`)
       .then(res =>
       {
         getDto.value = res.data
@@ -30,7 +30,7 @@ function modify()
 
 function getReply()
   {
-    axios.get(`http://localhost:8080/board/${bno}/reply`)
+    axios.get(`/board/${bno}/reply`)
       .then(res => rDtoList.value = res.data)
       .then(res =>
         {
@@ -53,7 +53,7 @@ function getNestedReplyFunction()
 
 function getNestedReply(rno: number, i: number)
   {
-    axios.get(`http://localhost:8080/board/${bno}/reply/${rno}`)
+    axios.get(`/board/${bno}/reply/${rno}`)
       .then(res => nrDtoList.value[i] = res.data)
       .then(() =>
       {
@@ -76,7 +76,7 @@ function deleteReply(rno: number, isNR: number)
   {
     if (isNR == 0)
       {
-        axios.delete(`http://localhost:8080/reply/${rno}`, {params: {bno: bno}})
+        axios.delete(`/reply/${rno}`, {params: {bno: bno}})
           .then(() => getReply())
       } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.', 'Delete Confirmation', // The goal is to prevent comment deletion, but instead, to add an API that allows for arbitrary modification of the comment's information.
       {
@@ -90,7 +90,7 @@ function boardDelete(isR: number)
   {
     if(isR==0)
       {
-        axios.delete(`http:localhost:8080/board/delete/${bno}`)
+        axios.delete(`/board/delete/${bno}`)
       } else
       {
         ElMessageBox.alert('You cannot delete a board that has a reply.', 'Delete Confirmation',
@@ -196,7 +196,7 @@ const tagUuid = ref<Array<string[]>>([])
 const replyContent = ref<string>()
 const reply = function ()
   {
-    axios.post(`http://localhost:8080/board/${bno}/reply`,
+    axios.post(`/board/${bno}/reply`,
       {
         bno: bno,
         replyContent: replyContent.value,
@@ -220,7 +220,7 @@ async function like(no: number)
   {
     if (no == 0)
       {
-        axios.put(`http://localhost:8080/like`,
+        axios.put(`/like`,
           {
             userId: <string>user.id,
             rno: 0,
@@ -235,7 +235,7 @@ async function like(no: number)
         })
       } else
       {
-        const response = await axios.put(`http://localhost:8080/like`,
+        const response = await axios.put(`/like`,
           {
             userId: <string>user.id,
             rno: no,

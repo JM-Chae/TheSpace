@@ -3,7 +3,16 @@ import {createRouter, createWebHistory} from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
+    {
+      path: '/test',
+      name: 'test',
+      component:  () => import('../views/ComponentTest.vue'),
+    },
+    {
+      path: '/list',
+      name: 'list',
+      component:  () => import('../views/ListView.vue'),
+    },
     {
       path: '/space',
       name: 'home',

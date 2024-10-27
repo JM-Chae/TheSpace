@@ -10,14 +10,14 @@ const categoryName = ref(window.history.state.categoryName)
 const bno = ref(window.history.state.bno)
 
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
-axios.get(`http://localhost:8080/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+axios.get(`/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 
 const post = function ()
 {
-  axios.put("http://localhost:8080/board/modify",
+  axios.put("/board/modify",
       {
         bno: bno.value,
         title: title.value,
