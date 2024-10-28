@@ -17,12 +17,27 @@ onMounted(() =>
           category: category.value
         }
       })
-        .then(res => dtoList.value = res.data)
+        .then(res =>
+        {
+          dtoList.value = res.data
+          if (dtoList && dtoList.value != undefined)
+            {
+              pageCount.value = parseInt(String((dtoList.value.total / dtoList.value.size))) + (((dtoList.value.total % dtoList.value.size) > 0) ? 1 : 0)
+            }
+        })
     }
 
   getList()
 
   watch(page, (newValue) =>
+  {
+    if (newValue)
+      {
+        getList()
+      }
+  })
+
+  watch(size, (newValue) =>
   {
     if (newValue)
       {
@@ -66,9 +81,10 @@ interface dtoList
     dtoList: dto[]
   }
 
-const setPage = (val1: number) =>
+const setPage = (val1: number, val2: number) =>
   {
     page.value = val1;
+    size.value = val2;
   }
 
 const size = ref(10)
@@ -78,10 +94,9 @@ const keyword = ref('')
 const path = ref("Test Community Name") // Community name -> Switch to reactive when after implementing the Community page.
 const category = ref('')
 const pageCount = ref<number>(0)
-if (dtoList && dtoList.value != undefined && dtoList.value.total != null && dtoList.value.size != null)
-  {
-    pageCount.value = dtoList.value.total / dtoList.value.size + (((dtoList.value.total % dtoList.value.size) > 0) ? 1 : 0)
-  }
+
+
+
 
 function formatDate(dateString: string)
   {
@@ -172,7 +187,7 @@ function formatDate(dateString: string)
 			</el-table-column>
 		</el-table>
 		<div class = "p-3 paging" style = "justify-self: end">
-			<el-pagination :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next" @current-change = "setPage"/>
+			<el-pagination v-model:current-page="page" v-model:page-size="size" :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next" :change = "setPage"/>
 		</div>
 	</div>
 	</html>
