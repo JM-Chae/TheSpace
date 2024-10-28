@@ -6,7 +6,6 @@ import router from "@/router";
 const title = ref("")
 const content = ref("")
 const categoryName = ref("")
-const bno = ref("")
 
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
 const categories = ref()
@@ -24,8 +23,9 @@ const post = function ()
         writer: user.name,
         writerUuid: user.uuid,
         categoryName: categoryName.value})
-      .then(res => {bno.value = res.data}).catch(error => {alert(error);})
-      .then(() => router.push({name: "read", state: { bno: bno.value }}))
+      .then(res => { router.push({name: "read", state: { bno: res.data }})})
+			.catch(error => {alert(error);})
+   
 }
 </script>
 

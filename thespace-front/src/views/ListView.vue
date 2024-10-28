@@ -1,22 +1,41 @@
 <script lang = "ts" setup>
 import axios from "axios";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import router from "@/router";
 
 onMounted(() =>
 {
-  axios.get(`/board/list`, {
-    params: {
-      page: page.value,
-      keyword: keyword.value,
-      type: type.value,
-      path: path.value,
-      category: category.value
+  function getList()
+    {
+      axios.get(`/board/list`, {
+        params: {
+          page: page.value,
+          keyword: keyword.value,
+          type: type.value,
+          path: path.value,
+          category: category.value
+        }
+      })
+        .then(res => dtoList.value = res.data)
     }
+
+  getList()
+
+  watch(page, (newValue) =>
+  {
+    if (newValue)
+      {
+        getList()
+      }
   })
-    .then(res => dtoList.value = res.data)
 })
 const dtoList = ref<dtoList>()
+
+const moveRead = (row: any) =>
+  {
+    router.push({name: "read", state: {bno: row.bno}})
+  }
 
 interface dto
   {
@@ -47,11 +66,22 @@ interface dtoList
     dtoList: dto[]
   }
 
+const setPage = (val1: number) =>
+  {
+    page.value = val1;
+  }
+
+const size = ref(10)
 const page = ref(1)
 const type = ref('')
 const keyword = ref('')
 const path = ref("Test Community Name") // Community name -> Switch to reactive when after implementing the Community page.
 const category = ref('')
+const pageCount = ref<number>(0)
+if (dtoList && dtoList.value != undefined && dtoList.value.total != null && dtoList.value.size != null)
+  {
+    pageCount.value = dtoList.value.total / dtoList.value.size + (((dtoList.value.total % dtoList.value.size) > 0) ? 1 : 0)
+  }
 
 function formatDate(dateString: string)
   {
@@ -79,84 +109,98 @@ function formatDate(dateString: string)
 </script>
 
 <template>
-	<html class="dark">
-	<el-table :data = "dtoList?.dtoList" class = "p-3 table" style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-table-column width="50">
+	<html class = "dark">
+	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+		<el-table :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
+			<el-table-column width = "50">
 				<template #header>
-					<div class="text-center th">No</div>
+					<div class = "text-center th">No</div>
 				</template>
-				<template #default="scope">
-					<div class="td">{{scope.row.bno}}</div>
+				<template #default = "scope">
+					<div class = "td">{{ scope.row.bno }}</div>
 				</template>
-		</el-table-column>
-		<el-table-column width="670">
-			<template #header>
-				<div class="text-center th">Tile</div>
-			</template>
-			<template #default="scope">
-				<div class="td" style="display: inline-block">{{scope.row.title}}</div><div style="color: rgba(255,255,255,0.29);display: inline-block">　[{{scope.row.rCount }}]</div>
-			</template>
-		</el-table-column>
-		<el-table-column width="100">
-			<template #header>
-				<div class="text-center th">Writer</div>
-			</template>
-			<template #default="scope">
-				<el-popover :hide-after="10" effect = "dark" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
-					<template #default>
-					<el-button class = "td" link style = "display: inline-block; color: white;">
-							{{ scope.row.writerUuid }}
-						</el-button>
-					</template>
-					<template #reference>
-					<div class="text-center td">{{ scope.row.writer }}</div>
-					</template>
-				</el-popover>
-			</template>
-		</el-table-column>
-		<el-table-column width="100">
-			<template #header>
-				<div class="text-center th">Date</div>
-			</template>
-		<template #default="scope">
-			<div class="text-center td">{{formatDate(scope.row.createDate)}}</div>
-		</template>
-		</el-table-column>
-		<el-table-column width="80">
-			<template #header>
-				<div class="text-center th">Viewed</div>
-			</template>
-			<template #default="scope">
-				<div class="text-center td">{{scope.row.viewCount}}</div>
-			</template>
-		</el-table-column>
-		<el-table-column width="60">
-			<template #header>
-				<div class="text-center th">Vote</div>
-			</template>
-			<template #default="scope">
-				<div class="text-center td">{{scope.row.vote}}</div>
-			</template>
-		</el-table-column>
-	</el-table>
+			</el-table-column>
+			<el-table-column width = "670">
+				<template #header>
+					<div class = "text-center th">Title</div>
+				</template>
+				<template #default = "scope">
+					<div class = "td" style = "display: inline-block">{{ scope.row.title }}</div>
+					<div style = "color: rgba(255,255,255,0.29);display: inline-block">　[{{ scope.row.rCount }}]</div>
+				</template>
+			</el-table-column>
+			<el-table-column width = "100">
+				<template #header>
+					<div class = "text-center th">Writer</div>
+				</template>
+				<template #default = "scope">
+					<el-popover :hide-after = "10" effect = "dark" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+						<template #default>
+							<el-button class = "td" link style = "display: inline-block; color: white;">
+								{{ scope.row.writerUuid }}
+							</el-button>
+						</template>
+						<template #reference>
+							<div class = "text-center td">{{ scope.row.writer }}</div>
+						</template>
+					</el-popover>
+				</template>
+			</el-table-column>
+			<el-table-column width = "100">
+				<template #header>
+					<div class = "text-center th">Date</div>
+				</template>
+				<template #default = "scope">
+					<div class = "text-center td">{{ formatDate(scope.row.createDate) }}</div>
+				</template>
+			</el-table-column>
+			<el-table-column width = "80">
+				<template #header>
+					<div class = "text-center th">Views</div>
+				</template>
+				<template #default = "scope">
+					<div class = "text-center td">{{ scope.row.viewCount }}</div>
+				</template>
+			</el-table-column>
+			<el-table-column width = "60">
+				<template #header>
+					<div class = "text-center th">Likes</div>
+				</template>
+				<template #default = "scope">
+					<div class = "text-center td">{{ scope.row.vote }}</div>
+				</template>
+			</el-table-column>
+		</el-table>
+		<div class = "p-3 paging" style = "justify-self: end">
+			<el-pagination :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next" @current-change = "setPage"/>
+		</div>
+	</div>
 	</html>
 </template>
+<script lang = "ts">
 
+</script>
 <style scoped>
-.table
-{
---el-bg-color: rgba(255, 255, 255, 0);
---el-table-row-hover-bg-color: rgba(255, 255, 255, 0.07);
+.table {
+    --el-bg-color: rgba(255, 255, 255, 0);
+    --el-table-row-hover-bg-color: rgba(255, 255, 255, 0.07);
 }
 
-.th
-{
-		font-weight: bold;
-		color: rgba(65, 255, 158, 0.71);
+.th {
+    font-weight: bold;
+    color: rgba(65, 255, 158, 0.71);
 }
 
-.td
-{
-		color: rgba(248, 248, 248, 0.71);
+.td {
+    color: rgba(248, 248, 248, 0.71);
+}
+
+.paging {
+    --el-pagination-button-color: rgba(65, 255, 158, 0.71);
+    --el-color-primary: rgba(181, 181, 181, 0.32);
+    --el-pagination-hover-color: rgba(255, 255, 255, 0.82);
+    --el-disabled-bg-color: rgba(97, 255, 176, 0.45);
+    --el-color-white: rgba(65, 255, 158, 0.71);
+    --el-text-color-placeholder: white;
 }
 </style>
