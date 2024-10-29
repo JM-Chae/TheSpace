@@ -22,11 +22,27 @@ const post = function ()
         content: content.value,
         writer: user.name,
         writerUuid: user.uuid,
-        categoryName: categoryName.value})
+        categoryName: categoryName.value,
+			fileNames: fileNames})
       .then(res => { router.push({name: "read", state: { bno: res.data }})})
 			.catch(error => {alert(error);})
    
 }
+
+interface BoardFileDTO
+  {
+    fileId: string
+    fileName: string
+    imageChk: boolean
+    ord: number
+	}
+
+const fileNames = ref([''])
+const file = () =>
+  {
+    axios.post(`/upload`)
+			.then(res => fileNames.value = res.data.map((list: BoardFileDTO) => list.fileName))
+	}
 </script>
 
 <template>
@@ -59,7 +75,9 @@ const post = function ()
 
     <div class="mt-3"><el-input size="large" v-model="title" placeholder="Enter title"/> </div>
     <div class="mt-3"><el-input size="large" type="textarea" v-model="content" placeholder="Enter content" :autosize="{minRows: 10}"/></div>
-    <div class="mt-3" style="text-align: end"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
+		<div class="mt-3"><el-input type="file" @change="file"></el-input></div>
+		<div class="mt-3" style="text-align: end"><el-button size="large" type="primary" @click="post()">Submit</el-button></div>
+		
 
   </main>
 </template>
