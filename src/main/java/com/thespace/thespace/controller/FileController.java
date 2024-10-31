@@ -74,6 +74,7 @@ public class FileController
                       .imageChk(image)
                   .build());
             });
+            log.info(list.toString());
             return list;
           }
         return null;

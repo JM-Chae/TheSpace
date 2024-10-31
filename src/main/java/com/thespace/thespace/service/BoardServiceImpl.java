@@ -57,7 +57,7 @@ public class BoardServiceImpl implements BoardService
           if(boardDTO.getFileNames() != null)
             {
               boardDTO.getFileNames().forEach(fileName ->{
-                String[] array = fileName.split("_");
+                String[] array = fileName.split("_", 2);
                 board.addFile(array[0], array[1]);
               });
             }
