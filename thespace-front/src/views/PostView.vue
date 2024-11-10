@@ -39,7 +39,6 @@ const post = async () =>
         try
           {
         await upload();
-        console.log(fileNames.value)
         const res = await axios.post("/board/post",
           {
             title: title.value,

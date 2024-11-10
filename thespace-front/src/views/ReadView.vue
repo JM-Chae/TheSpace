@@ -1,6 +1,6 @@
 <script lang = "ts" setup>
 import {onMounted, ref, watch, onBeforeUnmount} from "vue";
-import { Delete, Edit, Hide, View } from '@element-plus/icons-vue'
+import { Delete, Edit, Hide, View, Expand } from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
@@ -71,6 +71,11 @@ function getNestedReply(rno: number, i: number)
       })
       .catch(error => console.error(error));
   }
+
+function getFiles()
+  {
+  
+	}
 
 function deleteReply(rno: number, isNR: number)
   {
@@ -148,7 +153,7 @@ interface dto
     categoryName: string,
     content: string,
     createDate: string,
-    fileNames: [],
+    fileNames: string[],
     modDate: string,
     path: string,
     title: string,
@@ -360,38 +365,48 @@ onBeforeUnmount(() =>
 			<el-row>
 				<el-col :span = "16">
 					<div class = "mt-3">
-						<h3 v-if = "getDto">{{ getDto.title }}</h3>
+						<h3>{{ getDto?.title }}</h3>
 					</div>
 				</el-col>
 				<el-col :span = "8">
 					<div class = "mt-4" style = "text-align: end">
-						<el-text v-if = "getDto" class = "name">{{ formatDate(getDto.createDate) }}</el-text>
+						<el-text v-if="getDto" class = "name">{{ formatDate(getDto.createDate) }}</el-text>
 					</div>
 				</el-col>
 				<el-col :span = "16">
 					<div>
-						<el-text v-if = "getDto" class = "name">{{ getDto.writerUuid }}</el-text>
+						<el-text class = "name">{{ getDto?.writerUuid }}</el-text>
 						<el-text>&nbsp/&nbsp</el-text>
-						<el-text v-if = "getDto" class = "name">{{ getDto.writer }}</el-text>
+						<el-text class = "name">{{ getDto?.writer }}</el-text>
 					</div>
 				</el-col>
 				<el-col :span = "8">
 					<div style = "text-align: end">
-						<el-text v-if = "getDto" class = "name">Like {{ getDto.vote }}</el-text>
+						<el-text class = "name">Like {{ getDto?.vote }}</el-text>
 						<el-text>&nbsp/&nbsp</el-text>
-						<el-text v-if = "getDto" class = "name">Viewed {{ getDto.viewCount }}</el-text>
+						<el-text class = "name">Viewed {{ getDto?.viewCount }}</el-text>
 						<el-text>&nbsp/&nbsp</el-text>
-						<el-text v-if = "getDto" class = "name">Reply {{ getDto.rCount }}</el-text>
+						<el-text class = "name">Reply {{ getDto?.rCount }}</el-text>
 					</div>
 				</el-col>
 			</el-row>
 			
 			<hr class = "mb-2 mt-2" style = "background: rgba(70,130,180,0.17); height: 0.01em; border: 0;">
 			<div class = "mt-3" style = "min-height: 15em">
-				<el-text v-if = "getDto" class = "text">{{ getDto.content }}</el-text>
+				<el-text class = "text">{{ getDto?.content }}</el-text>
 			</div>
-			<div class = "mt-3 mb-2" style = "text-align: end">
-				<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em" @click = "like(0)">❤</el-button>
+			<div class = "mt-3 mb-2" style = "display: flex; justify-content: flex-start">
+				<div>
+					<el-popover :show-arrow="false" :width="'fit-content'" effect = "dark" placement = "right-start" popper-style = "text-align: center" trigger = "click">
+						<template #reference>
+							<el-button title="Attached Files" clss="button" color="#4682B42B" size="small" round style="justify-self: start;"><el-icon size="15" style="margin-right: 0.5em"><Expand /></el-icon>Files List</el-button>
+						</template>
+						<li v-for="file in getDto?.fileNames" style="width: fit-content">
+							{{file?.split("_").slice(1).join("_") }}
+						</li>
+					</el-popover>
+				</div>
+				<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: auto;" @click = "like(0)">❤</el-button>
 				<el-button v-bind:title="replyClose ? 'ReplyHide' : 'ReplyView'" placeholder="Close Reply" round size = "small" style = "margin-left: 0.5em" type = "primary" @click = "replyClose = !replyClose"><el-icon size="15"><Hide v-if="replyClose"/><View v-if="!replyClose"/></el-icon></el-button>
 				<el-button title="Modify" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "warning" @click = "modify"><el-icon size="15"><Edit/></el-icon></el-button>
 				<el-button title="Delete" v-if = "writerCheck && getDto" round size = "small" style = "margin-left: 0.5em" type = "danger" @click ="deleteBoardAlert(getDto.rCount)"><el-icon size="15"><Delete/></el-icon></el-button>
