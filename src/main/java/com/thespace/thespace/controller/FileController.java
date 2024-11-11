@@ -50,17 +50,22 @@ public class FileController
             uploadFilesDTO.getFileList().forEach(multipartFile -> {
               String originalFileName = multipartFile.getOriginalFilename();
               String uuid = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
-              Path savePath = Paths.get(uploadPath, uuid + "_" + originalFileName);
+              Path saveDirectory = Paths.get(uploadPath, uuid);
+              Path savePath = saveDirectory.resolve(originalFileName);
 
               boolean image = false;
 
               try
                 {
+                  if (!Files.exists(saveDirectory)) {
+                    Files.createDirectories(saveDirectory);
+                    }
+
                   multipartFile.transferTo(savePath);
                   if (Files.probeContentType(savePath).startsWith("image"))
                     {
                       image = true;
-                      File thumbFile = new File(uploadPath, "s_" + uuid + "_" + originalFileName);
+                      File thumbFile = new File(String.valueOf(saveDirectory), "s_" + originalFileName);
                       Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200, 200);
                     }
                 }catch (IOException e)

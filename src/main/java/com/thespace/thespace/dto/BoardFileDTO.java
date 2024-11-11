@@ -16,13 +16,13 @@ public class BoardFileDTO
     private boolean imageChk;
     private int ord;
 
-    public String getLink()
-      {
-        if(imageChk)
-          {
-            return "s_" + fileId + "_" + fileName;
-          }else{
-          return fileId + "_" + fileName;
-        }
-      }
+//    public String getLink()
+//      {
+//        if(imageChk)
+//          {
+//            return "s_" + fileId + "_" + fileName;
+//          }else{
+//          return fileId + "_" + fileName;
+//        }
+//      }
   }
