@@ -85,15 +85,16 @@ public class FileController
         return null;
       }
 
-    @GetMapping("/get/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable("filename") String filename)
+    @GetMapping("/get/{fileid}/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable("fileid") String fileid ,@PathVariable("filename") String filename)
       {
-        Resource resource = new FileSystemResource(uploadPath + File.separator + filename);
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileid + File.separator + filename);
         HttpHeaders headers = new HttpHeaders();
 
         try
           {
           headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
+            headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }catch (Exception e)
           {
             return ResponseEntity.internalServerError().build();

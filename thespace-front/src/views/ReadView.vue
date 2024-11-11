@@ -1,6 +1,6 @@
 <script lang = "ts" setup>
-import {onMounted, ref, watch, onBeforeUnmount} from "vue";
-import { Delete, Edit, Hide, View, Expand } from '@element-plus/icons-vue'
+import {onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {Delete, Edit, Expand, Hide, View} from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
@@ -261,7 +261,6 @@ const writerCheck = ref(false)
 const rWriterCheck = ref<boolean[]>([])
 const nrWriterCheck = ref<boolean[][]>([])
 
-
 watch(getDto, (newValue) =>
 {
   if (newValue)
@@ -402,7 +401,11 @@ onBeforeUnmount(() =>
 							<el-button title="Attached Files" clss="button" color="#4682B42B" size="small" round style="justify-self: start;"><el-icon size="15" style="margin-right: 0.5em"><Expand /></el-icon>Files List</el-button>
 						</template>
 						<li v-for="file in getDto?.fileNames" style="width: fit-content">
-							{{file?.split("_").slice(1).join("_") }}
+							<a
+									:download="file?.split('_').slice(1).join('_')"
+									:href="`/get/${file?.split('_')[0]}/${file?.split('_').slice(1).join('_')}`">
+								{{ file?.split('_').slice(1).join('_') }}
+							</a>
 						</li>
 					</el-popover>
 				</div>
