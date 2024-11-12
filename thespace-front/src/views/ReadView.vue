@@ -24,7 +24,8 @@ function modify()
             title: getDto.value?.title,
             content: getDto.value?.content,
             categoryName: getDto.value?.categoryName,
-						bno: bno
+						bno: bno,
+						fileNames: JSON.stringify(getDto.value?.fileNames)
           }});
 	}
 
@@ -395,7 +396,7 @@ onBeforeUnmount(() =>
 				<el-text class = "text">{{ getDto?.content }}</el-text>
 			</div>
 			<div class = "mt-3 mb-2" style = "display: flex; justify-content: flex-start">
-				<div>
+				<div v-if="getDto?.fileNames.length">
 					<el-popover :show-arrow="false" :width="'fit-content'" effect = "dark" placement = "right-start" popper-style = "text-align: center" trigger = "click">
 						<template #reference>
 							<el-button title="Attached Files" clss="button" color="#4682B42B" size="small" round style="justify-self: start;"><el-icon size="15" style="margin-right: 0.5em"><Expand /></el-icon>Files List</el-button>

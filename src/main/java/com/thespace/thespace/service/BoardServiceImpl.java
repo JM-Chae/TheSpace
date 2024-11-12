@@ -125,13 +125,11 @@ public class BoardServiceImpl implements BoardService
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
         board.change(boardDTO.getTitle(), boardDTO.getContent(), categoryRepository.findByCategoryName(boardDTO.getCategoryName()));
-        boardFileRepository.deleteByBoard_bno(bno);
-
 
         if(boardDTO.getFileNames() != null)
           {
             boardDTO.getFileNames().forEach(fileName ->{
-              String[] array = fileName.split("_");
+              String[] array = fileName.split("_", 2);
               board.addFile(array[0], array[1]);
             });
           }

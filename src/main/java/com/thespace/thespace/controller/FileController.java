@@ -102,22 +102,22 @@ public class FileController
         return ResponseEntity.ok().headers(headers).body(resource);
       }
 
-    @DeleteMapping("/delete/{filename}")
-    public void deleteFile(@PathVariable("filename") String filename)
+    @DeleteMapping("/delete/{fileid}/{filename}")
+    public void deleteFile(@PathVariable("fileid") String fileid ,@PathVariable("filename") String filename)
       {
-        String fileId = filename.substring(0,8);
-        Resource resource = new FileSystemResource(uploadPath + File.separator + filename);
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileid + File.separator + filename);
 
         try
           {
             String contentType = Files.probeContentType(resource.getFile().toPath());
             Files.delete(resource.getFile().toPath());
-            boardFileService.deleteBoardFile(fileId);
+            boardFileService.deleteBoardFile(fileid);
             if (contentType.startsWith("image"))
               {
-                File thumbnail = new File(uploadPath + File.separator +"s_"+ filename);
+                File thumbnail = new File(uploadPath + File.separator + fileid + File.separator +"s_"+ filename);
                 Files.deleteIfExists(thumbnail.toPath());
               }
+            Files.deleteIfExists(Paths.get(uploadPath + File.separator + fileid));
           }catch (Exception e)
           {
             log.error("Exception while deleting file [Err_Msg]: {}", e.getMessage());
