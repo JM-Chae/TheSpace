@@ -2,7 +2,10 @@ package com.thespace.thespace.repository.getList;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
-import com.thespace.thespace.domain.*;
+import com.thespace.thespace.domain.Board;
+import com.thespace.thespace.domain.Category;
+import com.thespace.thespace.domain.QBoard;
+import com.thespace.thespace.domain.QReply;
 import com.thespace.thespace.dto.BoardDTO;
 import com.thespace.thespace.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +95,8 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                 .modDate(board1.getModDate())
                 .viewCount(board1.getViewCount())
                 .vote(board1.getVote())
-                .fileNames(board1.getFileSet().stream().map(BoardFile::getFileName).toList())
+                .fileNames(board1.getFileSet().stream().sorted().map(boardFile ->
+                    boardFile.getFileId()+"_"+boardFile.getFileName()).toList())
                 .categoryName(board1.getCategory().getCategoryName())
                 .rCount(board1.getRCount())
                 .build();

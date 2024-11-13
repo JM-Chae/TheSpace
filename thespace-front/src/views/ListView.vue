@@ -64,7 +64,8 @@ interface dto
     modDate: string,
     viewCount: number,
     vote: number,
-    fileNames: [],
+    fileNames: string[],
+		thumbCheck: boolean,
     categoryName: string,
     rCount: number
   }
@@ -96,8 +97,6 @@ const category = ref('')
 const pageCount = ref<number>(0)
 
 
-
-
 function formatDate(dateString: string)
   {
     const date = new Date(dateString);
@@ -121,12 +120,49 @@ function formatDate(dateString: string)
       hour12: true
     });
   }
+
+const thumbnails = ref();
+
+const mouseLeave = function (rowData: dto)
+  {
+    thumbnails.value = '';
+    rowData.thumbCheck = false;
+  }
+
+const mouseOver = async function (rowData: dto)
+  {
+    rowData.thumbCheck = false;
+    
+    const imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'svg', 'ico', 'heic', 'heif'];
+
+    const imgArr = rowData?.fileNames.filter(file =>
+    {
+      const filesExt = file.split('.').pop()?.toLowerCase();
+      return imageExt.includes(filesExt ? filesExt : '');
+    })
+
+    if (imgArr.length > 0)
+      {
+        rowData.thumbCheck = true;
+      }
+		
+		const response = ref()
+		
+    for (let i = 0; i < imgArr.length; i++)
+      {
+        let fileid = imgArr[i].split("_")[0]
+        let filename = imgArr[i].substring(imgArr[i].indexOf('_') + 1);
+        response.value = URL.createObjectURL((await axios.get(`/get/${fileid}/s_${filename}`, {responseType: 'blob'}))?.data)
+      }
+		
+		thumbnails.value = response.value
+  }
 </script>
 
 <template>
 	<html class = "dark">
 	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-table :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
+		<el-table v-if = "dtoList" :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
 			<el-table-column width = "50">
 				<template #header>
 					<div class = "text-center th">No</div>
@@ -140,8 +176,17 @@ function formatDate(dateString: string)
 					<div class = "text-center th">Title</div>
 				</template>
 				<template #default = "scope">
-					<div class = "td" style = "display: inline-block">{{ scope.row.title }}</div>
-					<div style = "color: rgba(255,255,255,0.29);display: inline-block">　[{{ scope.row.rCount }}]</div>
+					<el-popover :hide-after = "10" :visible="scope.row.thumbCheck" :width="`fit-content`" effect = "dark" placement="bottom" popper-style = "text-align: center" title = "" trigger = "hover">
+						<template #default>
+							<img :src = "thumbnails" alt = "">
+						</template>
+						<template #reference>
+							<div style = "width: 100%" @mouseleave = "mouseLeave(scope.row)" @mouseover = "mouseOver(scope.row)">
+								<div class = "td" style = "display: inline-block">{{ scope.row.title }}</div>
+								<div style = "color: rgba(255,255,255,0.29);display: inline-block">　[{{ scope.row.rCount }}]</div>
+							</div>
+						</template>
+					</el-popover>
 				</template>
 			</el-table-column>
 			<el-table-column width = "100">
@@ -186,8 +231,8 @@ function formatDate(dateString: string)
 				</template>
 			</el-table-column>
 		</el-table>
-		<div class = "p-3 paging" style = "justify-self: end">
-			<el-pagination v-model:current-page="page" v-model:page-size="size" :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next" :change = "setPage"/>
+		<div v-if = "dtoList" class = "p-3 paging" style = "justify-self: end">
+			<el-pagination v-model:current-page = "page" v-model:page-size = "size" :change = "setPage" :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next"/>
 		</div>
 	</div>
 	</html>
