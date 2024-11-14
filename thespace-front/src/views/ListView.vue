@@ -3,30 +3,31 @@ import axios from "axios";
 import {onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import router from "@/router";
+import {Search} from '@element-plus/icons-vue'
+
+function getList()
+  {
+    axios.get(`/board/list`, {
+      params: {
+        page: page.value,
+        keyword: keyword.value,
+        type: type.value,
+        path: path.value,
+        category: category.value
+      }
+    })
+      .then(res =>
+      {
+        dtoList.value = res.data
+        if (dtoList && dtoList.value != undefined)
+          {
+            pageCount.value = parseInt(String((dtoList.value.total / dtoList.value.size))) + (((dtoList.value.total % dtoList.value.size) > 0) ? 1 : 0)
+          }
+      })
+  }
 
 onMounted(() =>
 {
-  function getList()
-    {
-      axios.get(`/board/list`, {
-        params: {
-          page: page.value,
-          keyword: keyword.value,
-          type: type.value,
-          path: path.value,
-          category: category.value
-        }
-      })
-        .then(res =>
-        {
-          dtoList.value = res.data
-          if (dtoList && dtoList.value != undefined)
-            {
-              pageCount.value = parseInt(String((dtoList.value.total / dtoList.value.size))) + (((dtoList.value.total % dtoList.value.size) > 0) ? 1 : 0)
-            }
-        })
-    }
-
   getList()
 
   watch(page, (newValue) =>
@@ -90,7 +91,7 @@ const setPage = (val1: number, val2: number) =>
 
 const size = ref(10)
 const page = ref(1)
-const type = ref('')
+const type = ref('t')
 const keyword = ref('')
 const path = ref("Test Community Name") // Community name -> Switch to reactive when after implementing the Community page.
 const category = ref('')
@@ -157,12 +158,31 @@ const mouseOver = async function (rowData: dto)
 		
 		thumbnails.value = response.value
   }
+
+type ListItem = {
+  name: string;
+  value: string;
+};
+
+const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', value: 'c'}, {name: 'writer name', value: 'w'}, {name: 'writer UUID', value: 'u'}, {name: 'reply', value: 'r'}, {name: 'title + content', value: 'tc'}]
 </script>
 
 <template>
 	<html class = "dark">
+	
 	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-table v-if = "dtoList" :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
+		<div class="p-3 pe-1 d-inline-block" style="width: 8em;" >
+			<el-select v-model="type" default-first-option>
+			<el-option v-for="list in typeList" :key="list.value" :label="list.name" :value="list.value">
+				{{ list.name }}
+			</el-option>
+			</el-select>
+		</div>
+		<div class="d-inline-block" style="width: 11.8em; height: 32px">
+			<el-input v-model="keyword" class="radius" placeholder="Enter keyword" style="position: relative; top:32px; border-radius: 0"/>
+			<el-button style="position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click="getList()"> <el-icon size="17"><Search /></el-icon></el-button>
+		</div>
+		<el-table v-if = "dtoList?.total!=0" :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
 			<el-table-column width = "50">
 				<template #header>
 					<div class = "text-center th">No</div>
@@ -171,7 +191,7 @@ const mouseOver = async function (rowData: dto)
 					<div class = "td">{{ scope.row.bno }}</div>
 				</template>
 			</el-table-column>
-			<el-table-column width = "670">
+			<el-table-column width = "500">
 				<template #header>
 					<div class = "text-center th">Title</div>
 				</template>
@@ -262,5 +282,9 @@ const mouseOver = async function (rowData: dto)
     --el-disabled-bg-color: rgba(97, 255, 176, 0.45);
     --el-color-white: rgba(65, 255, 158, 0.71);
     --el-text-color-placeholder: white;
+}
+
+.radius{
+    --el-border-radius-base: 4px 0px 0px 4px;
 }
 </style>

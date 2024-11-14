@@ -37,19 +37,6 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
         JPQLQuery<Board> boardJPQLQuery = from(board);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        booleanBuilder.or(board.path.contains(path));
-
-        if (!Objects.equals(category, ""))
-          {
-            List<Category> categoryList = categoryRepository.findByPath(path);
-            Optional<Category> categoryCheck = categoryList.stream().filter(cate -> cate.getCategoryName().equals(category)).findFirst();
-            if (categoryCheck.isPresent())
-              {
-                Category categoryObj = categoryCheck.get();
-                booleanBuilder.or(board.category.eq(categoryObj));
-              }
-          }
-
         if ((types != null && types.length > 0) && keyword != null)
           {
             for (String type : types)
@@ -74,6 +61,20 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                   }
               }
           }
+
+        booleanBuilder.and(board.path.eq(path));
+
+        if (!Objects.equals(category, ""))
+          {
+            List<Category> categoryList = categoryRepository.findByPath(path);
+            Optional<Category> categoryCheck = categoryList.stream().filter(cate -> cate.getCategoryName().equals(category)).findFirst();
+            if (categoryCheck.isPresent())
+              {
+                Category categoryObj = categoryCheck.get();
+                booleanBuilder.and(board.category.eq(categoryObj));
+              }
+          }
+
         boardJPQLQuery.where(booleanBuilder);
 
         boardJPQLQuery.distinct();
