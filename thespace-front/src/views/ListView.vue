@@ -3,7 +3,7 @@ import axios from "axios";
 import {onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import router from "@/router";
-import {Search} from '@element-plus/icons-vue'
+import {Link, Picture, Search} from '@element-plus/icons-vue'
 
 function getList()
   {
@@ -66,7 +66,7 @@ interface dto
     viewCount: number,
     vote: number,
     fileNames: string[],
-		thumbCheck: boolean,
+    thumbCheck: boolean,
     categoryName: string,
     rCount: number
   }
@@ -124,17 +124,26 @@ function formatDate(dateString: string)
 
 const thumbnails = ref();
 
+const imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'svg', 'ico', 'heic', 'heif'];
+
 const mouseLeave = function (rowData: dto)
   {
     thumbnails.value = '';
     rowData.thumbCheck = false;
   }
 
+const extCheck = function (rowData: dto)
+  {
+    return rowData?.fileNames.filter(file =>
+    {
+      const filesExt = file.split('.').pop()?.toLowerCase();
+      return imageExt.includes(filesExt ? filesExt : '');
+    }).toString() != ''
+  }
+
 const mouseOver = async function (rowData: dto)
   {
     rowData.thumbCheck = false;
-    
-    const imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'svg', 'ico', 'heic', 'heif'];
 
     const imgArr = rowData?.fileNames.filter(file =>
     {
@@ -145,18 +154,18 @@ const mouseOver = async function (rowData: dto)
     if (imgArr.length > 0)
       {
         rowData.thumbCheck = true;
+
+        const response = ref()
+
+        for (let i = 0; i < imgArr.length; i++)
+          {
+            let fileid = imgArr[i].split("_")[0]
+            let filename = imgArr[i].substring(imgArr[i].indexOf('_') + 1);
+            response.value = URL.createObjectURL((await axios.get(`/get/${fileid}/s_${filename}`, {responseType: 'blob'}))?.data)
+          }
+
+        thumbnails.value = response.value
       }
-		
-		const response = ref()
-		
-    for (let i = 0; i < imgArr.length; i++)
-      {
-        let fileid = imgArr[i].split("_")[0]
-        let filename = imgArr[i].substring(imgArr[i].indexOf('_') + 1);
-        response.value = URL.createObjectURL((await axios.get(`/get/${fileid}/s_${filename}`, {responseType: 'blob'}))?.data)
-      }
-		
-		thumbnails.value = response.value
   }
 
 type ListItem = {
@@ -164,23 +173,30 @@ type ListItem = {
   value: string;
 };
 
-const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', value: 'c'}, {name: 'writer name', value: 'w'}, {name: 'writer UUID', value: 'u'}, {name: 'reply', value: 'r'}, {name: 'title + content', value: 'tc'}]
+const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', value: 'c'}, {
+  name: 'writer name',
+  value: 'w'
+}, {name: 'writer UUID', value: 'u'}, {name: 'reply', value: 'r'}, {name: 'title + content', value: 'tc'}]
 </script>
 
 <template>
 	<html class = "dark">
 	
 	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<div class="p-3 pe-1 d-inline-block" style="width: 8em;" >
-			<el-select v-model="type" default-first-option>
-			<el-option v-for="list in typeList" :key="list.value" :label="list.name" :value="list.value">
-				{{ list.name }}
-			</el-option>
+		<div class = "p-3 pe-1 d-inline-block" style = "width: 8em;">
+			<el-select v-model = "type" default-first-option>
+				<el-option v-for = "list in typeList" :key = "list.value" :label = "list.name" :value = "list.value">
+					{{ list.name }}
+				</el-option>
 			</el-select>
 		</div>
-		<div class="d-inline-block" style="width: 11.8em; height: 32px">
-			<el-input v-model="keyword" class="radius" placeholder="Enter keyword" style="position: relative; top:32px; border-radius: 0"/>
-			<el-button style="position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click="getList()"> <el-icon size="17"><Search /></el-icon></el-button>
+		<div class = "d-inline-block" style = "width: 11.8em; height: 32px">
+			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
+			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
+				<el-icon size = "17">
+					<Search/>
+				</el-icon>
+			</el-button>
 		</div>
 		<el-table v-if = "dtoList?.total!=0" :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
 			<el-table-column width = "50">
@@ -196,14 +212,24 @@ const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', val
 					<div class = "text-center th">Title</div>
 				</template>
 				<template #default = "scope">
-					<el-popover :hide-after = "10" :visible="scope.row.thumbCheck" :width="`fit-content`" effect = "dark" placement="bottom" popper-style = "text-align: center" title = "" trigger = "hover">
+					<el-popover :hide-after = "10" :visible = "scope.row.thumbCheck" :width = "`fit-content`" effect = "dark" placement = "bottom" popper-style = "text-align: center" title = "" trigger = "hover">
 						<template #default>
 							<img :src = "thumbnails" alt = "">
 						</template>
 						<template #reference>
 							<div style = "width: 100%" @mouseleave = "mouseLeave(scope.row)" @mouseover = "mouseOver(scope.row)">
 								<div class = "td" style = "display: inline-block">{{ scope.row.title }}</div>
-								<div style = "color: rgba(255,255,255,0.29);display: inline-block">　[{{ scope.row.rCount }}]</div>
+								<div style = "color: rgba(255,255,255,0.29);display: inline-block">&nbsp[{{ scope.row.rCount }}]</div>
+								<div v-if = "scope.row.fileNames != '' && !extCheck(scope.row)" style = "display: inline-block; position: relative; top: 3px">&nbsp
+									<el-icon>
+										<Link/>
+									</el-icon>
+								</div>
+								<div v-if = "extCheck(scope.row)" style = "display: inline-block; position: relative; top: 3px">&nbsp
+									<el-icon>
+										<Picture/>
+									</el-icon>
+								</div>
 							</div>
 						</template>
 					</el-popover>
@@ -284,7 +310,7 @@ const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', val
     --el-text-color-placeholder: white;
 }
 
-.radius{
+.radius {
     --el-border-radius-base: 4px 0px 0px 4px;
 }
 </style>
