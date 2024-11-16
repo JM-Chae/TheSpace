@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterLink, RouterView} from 'vue-router'
 import {onMounted, ref} from "vue";
 import axios from "axios";
-
 
 async function getInfo()
   {

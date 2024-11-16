@@ -5,7 +5,6 @@ import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
 
-
 function getRead()
   {
     axios.get(`/board/read/${bno}`)
@@ -393,7 +392,7 @@ onBeforeUnmount(() =>
 			
 			<hr class = "mb-2 mt-2" style = "background: rgba(70,130,180,0.17); height: 0.01em; border: 0;">
 			<div class = "mt-3" style = "min-height: 15em">
-				<el-text class = "text">{{ getDto?.content }}</el-text>
+				<el-text v-dompurify-html="getDto?.content" class = "text"></el-text>
 			</div>
 			<div class = "mt-3 mb-2" style = "display: flex; justify-content: flex-start">
 				<div v-if="getDto?.fileNames.length">

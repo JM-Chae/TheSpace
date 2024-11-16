@@ -113,8 +113,7 @@ function formatDate(dateString: string)
         });
       } else if (date.getFullYear() == today.getFullYear())
       {
-        const res = date.getMonth() + '. ' + date.getDate();
-        return res;
+        return date.getMonth() + '. ' + date.getDate();
       }
 
     return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {

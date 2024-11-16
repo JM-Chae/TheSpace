@@ -1,8 +1,17 @@
 <script lang = "ts" setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import axios from "axios";
 import router from "@/router";
 import {Delete} from "@element-plus/icons-vue";
+import Editor from '@tinymce/tinymce-vue'
+
+const loading = ref(true);
+
+onMounted(() => {
+  setTimeout(() => {
+    loading.value = false;
+  }, 500);
+});
 
 const categories = ref()
 const title = ref<string>(window.history.state.title)
@@ -123,7 +132,18 @@ const buttonTrigger = () => {
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
 		<div class = "mt-3">
-			<el-input v-model = "content" :autosize = "{minRows: 10}" placeholder = "Enter content" size = "large" type = "textarea"/>
+			<Editor v-if="!loading"
+					v-model="content"
+					:init="{
+        toolbar_mode: 'wrap',
+        plugins: [
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+     selector: 'textarea', skin: 'oxide-dark', content_css: 'dark'}"
+					api-key="578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
+			/>
 		</div>
 		<div class="mt-3">
 			<el-button style="margin-right: 1em" type="warning" @click="buttonTrigger">File Select</el-button>
