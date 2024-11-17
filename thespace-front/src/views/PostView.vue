@@ -5,10 +5,16 @@ import router from "@/router";
 import {Delete} from '@element-plus/icons-vue'
 import Editor from '@tinymce/tinymce-vue'
 
+const fileInput = window.document;
+const formData = new FormData();
+const fileUrl = URL;
+
 const loading = ref(true);
 
-onMounted(() => {
-  setTimeout(() => {
+onMounted(() =>
+{
+  setTimeout(() =>
+  {
     loading.value = false;
   }, 500);
 });
@@ -116,7 +122,6 @@ const upload = async () =>
       }
   }
 
-
 const buttonTrigger = () =>
   {
     const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
@@ -158,18 +163,62 @@ const buttonTrigger = () =>
 		<div class = "mt-3">
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
-		<div class="mt-3">
-			<Editor v-if="!loading"
-					v-model="content"
-					:init="{
+		<div class = "mt-3">
+			<Editor v-if = "!loading"
+							v-model = "content"
+							:init = "{
         toolbar_mode: 'wrap',
         plugins: [
           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
           'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
         ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-     selector: 'textarea', skin: 'oxide-dark', content_css: 'dark'}"
-					api-key="578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
+     selector: 'textarea',
+     skin: 'oxide-dark',
+     content_css: 'dark',
+     image_title: true,
+     automatic_uploads: true,
+     file_picker_types: 'image',
+     file_picker_callback: (callback: any, value: any, meta: any) => {
+    if (meta.filetype === 'image') {
+          const input = fileInput.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+
+    // change 이벤트 리스너 설정
+    input.onchange = async () => {
+      const files = input.files;
+      if (files) {
+        const selectedFile = files[0]; // 첫 번째 파일을 예시로 사용
+        formData.append('fileList', selectedFile);
+
+        try {
+          const response = await axios.post('/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          })
+          
+          const fileid = response.data[0].fileId;
+          const filename = response.data[0].fileName;
+          
+          const blob = await axios.get(`/get/${fileid}/${filename}`, {responseType: 'blob'})
+          const objectUrl = fileUrl.createObjectURL(blob.data);
+
+          if (objectUrl) {
+            console.log(objectUrl)
+            callback (objectUrl, { title: selectedFile.name });
+          }
+        } catch (error) {}
+      }
+    };}
+
+    // 파일 선택 창 열기
+    input.click();
+  }
+
+   }"
+							api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
 			/>
 		</div>
 		<div class = "mt-3">
