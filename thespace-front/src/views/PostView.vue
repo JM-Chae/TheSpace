@@ -1,23 +1,54 @@
 <script lang = "ts" setup>
-import {onMounted, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import axios from "axios";
 import router from "@/router";
 import {Delete} from '@element-plus/icons-vue'
 import Editor from '@tinymce/tinymce-vue'
 
+const loading = ref<boolean>(false)
+const isSubmitted = ref<boolean>(false)
+
+const save = () =>
+  {
+    setTimeout(() =>
+    {
+
+      isSubmitted.value = false;
+      const submitButton = document.getElementsByClassName('tox-button');
+      if (submitButton)
+        {
+          submitButton[10].addEventListener('click', () =>
+          {
+            isSubmitted.value = true;
+          });
+        }
+    }, 500)
+  }
+
+const closeDialog = async () =>
+  {
+    if(!isSubmitted.value){
+      if ( count > 0)
+        {
+          try
+            {
+              const temp = fileNames.value.pop();
+              if (temp)
+                {
+                  const fileid = temp.split('_')[0];
+                  const filename = temp.substring(temp.indexOf('_') + 1);
+                  await axios.delete(`/delete/${fileid}/${filename}`);
+                }
+            } catch (error)
+            {
+              console.log('Error during file deletion on page unload:', error);
+            }
+        }}
+	}
+
 const fileInput = window.document;
 const formData = new FormData();
 const fileUrl = URL;
-
-const loading = ref(true);
-
-onMounted(() =>
-{
-  setTimeout(() =>
-  {
-    loading.value = false;
-  }, 500);
-});
 
 const title = ref("")
 const content = ref("")
@@ -28,7 +59,7 @@ const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 const bno = ref<number>()
-const fileNames = ref([])
+const fileNames = ref<string[]>([])
 
 axios.get(`/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
 
@@ -130,6 +161,9 @@ const buttonTrigger = () =>
         fileInput.click();
       }
   };
+
+let count = 0;
+
 </script>
 
 <template>
@@ -163,35 +197,43 @@ const buttonTrigger = () =>
 		<div class = "mt-3">
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
-		<div class = "mt-3">
-			<Editor v-if = "!loading"
-							v-model = "content"
-							:init = "{
+		<div id = "MCE" class = "mt-3"></div>
+		<Editor v-if = "!loading"
+						v-model = "content"
+						:init = "{
         toolbar_mode: 'wrap',
         plugins: [
           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
           'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
         ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-     selector: 'textarea',
+     selector: 'MCE',
      skin: 'oxide-dark',
      content_css: 'dark',
      image_title: true,
-     automatic_uploads: true,
      file_picker_types: 'image',
+     
+     setup: (editor: any) => {
+          editor.on('OpenWindow', () =>
+           {
+           save()
+           })
+					editor.on('CloseWindow', async () => {
+        		closeDialog()
+    });
+  },
      file_picker_callback: (callback: any, value: any, meta: any) => {
     if (meta.filetype === 'image') {
           const input = fileInput.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
 
-    // change 이벤트 리스너 설정
     input.onchange = async () => {
-      const files = input.files;
+      let files = input.files;
       if (files) {
-        const selectedFile = files[0]; // 첫 번째 파일을 예시로 사용
-        formData.append('fileList', selectedFile);
-
+        let selectedFile = files[0]; //
+        formData.set('fileList', selectedFile);
+        
         try {
           const response = await axios.post('/upload', formData, {
             headers: {
@@ -199,28 +241,30 @@ const buttonTrigger = () =>
             }
           })
           
-          const fileid = response.data[0].fileId;
-          const filename = response.data[0].fileName;
+          let fileid: string = response.data[0].fileId;
+          let filename: string = response.data[0].fileName;
           
-          const blob = await axios.get(`/get/${fileid}/${filename}`, {responseType: 'blob'})
-          const objectUrl = fileUrl.createObjectURL(blob.data);
+          let blob = await axios.get(`/get/${fileid}/${filename}`, {responseType: 'blob'})
+          let objectUrl = fileUrl.createObjectURL(blob.data);
+          fileNames.push(fileid+'_'+filename)
+          count += 1;
 
           if (objectUrl) {
-            console.log(objectUrl)
             callback (objectUrl, { title: selectedFile.name });
           }
+        
         } catch (error) {}
       }
-    };}
-
-    // 파일 선택 창 열기
-    input.click();
+    };
+    input.click();}
+    
+    
+    
   }
 
    }"
-							api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
-			/>
-		</div>
+						api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
+		/>
 		<div class = "mt-3">
 			<el-button style = "margin-right: 1em" type = "warning" @click = "buttonTrigger">File Select</el-button>
 			<input id = "fileUpload" hidden multiple type = "file" @change = "handleFileChange">
