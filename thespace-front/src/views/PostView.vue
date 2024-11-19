@@ -5,7 +5,6 @@ import router from "@/router";
 import {Delete} from '@element-plus/icons-vue'
 import Editor from '@tinymce/tinymce-vue'
 
-const loading = ref<boolean>(false)
 const isSubmitted = ref<boolean>(false)
 
 const save = () =>
@@ -162,6 +161,45 @@ const buttonTrigger = () =>
       }
   };
 
+const deleteEditorImage = () =>
+  {
+    try
+      {
+        for (let i = 0; i < count; i++)
+          {
+            const temp = fileNames.value.pop();
+            if (temp)
+              {
+                const fileid = temp.split('_')[0];
+                const filename = temp.substring(temp.indexOf('_') + 1);
+
+                const url = `http://localhost:8080/delete/${fileid}/${filename}`;
+
+                count--;
+
+                fetch(url, {
+                  method: 'DELETE',
+                  keepalive: true,
+                })
+              }
+          }
+      } catch (error) {
+      console.error('Error during file deletion on page unload:', error);
+    }
+	}
+
+//In the future, on the backend, when a file is initially uploaded, a separate column will be used to store a "temporary save flag."
+//A logic will then be implemented to delete the corresponding data if the "temporary save flag" remains true after the session expiration time.
+window.addEventListener('beforeunload', () => //
+{
+  deleteEditorImage()
+});
+
+window.addEventListener('popstate', () => //
+{
+  deleteEditorImage()
+});
+
 let count = 0;
 
 </script>
@@ -198,28 +236,24 @@ let count = 0;
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
 		<div id = "MCE" class = "mt-3"></div>
-		<Editor v-if = "!loading"
-						v-model = "content"
-						:init = "{
+		<Editor :init = "{
         toolbar_mode: 'wrap',
         plugins: [
           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
           'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
         ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-     selector: 'MCE',
      skin: 'oxide-dark',
      content_css: 'dark',
      image_title: true,
      file_picker_types: 'image',
-     
      setup: (editor: any) => {
           editor.on('OpenWindow', () =>
            {
            save()
            })
 					editor.on('CloseWindow', async () => {
-        		closeDialog()
+        		await closeDialog()
     });
   },
      file_picker_callback: (callback: any, value: any, meta: any) => {
@@ -252,18 +286,15 @@ let count = 0;
           if (objectUrl) {
             callback (objectUrl, { title: selectedFile.name });
           }
-        
         } catch (error) {}
       }
     };
     input.click();}
-    
-    
-    
   }
-
    }"
+						v-model = "content"
 						api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
+		hidden
 		/>
 		<div class = "mt-3">
 			<el-button style = "margin-right: 1em" type = "warning" @click = "buttonTrigger">File Select</el-button>

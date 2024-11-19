@@ -8,6 +8,7 @@ import router from './router'
 import 'bootstrap/dist/css/bootstrap-utilities.css'
 import axios from "axios";
 import VueDOMPurifyHTML from 'vue-dompurify-html';
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 
 axios.defaults.withCredentials = true;
