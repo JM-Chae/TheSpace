@@ -2,6 +2,7 @@ package com.thespace.thespace.controller;
 
 import com.thespace.thespace.dto.CommunityDTO;
 import com.thespace.thespace.service.CommunityService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,7 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @RestController
-@RequestMapping
+@RequestMapping("/community")
 @RequiredArgsConstructor
 @Log4j2
 public class CommunityController
@@ -19,20 +20,33 @@ public class CommunityController
     private final CommunityService communityService;
 
 
-    @GetMapping("/createCommunity")
-    public void createCommunityGet()
+    @GetMapping()
+    public void getCommunityList()
       {
+
       }
 
-    @PostMapping("/createCommunity")
-    public void createCommunity(@Valid CommunityDTO communityDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+    @PostMapping("/create")
+    public Long createCommunity(@Valid @RequestBody CommunityDTO communityDTO, BindingResult bindingResult, @RequestParam("check") boolean check, RedirectAttributes redirectAttributes)
       {
-        if(bindingResult.hasErrors())
+        if (check)
           {
+            if (bindingResult.hasErrors())
+              {
+                communityService.createCommunity(communityDTO);
+                redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+              }
+
             Long CommunityId = communityService.createCommunity(communityDTO);
-            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            redirectAttributes.addFlashAttribute("result", "Community created successfully");
+            return CommunityId;
           }
-        Long CommunityId = communityService.createCommunity(communityDTO);
-        redirectAttributes.addFlashAttribute("result", "Community created successfully");
+        return 0L;
+      }
+
+    @GetMapping("/check")
+    public boolean check(@RequestParam("communityName") String communityName)
+      {
+        return communityService.check(communityName);
       }
   }

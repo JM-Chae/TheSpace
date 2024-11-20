@@ -5,4 +5,5 @@ import com.thespace.thespace.dto.CommunityDTO;
 public interface CommunityService
   {
     Long createCommunity(CommunityDTO communityDTO);
+    boolean check(String communityName);
   }

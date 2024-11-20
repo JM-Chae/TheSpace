@@ -33,4 +33,10 @@ public class CommunityServiceImpl implements CommunityService
         Long communityId = communityRepository.save(community).getCommunityId();
         return communityId;
       }
+
+    @Override
+    public boolean check(String communityName)
+      {
+        return !communityRepository.existsByCommunityName(communityName);
+      }
   }
