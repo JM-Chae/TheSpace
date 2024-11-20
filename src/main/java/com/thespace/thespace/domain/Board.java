@@ -24,6 +24,7 @@ public class Board extends BaseEntity
 
     private String path;
 
+    @Column(columnDefinition = "longtext")
     private String content;
 
     private String writer;
