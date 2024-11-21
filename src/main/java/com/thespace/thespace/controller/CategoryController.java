@@ -27,12 +27,7 @@ public class CategoryController
         return categoryService.getAllCategories(path);
       }
 
-    @GetMapping("/{community}/createCategory")
-    public void createCategory()
-      {
-      }
-
-    @PostMapping("/{community}/createCategory")
+    @PostMapping("/{community}/category")
     public void createCategory(@Valid CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community") String communityName)
       {
         if (bindingResult.hasErrors())

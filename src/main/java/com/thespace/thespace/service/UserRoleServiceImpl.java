@@ -23,7 +23,7 @@ public class UserRoleServiceImpl implements UserRoleService
         if (!userRoleRepository.existsByRole(roleName))
         {
           UserRole role = new UserRole();
-          String roleSetName = "USER_"+roleName.toUpperCase()+"_ADMIN";
+          String roleSetName = "ADMIN_"+roleName.toUpperCase();
           boolean exist = userRoleRepository.existsByRole(roleSetName);
           if (!exist)
             {

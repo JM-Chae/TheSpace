@@ -1,7 +1,10 @@
 package com.thespace.thespace.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ public class Community extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long communityId;
 
+    @Column(unique = true)
     private String communityName;
 
     @Builder.Default

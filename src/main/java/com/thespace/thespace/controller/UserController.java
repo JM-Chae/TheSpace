@@ -81,6 +81,11 @@ public class UserController
 
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userDTO.setUuid(uuid);
-        userService.register(userDTO, check);
+
+        if (check)
+          {
+            userService.register(userDTO);
+            userService.setRole(userDTO.getId(), "ROLE_USER");
+          }
       }
   }

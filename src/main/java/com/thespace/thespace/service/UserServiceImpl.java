@@ -56,12 +56,8 @@ public class UserServiceImpl implements UserService
         return userInfoDTO;
       }
 
-    public void register(UserDTO userDTO, boolean check) throws Exception
+    public void register(UserDTO userDTO) throws Exception
       {
-        if (!check)
-          {
-            throw new Exception(); // Implement duplicateId Exception later
-          }
         User user = modelMapper.map(userDTO, User.class);
         userRepository.save(user);
       }
@@ -78,8 +74,7 @@ public class UserServiceImpl implements UserService
 
     public void setRole(String id, String role)
       {
-        UserRole userRole = userRoleRepository.findById
-            (userRoleRepository.findByRole(role).orElseThrow().getId()).orElseThrow(UserNotFound::new);
+        UserRole userRole = userRoleRepository.findByRole(role).orElseThrow(UserNotFound::new);
         User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         user.getRoles().add(userRole);
         userRepository.save(user);

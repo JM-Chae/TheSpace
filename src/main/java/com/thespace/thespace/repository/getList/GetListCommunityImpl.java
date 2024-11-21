@@ -60,7 +60,6 @@ public class GetListCommunityImpl extends QuerydslRepositorySupport implements G
                 .communityId(community1.getCommunityId())
                 .communityName(community1.getCommunityName())
                 .build();
-
             return dto;
           }).toList();
 

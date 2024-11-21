@@ -21,6 +21,7 @@ public class Category extends BaseEntity
 
     private String path;
 
+    @Column(unique = true)
     private String categoryName;
 
     private String categoryType;

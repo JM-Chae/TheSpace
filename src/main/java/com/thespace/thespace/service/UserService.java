@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 
 public interface UserService
   {
-    void register(UserDTO userDTO, boolean check) throws Exception;
+    void register(UserDTO userDTO) throws Exception;
     boolean checkUuid(String uuid);
     boolean checkId(String id);
     void setRole(String id, String role);
