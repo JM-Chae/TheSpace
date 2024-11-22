@@ -1,8 +1,10 @@
 package com.thespace.thespace.controller;
 
+import com.thespace.thespace.dto.CategoryDTO;
 import com.thespace.thespace.dto.CommunityDTO;
 import com.thespace.thespace.dto.PageReqDTO;
 import com.thespace.thespace.dto.PageResDTO;
+import com.thespace.thespace.service.CategoryService;
 import com.thespace.thespace.service.CommunityService;
 import com.thespace.thespace.service.UserRoleService;
 import com.thespace.thespace.service.UserService;
@@ -21,6 +23,7 @@ public class CommunityController
   {
     private final UserService userService;
     private final UserRoleService userRoleService;
+    private final CategoryService categoryService;
     private final CommunityService communityService;
 
 
@@ -59,6 +62,14 @@ public class CommunityController
 
             userRoleService.register(communityName);
             userService.setRole(userid, "ADMIN_" + communityName);
+
+            CategoryDTO categoryDTO = CategoryDTO.builder()
+                .communityId(CommunityId)
+                .categoryName("Open Forum")
+                .categoryType("Forum")
+                .build();
+
+            categoryService.createCategory(categoryDTO);
 
             return CommunityId;
           }

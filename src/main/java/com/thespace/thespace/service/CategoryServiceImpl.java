@@ -38,7 +38,6 @@ public class CategoryServiceImpl implements CategoryService
         Optional<Community> community = communityRepository.findById(communityId);
 
         Category category = Category.builder()
-            .categoryId(categoryDTO.getCategoryId())
             .categoryName(categoryDTO.getCategoryName())
             .categoryType(categoryDTO.getCategoryType())
             .community(community.orElseThrow())

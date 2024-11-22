@@ -3,7 +3,6 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,12 +19,6 @@ class UserServiceTests
     private UserRepository userRepository;
     @Autowired
     private UserRoleService userRoleService;
-
-    @BeforeEach
-    public void clean()
-      {
-        userRepository.deleteAll();
-      }
 
     @Test
     void checkUuid() throws Exception
@@ -56,5 +49,13 @@ class UserServiceTests
         userRepository.save(user);
 
         userService.setRole(user.getId(), "USER_COMMUNITY_ADMIN");
+      }
+
+    @Test
+    public void findUserRoles()
+      {
+        String userId = "123456";
+
+        log.info(userRepository.findRoleIdsByUserId(userId).toString());
       }
   }

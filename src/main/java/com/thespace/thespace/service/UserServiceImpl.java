@@ -32,6 +32,12 @@ public class UserServiceImpl implements UserService
         this.userRoleRepository = userRoleRepository;
       }
 
+    @Override
+    public List<Long> findUserRoles(String userId)
+      {
+        return userRepository.findRoleIdsByUserId(userId);
+      }
+
     @Transactional
     public UserInfoDTO getUserinfoDTO(Authentication authentication)
       {

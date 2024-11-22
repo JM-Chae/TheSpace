@@ -34,8 +34,6 @@ public class CommunityControllerTests
     @Transactional
     public void createCommunity() throws Exception
       {
-
-
         String communityName = "testtest";
         boolean check = true;
 

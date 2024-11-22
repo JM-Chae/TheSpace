@@ -18,6 +18,11 @@ public class UserRoleServiceImpl implements UserRoleService
         this.userRoleRepository = userRoleRepository;
       }
 
+    public Long findRoleId(String roleName)
+      {
+        return userRoleRepository.findByRole(roleName).orElseThrow().getId();
+      }
+
     public void register(String roleName)
       {
         if (!userRoleRepository.existsByRole(roleName))
