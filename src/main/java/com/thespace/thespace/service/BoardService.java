@@ -13,6 +13,7 @@ public interface BoardService
     void modify(BoardDTO boardDTO);
     void delete(Long bno);
     PageResDTO<BoardDTO> list(PageReqDTO pageReqDTO);
+    boolean writerCheck(Long bno, String userId);
 
     default Board dtoToEntity(BoardDTO boardDTO)
       {

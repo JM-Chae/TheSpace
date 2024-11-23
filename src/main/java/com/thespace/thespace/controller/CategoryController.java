@@ -29,9 +29,9 @@ public class CategoryController
       }
 
     @PostMapping("/{community}/category")
-    public void createCategory(@Valid CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community") String communityName, @RequestParam("userId") String userId)
+    public void createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community") String communityName, @RequestParam("userId") String userId)
       {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_"+communityName)))
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityName)))
           {
             if (bindingResult.hasErrors())
               {
@@ -44,5 +44,18 @@ public class CategoryController
           }
 
         redirectAttributes.addFlashAttribute("result", "You are not this community Admin");
+      }
+
+    @DeleteMapping
+    public void deleteCategory(@RequestParam("categoryId") Long categoryId, @RequestParam("userId") String userId, @RequestParam("communityName") String communityName, RedirectAttributes redirectAttributes)
+      {
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityName)))
+          {
+            categoryService.deleteCategory(categoryId);
+            redirectAttributes.addFlashAttribute("result", "Category deleted successfully");
+          } else
+          {
+            redirectAttributes.addFlashAttribute("result", "You are not this community Admin");
+          }
       }
   }

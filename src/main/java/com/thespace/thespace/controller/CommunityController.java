@@ -81,4 +81,17 @@ public class CommunityController
       {
         return communityService.check(communityName);
       }
+
+    @DeleteMapping
+    public void deleteCommunity(@RequestBody CommunityDTO communityDTO, @RequestParam("userId") String userId, RedirectAttributes redirectAttributes)
+    {
+      if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_"+communityDTO.getCommunityName())))
+        {
+          communityService.deleteCommunity(communityDTO.getCommunityId());
+          redirectAttributes.addFlashAttribute("result", "Community deleted successfully");
+        }else
+        { // add Exception later
+          redirectAttributes.addFlashAttribute("result", "You are not allowed to delete this community");
+        }
+    }
   }

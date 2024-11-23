@@ -8,4 +8,5 @@ public interface CategoryService
   {
     Long createCategory(CategoryDTO categoryDTO);
     List<CategoryDTO> getAllCategories(String path);
+    void deleteCategory(Long categoryId);
   }

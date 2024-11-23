@@ -4,6 +4,8 @@ import com.thespace.thespace.dto.BoardDTO;
 import com.thespace.thespace.dto.PageReqDTO;
 import com.thespace.thespace.dto.PageResDTO;
 import com.thespace.thespace.service.BoardService;
+import com.thespace.thespace.service.UserRoleService;
+import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BoardController
   {
     private final BoardService boardService;
-
-    @GetMapping("/")
-    public void postGet()
-      {
-      }
+    private final UserService userService;
+    private final UserRoleService userRoleService;
 
     @PostMapping("/post")
     public Long post(@Valid @RequestBody BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes)
@@ -76,8 +75,20 @@ public class BoardController
       }
 
     @DeleteMapping("/delete/{bno}")
-    public void delete(@PathVariable("bno") Long bno)
+    public void delete(@PathVariable("bno") Long bno, @RequestParam("userId") String userId)
       {
-        boardService.delete(bno);
+        if (boardService.writerCheck(bno, userId))
+          {
+            boardService.delete(bno);
+          }
+      }
+
+    @DeleteMapping("/delete/{bno}/admin")
+    public void delete(@PathVariable("bno") Long bno, @RequestParam("userId") String userId, @RequestParam("communityName") String communityName)
+      {
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityName)))
+          {
+            boardService.delete(bno);
+          }
       }
   }

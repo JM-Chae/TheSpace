@@ -60,4 +60,9 @@ public class CommunityServiceImpl implements CommunityService
 
         return pageResDTO;
       }
+
+    public void deleteCommunity(Long communityId)
+      {
+        communityRepository.deleteById(communityId);
+      }
   }

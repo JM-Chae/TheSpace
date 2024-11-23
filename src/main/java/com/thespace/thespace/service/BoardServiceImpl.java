@@ -166,4 +166,9 @@ public class BoardServiceImpl implements BoardService
 
       return pageResDTO;
     }
+
+    public boolean writerCheck(Long bno, String userId)
+      {
+        return boardRepository.findById(bno).orElseThrow(PostNotFound::new).getWriter().equals(userId);
+      }
   }

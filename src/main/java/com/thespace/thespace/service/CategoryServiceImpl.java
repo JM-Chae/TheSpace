@@ -61,4 +61,9 @@ public class CategoryServiceImpl implements CategoryService
 
         return categories;
       }
+
+    public void deleteCategory(Long categoryId)
+      {
+        categoryRepository.deleteById(categoryId);
+      }
   }
