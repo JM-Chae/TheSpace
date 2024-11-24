@@ -1,6 +1,7 @@
 <script lang = "ts" setup>
 import {ref} from "vue";
 import axios from "axios";
+import router from "@/router";
 
 const id = ref("")
 const pw = ref("")
@@ -42,9 +43,15 @@ const login = function ()
 
     sessionStorage.setItem("login", "true")
   }
+
+const join = () =>
+  {
+    router.push('/user/join')
+	}
 </script>
 
 <template>
+	<html class="dark">
 	<main style="height: 80vh">
 		<div style="max-width: 300px; justify-self: center; padding-top: 10vh">
 		<div class = "pb-3"><h2>Welcome to Your Space!</h2></div>
@@ -57,9 +64,11 @@ const login = function ()
 		<div class = "mt-2 pt-2">
 			<el-checkbox v-model = "remember" type = "primary">Remember Me</el-checkbox>
 			<el-button class = "float-end" type = "primary" @click = "login">Login</el-button>
+			<el-button class = "float-end me-2" type = "success" @click = "join">Join</el-button>
 		</div>
 		</div>
 	</main>
+	</html>
 </template>
 
 <style scoped>

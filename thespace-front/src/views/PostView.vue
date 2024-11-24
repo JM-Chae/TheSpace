@@ -110,7 +110,7 @@ watch(bno, (newValue) =>
 {
   if (newValue)
     {
-      router.push({name: "read", state: {bno: bno.value}})
+      router.push({path: '/read', state: {bno: bno.value}})
     }
 })
 

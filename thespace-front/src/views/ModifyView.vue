@@ -101,6 +101,7 @@ const buttonTrigger = () => {
 </script>
 
 <template>
+	<html class="dark">
 	<main>
 		<div>
 			<h2 class = "communityName">{{ path }}</h2>
@@ -174,6 +175,7 @@ const buttonTrigger = () => {
 		</div>
 	
 	</main>
+	</html>
 </template>
 
 <style scoped>

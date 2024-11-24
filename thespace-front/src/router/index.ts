@@ -22,7 +22,7 @@ const router = createRouter({
       path: '/post',
       name: 'post',
       component: () => import('../views/PostView.vue'),
-      meta: { roles: ["ROLE_USER"] },
+      meta: { login: true },
       props: true
     },
     {
@@ -44,6 +44,11 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
+      path: '/user/join',
+      name: 'join',
+      component: () => import('../views/JoinView.vue')
+    },
+    {
       path: '/user/logout',
       name: 'logout',
       component: () => import('../views/LogoutView.vue')
@@ -53,20 +58,22 @@ const router = createRouter({
 
 export default router
 
-
-const userInfo = sessionStorage.getItem("userInfo") || "{}"
-const roles = JSON.parse(userInfo)
-
-
 router.beforeEach((to, from, next) =>
-    {
+  {
 
-      if (to.meta.roles && sessionStorage.getItem('login')?.split('=')[1] == 'true')
+    if (to.meta.login)
       {
-        alert('You must to login')
-          next('/user/login')
+        if(sessionStorage.getItem('login')?.split('=')[0] === 'true')
+          {
+            next()
+          }else
+          {
+            alert('You must to login')
+            next('/user/login')
+          }
+
       }else {
-          next()
-        }
+      next()
     }
+  }
 )

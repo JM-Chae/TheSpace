@@ -354,7 +354,7 @@ onBeforeUnmount(() =>
 </script>
 
 <template>
-	<html>
+	<html class="dark">
 	<main>
 		<div class = "board">
 			<div>
