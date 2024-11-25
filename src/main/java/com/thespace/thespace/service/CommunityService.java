@@ -10,4 +10,5 @@ public interface CommunityService
     boolean check(String communityName);
     PageResDTO<CommunityDTO> getCommunityList(PageReqDTO pageReqDTO);
     void deleteCommunity(Long communityId);
+    CommunityDTO getCommunity(String communityName);
   }

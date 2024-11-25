@@ -9,7 +9,6 @@ import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -40,18 +39,18 @@ public class BoardController
       }
 
     @GetMapping("/read/{bno}")
-    public BoardDTO readGet(@PathVariable("bno") Long bno, Model model)
+    public BoardDTO readGet(@PathVariable("bno") Long bno)
       {
         BoardDTO boardDTO = boardService.read(bno);
-        model.addAttribute("dtoList", boardDTO);
 
         return boardDTO;
       }
 
     @GetMapping("/list")
-    public PageResDTO<BoardDTO> listGet(@RequestParam("path") String path, @RequestParam("category") String category, @RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type, Model model)
+    public PageResDTO<BoardDTO> listGet(@RequestParam("path") String path, @RequestParam("size")int size, @RequestParam("category") String category, @RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type)
       {
         PageReqDTO pageReqDTO = PageReqDTO.builder()
+            .size(size)
             .page(page)
             .keyword(keyword)
             .type(type)
@@ -59,7 +58,7 @@ public class BoardController
             .path(path)
             .build();
         PageResDTO<BoardDTO> getList = boardService.list(pageReqDTO);
-        model.addAttribute("getList", getList);
+
         return getList;
       }
 

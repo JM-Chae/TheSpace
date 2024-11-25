@@ -6,7 +6,6 @@ import com.thespace.thespace.dto.ReplyDTO;
 import com.thespace.thespace.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -29,19 +28,17 @@ public class ReplyController
       }
 
     @GetMapping("/board/{bno}/reply")
-    public PageResDTO<ReplyDTO> listGet(@PathVariable("bno") Long bno, PageReqDTO pageReqDTO, Model model)
+    public PageResDTO<ReplyDTO> listGet(@PathVariable("bno") Long bno, PageReqDTO pageReqDTO)
       {
         PageResDTO<ReplyDTO> rdtoList = replyService.getListReply(bno, pageReqDTO);
-        model.addAttribute("rdtoList", rdtoList);
 
         return rdtoList;
       }
 
     @GetMapping("/board/{bno}/reply/{rno}")
-    public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno, @PathVariable("bno") Long bno, PageReqDTO pageReqDTO, Model model)
+    public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno, @PathVariable("bno") Long bno, PageReqDTO pageReqDTO)
       {
         PageResDTO<ReplyDTO> nrdtoList = replyService.getListNestedReply(rno, bno, pageReqDTO);
-        model.addAttribute("nrdtoList", nrdtoList);
 
         return nrdtoList;
       }

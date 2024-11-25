@@ -23,9 +23,9 @@ public class CategoryDTO
 
     private String path;
 
-    private LocalDateTime categoryDate;
+    private LocalDateTime createDate;
 
-    private LocalDateTime modifiedDate;
+    private LocalDateTime modDate;
 
     @NotNull
     private Long communityId;

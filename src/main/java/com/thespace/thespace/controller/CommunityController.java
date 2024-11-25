@@ -10,7 +10,6 @@ import com.thespace.thespace.service.UserRoleService;
 import com.thespace.thespace.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -27,8 +26,15 @@ public class CommunityController
     private final CommunityService communityService;
 
 
+    @GetMapping("/{communityname}")
+    public CommunityDTO home(@PathVariable("communityname") String communityname)
+      {
+        return communityService.getCommunity(communityname);
+      }
+
+
     @GetMapping("")
-    public PageResDTO<CommunityDTO> getCommunityList(@RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type, Model model)
+    public PageResDTO<CommunityDTO> getCommunityList(@RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type)
       {
         {
           PageReqDTO pageReqDTO = PageReqDTO.builder()
@@ -38,7 +44,6 @@ public class CommunityController
               .type(type)
               .build();
           PageResDTO<CommunityDTO> getList = communityService.getCommunityList(pageReqDTO);
-          model.addAttribute("getList", getList);
 
           return getList;
         }

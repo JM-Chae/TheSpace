@@ -25,6 +25,9 @@ public class Community extends BaseEntity
     @Column(unique = true)
     private String communityName;
 
+    @Column(columnDefinition = "longtext")
+    private String description;
+
     @Builder.Default
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Category> category  = new ArrayList<>();

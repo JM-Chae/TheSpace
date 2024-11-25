@@ -42,8 +42,7 @@ const login =  ref(false);
     <div class="wrapper pb-5">
       <nav>
         <RouterLink to="/space">Home</RouterLink>
-        <RouterLink to="/post">POST</RouterLink>
-				<RouterLink to="/list">LIST</RouterLink>
+				<RouterLink to="/community">COMMUNITY</RouterLink>
 				<RouterLink v-if="login" to="/user/logout">LOGOUT</RouterLink>
         <RouterLink v-else to="/user/login">LOGIN</RouterLink>
       </nav>

@@ -11,22 +11,25 @@ function getRead()
       .then(res =>
       {
         getDto.value = res.data
-				path.value = getDto.value?.path || ''
+        path.value = getDto.value?.path || ''
       })
       .catch(error => console.error(error));
-    
+
   }
+
 function modify()
   {
-			router.push({name: "modify", state:
-					{
-            title: getDto.value?.title,
-            content: getDto.value?.content,
-            categoryName: getDto.value?.categoryName,
-						bno: bno,
-						fileNames: JSON.stringify(getDto.value?.fileNames)
-          }});
-	}
+    router.push({
+      name: "modify", state:
+        {
+          title: getDto.value?.title,
+          content: getDto.value?.content,
+          categoryName: getDto.value?.categoryName,
+          bno: bno,
+          fileNames: JSON.stringify(getDto.value?.fileNames)
+        }
+    });
+  }
 
 function getReply()
   {
@@ -74,8 +77,8 @@ function getNestedReply(rno: number, i: number)
 
 function getFiles()
   {
-  
-	}
+
+  }
 
 function deleteReply(rno: number, isNR: number)
   {
@@ -93,7 +96,7 @@ function deleteReply(rno: number, isNR: number)
 
 function boardDelete(isR: number)
   {
-    if(isR==0)
+    if (isR == 0)
       {
         axios.delete(`/board/delete/${bno}`)
       } else
@@ -272,7 +275,7 @@ watch(getDto, (newValue) =>
 const formatDate = (dateString: string) =>
   {
     const date = new Date(dateString);
-    date.setHours(date.getHours()-9);
+    date.setHours(date.getHours() - 9);
     return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {
       hour12: true
     });
@@ -296,7 +299,13 @@ const closeAllNestedReplies = () =>
 const handleOutsideClick = (event: MouseEvent) =>
   {
     const clickedElement = event.target as HTMLElement;
-    if (clickedElement.closest("li"))
+
+    if (clickedElement.closest("#replyList"))
+    {
+      tag.value = '';
+      return;
+    }
+    if (clickedElement.closest("#nestedList"))
       {
         return;
       }
@@ -354,7 +363,7 @@ onBeforeUnmount(() =>
 </script>
 
 <template>
-	<html class="dark">
+	<html class = "dark">
 	<main>
 		<div class = "board">
 			<div>
@@ -369,7 +378,7 @@ onBeforeUnmount(() =>
 				</el-col>
 				<el-col :span = "8">
 					<div class = "mt-4" style = "text-align: end">
-						<el-text v-if="getDto" class = "name">{{ formatDate(getDto.createDate) }}</el-text>
+						<el-text v-if = "getDto" class = "name">{{ formatDate(getDto.createDate) }}</el-text>
 					</div>
 				</el-col>
 				<el-col :span = "16">
@@ -392,33 +401,51 @@ onBeforeUnmount(() =>
 			
 			<hr class = "mb-2 mt-2" style = "background: rgba(70,130,180,0.17); height: 0.01em; border: 0;">
 			<div class = "mt-3" style = "min-height: 15em">
-				<el-text v-dompurify-html="getDto?.content" class = "text"></el-text>
+				<el-text v-dompurify-html = "getDto?.content" class = "text"></el-text>
 			</div>
 			<div class = "mt-3 mb-2" style = "display: flex; justify-content: flex-start">
-				<div v-if="getDto?.fileNames.length">
-					<el-popover :show-arrow="false" :width="'fit-content'" effect = "dark" placement = "right-start" popper-style = "text-align: center" trigger = "click">
+				<div v-if = "getDto?.fileNames.length">
+					<el-popover :show-arrow = "false" :width = "'fit-content'" effect = "dark" placement = "right-start" popper-style = "text-align: center" trigger = "click">
 						<template #reference>
-							<el-button title="Attached Files" clss="button" color="#4682B42B" size="small" round style="justify-self: start;"><el-icon size="15" style="margin-right: 0.5em"><Expand /></el-icon>Files List</el-button>
+							<el-button clss = "button" color = "#4682B42B" round size = "small" style = "justify-self: start;" title = "Attached Files">
+								<el-icon size = "15" style = "margin-right: 0.5em">
+									<Expand/>
+								</el-icon>
+								Files List
+							</el-button>
 						</template>
-						<li v-for="file in getDto?.fileNames" style="width: fit-content">
+						<li v-for = "file in getDto?.fileNames" style = "width: fit-content">
 							<a
-									:download="file?.split('_').slice(1).join('_')"
-									:href="`/get/${file?.split('_')[0]}/${file?.split('_').slice(1).join('_')}`">
+									:download = "file?.split('_').slice(1).join('_')"
+									:href = "`/get/${file?.split('_')[0]}/${file?.split('_').slice(1).join('_')}`">
 								{{ file?.split('_').slice(1).join('_') }}
 							</a>
 						</li>
 					</el-popover>
 				</div>
-				<el-button title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: auto;" @click = "like(0)">❤</el-button>
-				<el-button v-bind:title="replyClose ? 'ReplyHide' : 'ReplyView'" placeholder="Close Reply" round size = "small" style = "margin-left: 0.5em" type = "primary" @click = "replyClose = !replyClose"><el-icon size="15"><Hide v-if="replyClose"/><View v-if="!replyClose"/></el-icon></el-button>
-				<el-button title="Modify" v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" type = "warning" @click = "modify"><el-icon size="15"><Edit/></el-icon></el-button>
-				<el-button title="Delete" v-if = "writerCheck && getDto" round size = "small" style = "margin-left: 0.5em" type = "danger" @click ="deleteBoardAlert(getDto.rCount)"><el-icon size="15"><Delete/></el-icon></el-button>
+				<el-button class = "button" color = "#ff25cf" round size = "small" style = "margin-left: auto;" title = "Like!" @click = "like(0)">❤</el-button>
+				<el-button placeholder = "Close Reply" round size = "small" style = "margin-left: 0.5em" type = "primary" v-bind:title = "replyClose ? 'ReplyHide' : 'ReplyView'" @click = "replyClose = !replyClose">
+					<el-icon size = "15">
+						<Hide v-if = "replyClose"/>
+						<View v-if = "!replyClose"/>
+					</el-icon>
+				</el-button>
+				<el-button v-if = "writerCheck" round size = "small" style = "margin-left: 0.5em" title = "Modify" type = "warning" @click = "modify">
+					<el-icon size = "15">
+						<Edit/>
+					</el-icon>
+				</el-button>
+				<el-button v-if = "writerCheck && getDto" round size = "small" style = "margin-left: 0.5em" title = "Delete" type = "danger" @click = "deleteBoardAlert(getDto.rCount)">
+					<el-icon size = "15">
+						<Delete/>
+					</el-icon>
+				</el-button>
 			</div>
 		</div>
 		
 		<hr style = "background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
 		
-		<div class="reply" v-show="replyClose">
+		<div v-show = "replyClose && rDtoList?.total" class = "reply">
 			<div class = "replyList">
 				<div class = "p-3 m-3 pt-4"
 						 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
@@ -427,7 +454,8 @@ onBeforeUnmount(() =>
 						<ul v-for = "(rDto, index) in rDtoList?.dtoList" key = "rDto.rno" class = "list" style = "padding-left: 0">
 							<li class = "list" style = "list-style-type: none;" @click = "toggleNested(index); nestedReply = rDto.rno">
 								<div style = "display: grid;">
-									<div style = "display: flex; justify-content: space-between; align-items: center; ">
+									<div id="replyList">
+									<div style = "display: flex; justify-content: space-between; align-items: center; " >
 										<div style = "flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
 											<el-popover :width = "10" effect = "dark" placement = "top" popper-style = "text-align: center" title = "UUID" trigger = "hover">
 												<template #reference>
@@ -443,17 +471,24 @@ onBeforeUnmount(() =>
 										</div>
 										<div style = "margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
 											<el-text class = "text">{{ formatDate(rDto.replyDate) }}</el-text>
-										</div >
-									</div>
-									<div class="pt-1" style="display: flex; justify-content: space-between; align-items: center; ">
-										<div style="margin-left: 10.5em; display: inline-block;"><el-text>Like: {{rDto.vote}}</el-text></div>
-										<div style="display: inline-block;">
-											<el-button @click.stop title="Delete" v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(rDto.rno, rDto.isNested)"><el-icon size="15"><Delete/></el-icon></el-button>
-											<el-button @click.stop title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" @click = "rLikeCount(rDto.rno, rDto);">❤</el-button>
 										</div>
 									</div>
+									<div class = "pt-1" style = "display: flex; justify-content: space-between; align-items: center; ">
+										<div style = "margin-left: 10.5em; display: inline-block;">
+											<el-text>Like: {{ rDto.vote }}</el-text>
+										</div>
+										<div style = "display: inline-block;">
+											<el-button v-if = "rWriterCheck[index]" round size = "small" style = "margin-left: 0.5em" title = "Delete" type = "danger" @click = "deleteReplyAlert(rDto.rno, rDto.isNested)" @click.stop>
+												<el-icon size = "15">
+													<Delete/>
+												</el-icon>
+											</el-button>
+											<el-button class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" title = "Like!" @click = "rLikeCount(rDto.rno, rDto);" @click.stop>❤</el-button>
+										</div>
+									</div>
+									</div>
 									<ul v-for = "(nrDto, i) in nrDtoList[index].dtoList" v-if = "nrDtoList[index]?.dtoList" key = "nrDto.rno" class = "p-2 m-3 mt-2 mb-0" style = "border-radius: 0.5em; border: 0.1em solid #494949; padding-left: 0; background-color: rgb(46,46,46)">
-										<li v-show = "isNested[index]" class = "nestedList" style = "list-style-type: none;" @click = "tag = nrDto.replyWriter + ' ' + nrDto.replyWriterUuid + ' ' + 'To'">
+										<li v-show = "isNested[index]" id = "nestedList" style = "list-style-type: none;" @click = "tag = nrDto.replyWriter + ' ' + nrDto.replyWriterUuid + ' ' + 'To'">
 											<div style = "display: grid;">
 												<div style = "display: flex; justify-content: space-between; align-items: center; ">
 													<div style = "flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
@@ -484,11 +519,17 @@ onBeforeUnmount(() =>
 														<el-text class = "text">{{ formatDate(nrDto.replyDate) }}</el-text>
 													</div>
 												</div>
-												<div class="pt-1" style="display: flex; justify-content: space-between; align-items: center; ">
-													<div style="margin-left: 12.5em; display: inline-block;"><el-text>Like: {{nrDto.vote}}</el-text></div>
-													<div style="display: inline-block;">
-														<el-button @click.stop title="Delete" v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" type = "danger" @click = "deleteReplyAlert(nrDto.rno, nrDto.isNested)"><el-icon size="15"><Delete/></el-icon></el-button>
-														<el-button @click.stop title="Like!" class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" @click = "rLikeCount(nrDto.rno, nrDto);">❤</el-button>
+												<div class = "pt-1" style = "display: flex; justify-content: space-between; align-items: center; ">
+													<div style = "margin-left: 12.5em; display: inline-block;">
+														<el-text>Like: {{ nrDto.vote }}</el-text>
+													</div>
+													<div style = "display: inline-block;">
+														<el-button v-if = "nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]" round size = "small" style = "margin-left: 0.5em" title = "Delete" type = "danger" @click = "deleteReplyAlert(nrDto.rno, nrDto.isNested)" @click.stop>
+															<el-icon size = "15">
+																<Delete/>
+															</el-icon>
+														</el-button>
+														<el-button class = "button" color = "#ff25cf" round size = "small" style = "margin-left: 0.5em;" title = "Like!" @click = "rLikeCount(nrDto.rno, nrDto);" @click.stop>❤</el-button>
 													</div>
 												</div>
 											</div>
@@ -513,14 +554,13 @@ onBeforeUnmount(() =>
 				</div>
 				<hr style = "background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
 			</div>
-			
-			<div v-if = "focused" class = "replyPost p-3 m-3 pb-2 pt-2"
-					 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-				<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-				<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" @click.stop/>
-				<div style = "text-align: end">
-					<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
-				</div>
+		</div>
+		<div v-if = "focused" class = "replyPost p-3 m-3 pb-2 pt-2"
+				 style = "background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+			<div class = "mb-1" style = "color:rgba(97,255,176,0.8)">{{ user.name }}</div>
+			<el-input v-model = "replyContent" :autosize = "{minRows: 3}" type = "textarea" @click.stop/>
+			<div style = "text-align: end">
+				<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
 			</div>
 		</div>
 	</main>

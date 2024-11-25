@@ -26,7 +26,9 @@ public class CommunityDTO
 
     private LocalDateTime createDate;
 
-    private LocalDateTime modifyDate;
+    private LocalDateTime modDate;
+
+    private String description;
 
     private List<CategoryDTO> category;
 

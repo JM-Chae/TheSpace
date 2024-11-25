@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap-utilities.css'
 import axios from "axios";
 import VueDOMPurifyHTML from 'vue-dompurify-html';
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import ListView from './views/ListView.vue'
 
 
 axios.defaults.withCredentials = true;
@@ -19,4 +20,5 @@ app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
 app.use(VueDOMPurifyHTML);
+app.component('ListView', ListView)
 app.mount('#app');

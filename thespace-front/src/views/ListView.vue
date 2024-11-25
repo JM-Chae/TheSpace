@@ -12,7 +12,8 @@ function getList()
         page: page.value,
         keyword: keyword.value,
         type: type.value,
-        path: path.value,
+				size: size.value,
+        path: props.path,
         category: category.value
       }
     })
@@ -93,7 +94,9 @@ const size = ref(10)
 const page = ref(1)
 const type = ref('t')
 const keyword = ref('')
-const path = ref("Test Community Name") // Community name -> Switch to reactive when after implementing the Community page.
+
+const props = defineProps(['path'])
+
 const category = ref('')
 const pageCount = ref<number>(0)
 
@@ -197,7 +200,7 @@ const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', val
 				</el-icon>
 			</el-button>
 		</div>
-		<el-table v-if = "dtoList?.total!=0" :data = "dtoList?.dtoList" class = "p-3 table" @row-click = "moveRead">
+		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">
 				<template #header>
 					<div class = "text-center th">No</div>
