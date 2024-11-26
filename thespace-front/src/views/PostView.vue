@@ -53,14 +53,16 @@ const title = ref("")
 const content = ref("")
 const categoryName = ref("")
 
-const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
+const path = history.state.path
 const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 const bno = ref<number>()
 const fileNames = ref<string[]>([])
 
+
 axios.get(`/getcategory/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+
 
 const post = async () =>
   {
@@ -271,7 +273,7 @@ let count = 0;
         try {
           const response = await axios.post('/upload', formData, {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': 'multipart/form-data'
             }
           })
           

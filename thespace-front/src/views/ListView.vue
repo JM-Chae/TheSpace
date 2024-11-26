@@ -179,26 +179,34 @@ const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', val
   name: 'writer name',
   value: 'w'
 }, {name: 'writer UUID', value: 'u'}, {name: 'reply', value: 'r'}, {name: 'title + content', value: 'tc'}]
+
+const post = () =>
+  {
+    router.push({path: '/post', state: {path: props.path}})
+	}
 </script>
 
 <template>
 	<html class = "dark">
 	
 	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<div class = "p-3 pe-1 d-inline-block" style = "width: 8em;">
+		<div class = "p-3 pe-1 d-inline-block" style = "width: 15%;">
 			<el-select v-model = "type" default-first-option>
 				<el-option v-for = "list in typeList" :key = "list.value" :label = "list.name" :value = "list.value">
 					{{ list.name }}
 				</el-option>
 			</el-select>
 		</div>
-		<div class = "d-inline-block" style = "width: 11.8em; height: 32px">
+		<div class = "d-inline-block" style = "width: 19.2%; height: 32px">
 			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
 			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 				<el-icon size = "17">
 					<Search/>
 				</el-icon>
 			</el-button>
+		</div>
+		<div class="pe-3" style="display: inline-grid; width: 65.8%">
+			<el-button color="rgba(65, 255, 158, 0.71)" style="color: rgba(255,255,255,0.82); justify-self: end; width: 13%" type="success" @click="post">Post</el-button>
 		</div>
 		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">
