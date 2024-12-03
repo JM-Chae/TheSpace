@@ -50,19 +50,20 @@ public class CommunityController
       }
 
     @PostMapping("/create")
-    public Long createCommunity(@RequestParam("communityName") String communityName, @RequestParam("userid") String userid, @RequestParam("check") boolean check, RedirectAttributes redirectAttributes)
+    public Long createCommunity(@RequestBody CommunityDTO communityDTO, @RequestParam("userid") String userid, @RequestParam("check") boolean check, RedirectAttributes redirectAttributes)
       {
         if (check)
           {
+            String communityName = communityDTO.getCommunityName();
             if (communityName.isEmpty())
               {
-                communityService.createCommunity(communityName);
+                communityService.createCommunity(communityDTO);
                 redirectAttributes.addFlashAttribute("errors", "communityName is empty");
 
                 return null;
               }
 
-            Long CommunityId = communityService.createCommunity(communityName);
+            Long CommunityId = communityService.createCommunity(communityDTO);
             redirectAttributes.addFlashAttribute("result", "Community created successfully");
 
             userRoleService.register(communityName);

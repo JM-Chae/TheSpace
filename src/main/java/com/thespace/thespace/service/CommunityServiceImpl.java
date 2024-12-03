@@ -29,11 +29,9 @@ public class CommunityServiceImpl implements CommunityService
         this.modelMapper=modelMapper;
       }
 
-    public Long createCommunity(String communityName)
+    public Long createCommunity(CommunityDTO communityDTO)
       {
-        Community community= Community.builder()
-            .communityName(communityName)
-            .build();
+        Community community= modelMapper.map(communityDTO, Community.class);
 
         Long communityId = communityRepository.save(community).getCommunityId();
         return communityId;

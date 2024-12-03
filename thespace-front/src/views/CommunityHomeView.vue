@@ -23,9 +23,9 @@ function formatDate(dateString: string)
 <template>
 	<html class = "dark" style="display: grid; justify-content: center">
 	<div class="mb-3" style="display: grid; width: 924px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-	<el-text v-model="communityname" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityname}}</el-text>
-	<el-text v-model="community" class="p-2" style="font-size: 1.2em">{{community.description}}</el-text>
-		<el-text v-model="community" class="p-2">{{formatDate(community.createDate)}}</el-text>
+	<el-text v-if="communityname" v-model="communityname" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityname}}</el-text>
+	<el-text v-if="community" v-model="community" class="p-2" style="font-size: 1.2em">{{community.description}}</el-text>
+		<el-text v-if="community" v-model="community" class="p-2">{{formatDate(community.createDate)}}</el-text>
 	</div>
 	<ListView :path="communityname"/>
 	</html>

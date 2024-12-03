@@ -6,7 +6,7 @@ import com.thespace.thespace.dto.PageResDTO;
 
 public interface CommunityService
   {
-    Long createCommunity(String communityName);
+    Long createCommunity(CommunityDTO communityDTO);
     boolean check(String communityName);
     PageResDTO<CommunityDTO> getCommunityList(PageReqDTO pageReqDTO);
     void deleteCommunity(Long communityId);

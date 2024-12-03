@@ -21,11 +21,20 @@ const goHomepage = (communityname: string) =>
     router.push({path: '/community/home', state: {communityname}})
 	}
 
+function create()
+  {
+    router.push('/community/create')
+	}
 </script>
 
 <template>
 <html class="dark">
-
+<div class="pb-4" style="display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; justify-content: center">
+	<div></div>
+	<el-button color="#00bd7e" style="justify-self: center; min-width: 12em" type="success" @click="create()">Create Community!</el-button>
+	<el-button color="#ff7277" style="justify-self: center; color: white; min-width: 12em" type="success">My Community</el-button>
+	<div></div>
+</div>
 <ul>
 	<li v-for="dtoList in dto">
 		<a @click="goHomepage(dtoList.communityName)">{{dtoList.communityName}}</a>
