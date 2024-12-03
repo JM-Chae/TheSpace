@@ -74,9 +74,9 @@ public class BoardController
       }
 
     @DeleteMapping("/delete/{bno}")
-    public void delete(@PathVariable("bno") Long bno, @RequestParam("userId") String userId)
+    public void delete(@PathVariable("bno") Long bno, @RequestParam("userUuid") String userUuid)
       {
-        if (boardService.writerCheck(bno, userId))
+        if (boardService.writerCheck(bno, userUuid))
           {
             boardService.delete(bno);
           }

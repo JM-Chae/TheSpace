@@ -26,24 +26,26 @@ const save = () =>
 
 const closeDialog = async () =>
   {
-    if(!isSubmitted.value){
-      if ( count > 0)
-        {
-          try
-            {
-              const temp = fileNames.value.pop();
-              if (temp)
-                {
-                  const fileid = temp.split('_')[0];
-                  const filename = temp.substring(temp.indexOf('_') + 1);
-                  await axios.delete(`/delete/${fileid}/${filename}`);
-                }
-            } catch (error)
-            {
-              console.log('Error during file deletion on page unload:', error);
-            }
-        }}
-	}
+    if (!isSubmitted.value)
+      {
+        if (count > 0)
+          {
+            try
+              {
+                const temp = fileNames.value.pop();
+                if (temp)
+                  {
+                    const fileid = temp.split('_')[0];
+                    const filename = temp.substring(temp.indexOf('_') + 1);
+                    await axios.delete(`/delete/${fileid}/${filename}`);
+                  }
+              } catch (error)
+              {
+                console.log('Error during file deletion on page unload:', error);
+              }
+          }
+      }
+  }
 
 const fileInput = window.document;
 const formData = new FormData();
@@ -185,10 +187,11 @@ const deleteEditorImage = () =>
                 })
               }
           }
-      } catch (error) {
-      console.error('Error during file deletion on page unload:', error);
-    }
-	}
+      } catch (error)
+      {
+        console.error('Error during file deletion on page unload:', error);
+      }
+  }
 
 //In the future, on the backend, when a file is initially uploaded, a separate column will be used to store a "temporary save flag."
 //A logic will then be implemented to delete the corresponding data if the "temporary save flag" remains true after the session expiration time.
@@ -238,16 +241,18 @@ let count = 0;
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
 		<div id = "MCE" class = "mt-3"></div>
-		<Editor :init = "{
+		<Editor v-model = "content"
+						:init = "{
         toolbar_mode: 'wrap',
         plugins: [
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
-        ],
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
+          ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
      skin: 'oxide-dark',
      content_css: 'dark',
      image_title: true,
+     tinycomments_mode: 'embedded',
+	   tinycomments_author: 'Author name',
      file_picker_types: 'image',
      setup: (editor: any) => {
           editor.on('OpenWindow', () =>
@@ -294,9 +299,9 @@ let count = 0;
     input.click();}
   }
    }"
-						v-model = "content"
 						api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
-		hidden
+						
+						hidden
 		/>
 		<div class = "mt-3">
 			<el-button style = "margin-right: 1em" type = "warning" @click = "buttonTrigger">File Select</el-button>

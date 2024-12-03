@@ -98,7 +98,8 @@ function boardDelete(isR: number)
   {
     if (isR == 0)
       {
-        axios.delete(`/board/delete/${bno}`)
+        axios.delete(`/board/delete/${bno}`, {params: {userUuid: user.uuid}})
+					.then(()=> router.back())
       } else
       {
         ElMessageBox.alert('You cannot delete a board that has a reply.', 'Delete Confirmation',

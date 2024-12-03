@@ -169,6 +169,6 @@ public class BoardServiceImpl implements BoardService
 
     public boolean writerCheck(Long bno, String userId)
       {
-        return boardRepository.findById(bno).orElseThrow(PostNotFound::new).getWriter().equals(userId);
+        return boardRepository.findById(bno).orElseThrow(PostNotFound::new).getWriterUuid().equals(userId);
       }
   }
