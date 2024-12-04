@@ -73,4 +73,9 @@ public class CommunityServiceImpl implements CommunityService
         Community community = communityRepository.findByCommunityName(communityName);
         return modelMapper.map(community, CommunityDTO.class);
       }
+
+    public Long getCommunityIdByName(String communityName)
+      {
+        return communityRepository.findCommunityIdByNameIgnoreCase(communityName);
+      }
   }

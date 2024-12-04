@@ -37,4 +37,8 @@ public class UserRoleServiceImpl implements UserRoleService
             }
         }
       }
+    public String findRoleNameById(Long id)
+      {
+        return userRoleRepository.findById(id).orElseThrow().getRole();
+      }
   }

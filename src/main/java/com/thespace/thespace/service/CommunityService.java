@@ -11,4 +11,5 @@ public interface CommunityService
     PageResDTO<CommunityDTO> getCommunityList(PageReqDTO pageReqDTO);
     void deleteCommunity(Long communityId);
     CommunityDTO getCommunity(String communityName);
+    Long getCommunityIdByName(String communityName);
   }

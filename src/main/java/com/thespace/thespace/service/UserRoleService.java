@@ -5,4 +5,6 @@ public interface UserRoleService
     void register(String roleName);
 
     Long findRoleId(String roleName);
+
+    String findRoleNameById(Long id);
   }

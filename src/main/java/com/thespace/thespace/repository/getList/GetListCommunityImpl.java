@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -30,19 +31,18 @@ public class GetListCommunityImpl extends QuerydslRepositorySupport implements G
         JPQLQuery<Community> communityJPQLQuery = from(community);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if ((types != null && types.length > 0 && types[0].equals("n")) && keyword != null)
+        if ((types != null && types.length > 0) && keyword != null)
           {
-                booleanBuilder.or(community.communityName.contains(keyword));
-
 //            for (String type : types)
 //              {
-//                switch (type)
-//                {
-//                  case "n":
-//                    booleanBuilder.or(community.communityName.contains(keyword));
-//                    break;
-//                }
-//
+            if (types[0].equals("n"))
+              {
+                booleanBuilder.or(community.communityName.contains(keyword));
+              }
+            if (types[0].equals("i"))
+              {
+                Arrays.stream(keyword.split(",")).toList().forEach(id -> booleanBuilder.or(community.communityId.eq(Long.parseLong(id))));
+              }
 //              }
           }
 

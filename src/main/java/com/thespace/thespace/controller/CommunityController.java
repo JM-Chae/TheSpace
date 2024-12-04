@@ -13,6 +13,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/community")
@@ -90,14 +93,33 @@ public class CommunityController
 
     @DeleteMapping
     public void deleteCommunity(@RequestBody CommunityDTO communityDTO, @RequestParam("userId") String userId, RedirectAttributes redirectAttributes)
-    {
-      if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_"+communityDTO.getCommunityName())))
-        {
-          communityService.deleteCommunity(communityDTO.getCommunityId());
-          redirectAttributes.addFlashAttribute("result", "Community deleted successfully");
-        }else
-        { // add Exception later
-          redirectAttributes.addFlashAttribute("result", "You are not allowed to delete this community");
-        }
-    }
+      {
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityDTO.getCommunityName())))
+          {
+            communityService.deleteCommunity(communityDTO.getCommunityId());
+            redirectAttributes.addFlashAttribute("result", "Community deleted successfully");
+          } else
+          { // add Exception later
+            redirectAttributes.addFlashAttribute("result", "You are not allowed to delete this community");
+          }
+      }
+
+    @GetMapping("/hasAdmin")
+    public List<Long> hasAdminCommunity(@RequestParam("userId") String userId)
+      {
+        List<Long> roles = userService.findUserRoles(userId);
+        List<String> roleNames = roles.stream()
+            .map(userRoleService::findRoleNameById)
+            .toList();
+
+        List<Long> findList = new ArrayList<>();
+        roleNames.forEach(roleName -> {
+          if (roleName.contains("ADMIN"))
+            {
+              findList.add(communityService.getCommunityIdByName(roleName.split("_")[1]));
+            }
+        });
+
+        return findList;
+      }
   }

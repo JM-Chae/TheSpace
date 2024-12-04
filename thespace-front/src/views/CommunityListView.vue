@@ -9,6 +9,9 @@ const page = ref(1)
 const type = ref('n')
 const keyword = ref('')
 
+const userinfo = sessionStorage.getItem('userInfo') || ""
+const userId = JSON.parse(userinfo).id
+
 onMounted(() =>
 {
   getList();
@@ -35,6 +38,19 @@ function create()
   {
     router.push('/community/create')
 	}
+
+function hasAdmin()
+  {
+  	axios.get(`/community/hasAdmin`, {params: {userId: userId}})
+			.then(res =>
+      {
+        keyword.value = res.data.toString()
+				type.value = "i"
+        getList();
+        keyword.value = ""
+      })
+
+  }
 </script>
 
 <template>
@@ -59,7 +75,7 @@ function create()
 				</div>
 			</div>
 		<el-button color="#00bd7e" style="justify-self: center; min-width: 12em" type="success" @click="create()">Create Community!</el-button>
-		<el-button color="#ff7277" style="justify-self: center; color: white; min-width: 12em" type="success">My Community</el-button>
+		<el-button color="#ff7277" style="justify-self: center; color: white; min-width: 12em" type="success" @click="hasAdmin()">My Community</el-button>
 		<div>
 		</div>
 	</div>
