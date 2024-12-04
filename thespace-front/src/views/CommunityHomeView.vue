@@ -6,6 +6,7 @@ const communityname = history.state.communityname;
 
 axios.get(`/community/${communityname}`).then(res => community.value = res.data)
 
+
 const community = ref()
 
 function formatDate(dateString: string)

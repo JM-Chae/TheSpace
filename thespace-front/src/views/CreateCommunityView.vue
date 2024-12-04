@@ -30,6 +30,15 @@ watch(check, (newValue) =>
           element.parentElement.style.border = "1px solid #00bd7e"
         }
     }
+  if (newValue == false)
+    {
+      const element = document.getElementById('name');
+
+      if(element && element.parentElement)
+        {
+          element.parentElement.style.border = "1px solid #F56C6C"
+        }
+    }
 })
 
 function reset()
@@ -72,7 +81,7 @@ function create()
 			</div>
 			<div class = "mt-2 pt-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-column-gap: 1em">
 				<el-button class = "float-end m-0" type = "danger" @click="reset()">Reset</el-button>
-				<el-button class = "float-end m-0" type = "success" @click = "checkName(communityName)">Check Name</el-button>
+				<el-button class = "float-end m-0" color="#00bd7e" type = "success" @click = "checkName(communityName)">Check Name</el-button>
 				<el-button class = "float-end m-0" type = "primary" @click = "create()">Let's Create!</el-button>
 			</div>
 		</div>

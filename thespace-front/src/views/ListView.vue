@@ -189,7 +189,7 @@ const post = () =>
 <template>
 	<html class = "dark">
 	
-	<div style = "justify-self: center; width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+	<div style = "justify-self: center; width: 926px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 		<div class = "p-3 pe-1 d-inline-block" style = "width: 15%;">
 			<el-select v-model = "type" default-first-option>
 				<el-option v-for = "list in typeList" :key = "list.value" :label = "list.name" :value = "list.value">

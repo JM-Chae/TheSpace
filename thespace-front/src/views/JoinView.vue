@@ -117,7 +117,7 @@ const check = () =>
 			<div class = "mt-2">
 				<el-button v-if = "!isOK" style = "width: 35%" type = "danger" @click = "check">ID Check</el-button>
 				<el-button v-if = "isOK" style = "width: 35%" type = "primary">Checked!</el-button>
-				<el-button class = "float-end" style = "width: 35%" type = "success" @click = "join">Join</el-button>
+				<el-button class = "float-end" color="#00bd7e" style = "width: 35%" type = "success" @click = "join">Join</el-button>
 			</div>
 		</div>
 	</main>
