@@ -3,9 +3,42 @@ import axios from "axios";
 import {onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import router from "@/router";
-import {Link, Picture, Search} from '@element-plus/icons-vue'
+import {Delete, Link, Picture, Search} from '@element-plus/icons-vue'
+import {ElMessageBox} from "element-plus";
 
-const props = defineProps(['path', 'size', 'page'])
+const userinfo = sessionStorage.getItem('userInfo') || ""
+const userId = JSON.parse(userinfo).id
+const props = defineProps(['path', 'page', 'size'])
+
+const deleteBoardAlert = (bno: number) =>
+  {
+    ElMessageBox.confirm('Are you sure you want to delete this Post?', 'Delete Confirmation',
+      {
+        cancelButtonText: 'NO',
+        confirmButtonText: 'OK',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true,
+        customClass: '.el-message-box'
+      })
+      .then(() =>
+      {
+        deleteAdmin(bno)
+      }).catch(() =>
+    {
+      console.log('')
+    })
+  }
+
+
+function deleteAdmin(bno: number)
+  {
+    axios.delete(`board/delete/${bno}/admin`, {params: {
+      	userId: userId,
+				communityName: props.path
+			}})
+			.then(() => getList())
+	}
 
 function getList()
   {
@@ -94,13 +127,10 @@ const setPage = (val1: number, val2: number) =>
     size.value = val2;
   }
 
-console.log(props)
-
-const size = ref(props.size ? props.size : 10)
-const page = ref(props.page ? props.page : 1)
+const size = ref(props.size)
+const page = ref(props.page)
 const type = ref('t')
 const keyword = ref('')
-
 
 const category = ref('')
 const pageCount = ref<number>(0)
@@ -119,7 +149,8 @@ const sendSizeToParent = () =>
     emit('sendSize', size.value)
   }
 
-  function formatDate(dateString: string)
+
+function formatDate(dateString: string)
   {
     const date = new Date(dateString);
     date.setHours(date.getHours() - 9);
@@ -223,9 +254,6 @@ const post = () =>
 				</el-icon>
 			</el-button>
 		</div>
-		<div class="pe-3" style="display: inline-grid; width: 65.8%">
-			<el-button color="rgba(65, 255, 158, 0.71)" style="color: rgba(255,255,255,0.82); justify-self: end; width: 13%" type="success" @click="post">Post</el-button>
-		</div>
 		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">
 				<template #header>
@@ -235,7 +263,7 @@ const post = () =>
 					<div class = "td">{{ scope.row.bno }}</div>
 				</template>
 			</el-table-column>
-			<el-table-column width = "500">
+			<el-table-column width = "400">
 				<template #header>
 					<div class = "text-center th">Title</div>
 				</template>
@@ -302,6 +330,16 @@ const post = () =>
 				</template>
 				<template #default = "scope">
 					<div class = "text-center td">{{ scope.row.vote }}</div>
+				</template>
+			</el-table-column>
+			<el-table-column width = "100">
+				<template #header>
+					<div class = "text-center th">Delete</div>
+				</template>
+				<template #default = "scope">
+					<div style="display: grid">
+							<el-button round style="width: 50%; justify-self: center" type="danger" @click="deleteBoardAlert(scope.row.bno)" @click.stop><el-icon><Delete /></el-icon></el-button>
+					</div>
 				</template>
 			</el-table-column>
 		</el-table>

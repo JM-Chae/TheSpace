@@ -9,11 +9,6 @@ const router = createRouter({
       component:  () => import('../views/ComponentTest.vue'),
     },
     {
-      path: '/list',
-      name: 'list',
-      component:  () => import('../views/ListView.vue'),
-    },
-    {
       path: '/space',
       name: 'home',
       component:  () => import('../views/HomeView.vue'),
@@ -61,7 +56,7 @@ const router = createRouter({
     {
       path: '/community/home',
       name: 'communityhome',
-      component: () => import('../views/CommunityHomeView.vue')
+      component: () => import('../views/CommunityHomeView.vue'),
     },
     {
       path: '/community/create',
@@ -71,7 +66,7 @@ const router = createRouter({
     {
       path: '/community/management',
       name: 'cManagement',
-      component: () => import('../views/CommunityManagementView.vue')
+      component: () => import('../views/CommunityManagementView.vue'),
     }
   ]
 })

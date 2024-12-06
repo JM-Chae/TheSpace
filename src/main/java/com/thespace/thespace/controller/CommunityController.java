@@ -122,4 +122,16 @@ public class CommunityController
 
         return findList;
       }
+
+    @PutMapping("/modify")
+    public void modify(@RequestBody CommunityDTO communityDTO, @RequestParam("userId") String userId, RedirectAttributes redirectAttributes)
+      {
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityDTO.getCommunityName())))
+          {
+        communityService.updateCommunity(communityDTO);
+          } else
+          { // add Exception later
+            redirectAttributes.addFlashAttribute("result", "You are not allowed to modify this community");
+          }
+      }
   }

@@ -31,4 +31,9 @@ public class Community extends BaseEntity
     @Builder.Default
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Category> category  = new ArrayList<>();
+
+    public void change(String description)
+      {
+        this.description = description;
+      }
   }

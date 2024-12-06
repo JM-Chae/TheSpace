@@ -12,4 +12,5 @@ public interface CommunityService
     void deleteCommunity(Long communityId);
     CommunityDTO getCommunity(String communityName);
     Long getCommunityIdByName(String communityName);
+    void updateCommunity(CommunityDTO communityDTO);
   }

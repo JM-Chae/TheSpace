@@ -78,4 +78,12 @@ public class CommunityServiceImpl implements CommunityService
       {
         return communityRepository.findCommunityIdByNameIgnoreCase(communityName);
       }
+
+    @Override
+    public void updateCommunity(CommunityDTO communityDTO)
+      {
+        Community community = communityRepository.findById(communityDTO.getCommunityId()).orElseThrow();//add Exception
+        community.change(communityDTO.getDescription());
+        communityRepository.save(community);
+      }
   }

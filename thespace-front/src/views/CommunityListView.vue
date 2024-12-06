@@ -29,6 +29,7 @@ function getList()
     })
       .then(res => dto.value = res.data.dtoList)
   }
+
 const goHomepage = (communityname: string) =>
   {
     router.push({path: '/community/home', state: {communityname}})

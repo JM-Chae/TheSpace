@@ -10,7 +10,7 @@ import axios from "axios";
 import VueDOMPurifyHTML from 'vue-dompurify-html';
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import ListView from './views/ListView.vue'
-
+import ListViewAdmin from './views/ListViewAdmin.vue'
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = `http://localhost:8080`
@@ -21,4 +21,5 @@ app.use(router)
 app.use(ElementPlus)
 app.use(VueDOMPurifyHTML);
 app.component('ListView', ListView)
+app.component('ListViewAdmin', ListViewAdmin)
 app.mount('#app');
