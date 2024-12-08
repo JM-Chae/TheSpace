@@ -2,12 +2,15 @@
 import {onMounted, ref} from 'vue'
 import axios from "axios";
 import router from "@/router";
+import {ElMessageBox} from "element-plus";
 
 const communityname = history.state.communityname;
 const page = ref(history.state.page)
 const size = ref(history.state.size)
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
+const roles = JSON.parse(userinfo).roles
+const hasAdmin = roles.includes('ADMIN_'+communityname.toUpperCase())
 
 const getPageValue = (value: number) => {
   page.value = value;
@@ -25,7 +28,15 @@ function getCommunity()
 
 onMounted(() =>
 {
-  getCommunity();
+  if(!hasAdmin)
+    {
+      ElMessageBox.alert('You have not admin role with this community!', {
+        confirmButtonText: 'OK',
+        callback: () => { router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value}})}
+			})
+    
+    }
+		getCommunity();
 })
 
 const community = ref()
@@ -67,7 +78,7 @@ function returnHome()
 </script>
 
 <template>
-	<html class = "dark" style="display: grid; justify-content: center">
+	<html v-show="hasAdmin" class = "dark" style="display: grid; justify-content: center">
 	<div class="mb-3" style="display: grid; width: 924px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 		<el-text v-if="communityname" v-model="communityname" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityname}}</el-text>
 		<div>

@@ -361,6 +361,17 @@ onBeforeUnmount(() =>
   window.removeEventListener("click", handleOutsideClick);
 });
 
+const tempSize = history.state.size;
+const tempPage = history.state.page;
+const page = ref(tempPage ? tempPage : 1);
+const size = ref(tempSize ? tempSize : 10)
+
+function returnBack()
+  {
+    // checking history URL, if it is PostView, push commu home.
+    history.replaceState({communityname: path.value, size: size.value, page: page.value}, '')
+    router.back()
+  }
 </script>
 
 <template>
@@ -563,6 +574,9 @@ onBeforeUnmount(() =>
 			<div style = "text-align: end">
 				<el-button class = "mt-2" round size = "small" type = "primary" @click = "reply">Reply</el-button>
 			</div>
+		</div>
+		<div>
+			<el-button color="#00bd7e" round style="position: fixed; top: 3vh; right: 2vw" @click="returnBack()">Return Back</el-button>
 		</div>
 	</main>
 	</html>

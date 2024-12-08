@@ -6,6 +6,8 @@ import router from "@/router";
 import {Link, Picture, Search} from '@element-plus/icons-vue'
 
 const props = defineProps(['path', 'size', 'page'])
+const categories = ref()
+
 
 function getList()
   {
@@ -16,7 +18,7 @@ function getList()
         type: type.value,
 				size: size.value,
         path: props.path,
-        category: category.value
+        category: categoryName.value
       }
     })
       .then(res =>
@@ -32,11 +34,14 @@ function getList()
 onMounted(() =>
 {
   getList()
-
+	
+  axios.get(`/getcategory/${props.path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+	
   watch(page, (newValue) =>
   {
     if (newValue)
       {
+        history.replaceState({communityname: props.path, page: page.value}, '')
         sendPageToParent()
         getList()
       }
@@ -46,16 +51,22 @@ onMounted(() =>
   {
     if (newValue)
       {
+        history.replaceState({communityname: props.path, size: size.value}, '')
         sendSizeToParent()
         getList()
       }
   })
+	
+	watch(categoryName, () => {
+        getList()
 })
+})
+
 const dtoList = ref<dtoList>()
 
 const moveRead = (row: any) =>
   {
-    router.push({name: "read", state: {bno: row.bno}})
+    router.push({name: "read", state: {bno: row.bno, size: size.value, page: page.value}})
   }
 
 interface dto
@@ -94,15 +105,12 @@ const setPage = (val1: number, val2: number) =>
     size.value = val2;
   }
 
-console.log(props)
-
 const size = ref(props.size ? props.size : 10)
 const page = ref(props.page ? props.page : 1)
 const type = ref('t')
 const keyword = ref('')
 
-
-const category = ref('')
+const categoryName = ref('')
 const pageCount = ref<number>(0)
 
 const emit = defineEmits<{
@@ -215,7 +223,7 @@ const post = () =>
 				</el-option>
 			</el-select>
 		</div>
-		<div class = "d-inline-block" style = "width: 19.2%; height: 32px">
+		<div class = "d-inline-block" style = "width: 19.2%; height: 32px; margin-right: 4em">
 			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
 			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 				<el-icon size = "17">
@@ -223,8 +231,16 @@ const post = () =>
 				</el-icon>
 			</el-button>
 		</div>
-		<div class="pe-3" style="display: inline-grid; width: 65.8%">
-			<el-button color="rgba(65, 255, 158, 0.71)" style="color: rgba(255,255,255,0.82); justify-self: end; width: 13%" type="success" @click="post">Post</el-button>
+		<div class = "d-inline-block" style="width: 20%">
+			<el-select v-model="categoryName" class = "form-control" placeholder = "Choose category">
+				<el-option label = "All" value = "">All</el-option>
+				<el-option v-for = "category in categories" :key = "category.categoryId" :label="category.categoryName" :value="category.categoryName">
+					{{ category.categoryName }}
+				</el-option>
+			</el-select>
+		</div>
+		<div class="pe-3" style="display: inline-grid; margin-left: 30%;">
+			<el-button color="rgba(65, 255, 158, 0.71)" style="color: rgba(255,255,255,0.82); justify-self: end; width: 100%" type="success" @click="post">Post</el-button>
 		</div>
 		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">

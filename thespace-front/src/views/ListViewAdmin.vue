@@ -70,6 +70,7 @@ onMounted(() =>
   {
     if (newValue)
       {
+        history.replaceState({communityname: props.path, page: page.value}, '')
         sendPageToParent()
         getList()
       }
@@ -79,6 +80,7 @@ onMounted(() =>
   {
     if (newValue)
       {
+        history.replaceState({communityname: props.path, size: size.value}, '')
         sendSizeToParent()
         getList()
       }
@@ -127,8 +129,8 @@ const setPage = (val1: number, val2: number) =>
     size.value = val2;
   }
 
-const size = ref(props.size)
-const page = ref(props.page)
+const size = ref(props.size ? props.size : 10)
+const page = ref(props.page ? props.page : 1)
 const type = ref('t')
 const keyword = ref('')
 
