@@ -368,9 +368,16 @@ const size = ref(tempSize ? tempSize : 10)
 
 function returnBack()
   {
-    // checking history URL, if it is PostView, push commu home.
-    history.replaceState({communityname: path.value, size: size.value, page: page.value}, '')
-    router.back()
+		const historyURL = history.state.back
+		
+		if(historyURL == '/post')
+      {
+       router.push({path: '/community/home', state: {communityname: path.value}})
+			}else
+      {
+        history.replaceState({communityname: path.value, size: size.value, page: page.value}, '')
+        router.back()
+      }
   }
 </script>
 

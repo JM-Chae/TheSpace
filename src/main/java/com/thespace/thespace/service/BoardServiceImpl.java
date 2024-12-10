@@ -43,7 +43,7 @@ public class BoardServiceImpl implements BoardService
 
     public Board dtoToEntity(BoardDTO boardDTO)
       {
-        Category category = categoryRepository.findByCategoryName(boardDTO.getCategoryName());
+        Category category = categoryRepository.findById(boardDTO.getCategoryId()).orElseThrow();
           Board board = Board.builder()
               .bno(boardDTO.getBno())
               .title(boardDTO.getTitle())
@@ -66,7 +66,7 @@ public class BoardServiceImpl implements BoardService
 
     public BoardDTO entityToDTO(Board board)
       {
-        String categoryName = board.getCategory().getCategoryName();
+        Long categoryId = board.getCategory().getCategoryId();
         BoardDTO boardDTO = BoardDTO.builder()
             .bno(board.getBno())
             .title(board.getTitle())
@@ -74,7 +74,7 @@ public class BoardServiceImpl implements BoardService
             .writer(board.getWriter())
             .writerUuid(board.getWriterUuid())
             .path(board.getPath())
-            .categoryName(categoryName)
+            .categoryId(categoryId)
             .vote(board.getVote())
             .viewCount(board.getViewCount())
             .modDate(board.getModDate())
@@ -124,7 +124,7 @@ public class BoardServiceImpl implements BoardService
         Long bno = boardDTO.getBno();
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
-        board.change(boardDTO.getTitle(), boardDTO.getContent(), categoryRepository.findByCategoryName(boardDTO.getCategoryName()));
+        board.change(boardDTO.getTitle(), boardDTO.getContent(), categoryRepository.findById(boardDTO.getCategoryId()).orElseThrow());
 
         if(boardDTO.getFileNames() != null)
           {

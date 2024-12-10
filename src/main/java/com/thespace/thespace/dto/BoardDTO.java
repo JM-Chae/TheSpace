@@ -46,7 +46,7 @@ public class BoardDTO
     private List<String> fileNames; // Since 'FileId' and 'FileName' are now handled separately, it seems more intuitive to divide the field
 
     @NotNull(message = "Choose category.")
-    private String categoryName;
+    private Long categoryId;
   }
 
 

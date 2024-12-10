@@ -98,7 +98,7 @@ public class GetListBoardImpl extends QuerydslRepositorySupport implements GetLi
                 .vote(board1.getVote())
                 .fileNames(board1.getFileSet().stream().sorted().map(boardFile ->
                     boardFile.getFileId()+"_"+boardFile.getFileName()).toList())
-                .categoryName(board1.getCategory().getCategoryName())
+                .categoryId(board1.getCategory().getCategoryId())
                 .rCount(board1.getRCount())
                 .build();
 

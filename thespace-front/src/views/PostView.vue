@@ -53,7 +53,7 @@ const fileUrl = URL;
 
 const title = ref("")
 const content = ref("")
-const categoryName = ref("")
+const categoryId = ref("")
 
 const path = history.state.path
 const categories = ref()
@@ -70,7 +70,7 @@ const post = async () =>
   {
     const errorMessage = ref('')
 
-    if (categoryName.value == "")
+    if (categoryId.value == "")
       {
         errorMessage.value += 'Choose category \n'
       }
@@ -94,7 +94,7 @@ const post = async () =>
                 content: content.value,
                 writer: user.name,
                 writerUuid: user.uuid,
-                categoryName: categoryName.value,
+                categoryId: categoryId.value,
                 fileNames: fileNames.value
               })
             selectedFiles.value = [];
@@ -219,8 +219,8 @@ let count = 0;
 		<div>
 			<el-row :gutter = "10">
 				<el-col :span = "12">
-					<el-select id = "select-category" v-model = "categoryName" class = "form-control mt-3" placeholder = "Choose category">
-						<el-option v-for = "category in categories" :key = "category.categoryId" :value = "category.categoryName">
+					<el-select id = "select-category" v-model = "categoryId" class = "form-control mt-3" placeholder = "Choose category">
+						<el-option v-for = "category in categories" :key = "category.categoryId" :label="category.categoryName" :value = "category.categoryId">
 							{{ category.categoryName }}
 						</el-option>
 					</el-select>
