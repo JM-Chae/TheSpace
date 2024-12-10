@@ -11,6 +11,7 @@ const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
 const roles = JSON.parse(userinfo).roles
 const hasAdmin = roles.includes('ADMIN_'+communityname.toUpperCase())
+const categoryMaker = ref(false)
 
 const getPageValue = (value: number) => {
   page.value = value;
@@ -23,7 +24,12 @@ const getSizeValue = (value: number) => {
 function getCommunity()
   {
     axios.get(`/community/${communityname}`).then(res => community.value = res.data)
-      .then(() => des.value = community.value.description)
+      .then(() =>
+      {
+        des.value = community.value.description;
+        communityId.value = community.value.communityId;
+        path.value = communityname;
+      })
   }
 
 onMounted(() =>
@@ -75,6 +81,36 @@ function returnHome()
 		router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value}})
 	}
 
+const categoryType = ref()
+const communityId = ref()
+const path = ref()
+const categoryName = ref()
+
+function createCategory()
+  {
+    axios.post(`/category`,
+			{
+        categoryType: categoryType.value,
+				communityId: communityId.value,
+				path: path.value,
+				categoryName: categoryName.value
+			},
+			{params: {userId: userId}})
+			.then(() =>
+      {
+        categoryMaker.value = false;
+        categoryType.value = '';
+        categoryName.value = '';
+        categoryRe.value = true;
+      })
+	}
+
+const categoryRe = ref(false)
+
+const getCategoryRe = (value: boolean) => {
+  categoryRe.value = value;
+  console.log(categoryRe.value)
+}
 </script>
 
 <template>
@@ -91,10 +127,28 @@ function returnHome()
 		</div>
 	</div>
 	<div>
-		<el-button color="#00bd7e" round style="position: fixed; top: 93vh; right: 2vw" @click="returnHome()">Return Home</el-button>
+		<el-button round style="z-index: 100; position: fixed; top: 8vh; right: 2vw; width: 10em" type="warning" @click="categoryMaker=true">Create Category</el-button>
+		<el-dialog v-model="categoryMaker" :show-close="false" width="500">
+			<template #header="{ close, titleId, titleClass }">
+				<div class="my-header">
+					<h4 :id="titleId" :class="titleClass">Create Category!</h4>
+					<div class="m-3">
+						<el-input v-model="categoryName" class="mb-2" placeholder="Enter Category Name">{{categoryName}}</el-input>
+						<el-input v-model="categoryType" placeholder="Enter Category Type">{{categoryType}}</el-input>
+					</div>
+					<div class="mt-4" style="justify-self: end">
+						<el-button type="danger" @click="close">Close</el-button>
+						<el-button type="primary" @click="createCategory()">Submit</el-button>
+					</div>
+				</div>
+			</template>
+		</el-dialog>
+	</div>
+		<div>
+			<el-button color="#00bd7e" round style="z-index: 100; position: fixed; top: 3vh; right: 2vw; width: 10em" @click="returnHome()">Return Home</el-button>
 	</div>
 	
-	<ListViewAdmin :page="page" :path="communityname" :size="size" @sendPage="getPageValue" @sendSize="getSizeValue"/>
+	<ListViewAdmin :categoryRe="categoryRe" :page="page" :path="communityname" :size="size" @sendCategoryRe="getCategoryRe" @sendPage="getPageValue" @sendSize="getSizeValue"/>
 	</html>
 </template>
 

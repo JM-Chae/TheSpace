@@ -28,10 +28,10 @@ public class CategoryController
         return categoryService.getAllCategories(path);
       }
 
-    @PostMapping("/{community}/category")
-    public void createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @PathVariable("community") String communityName, @RequestParam("userId") String userId)
+    @PostMapping("/category")
+    public void createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @RequestParam("userId") String userId)
       {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityName)))
+        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + categoryDTO.getPath())))
           {
             if (bindingResult.hasErrors())
               {

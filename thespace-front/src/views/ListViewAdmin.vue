@@ -8,7 +8,8 @@ import {ElMessageBox} from "element-plus";
 
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
-const props = defineProps(['path', 'page', 'size'])
+const props = defineProps(['path', 'page', 'size', 'categoryRe'])
+const categories = ref()
 
 const deleteBoardAlert = (bno: number) =>
   {
@@ -30,7 +31,6 @@ const deleteBoardAlert = (bno: number) =>
     })
   }
 
-
 function deleteAdmin(bno: number)
   {
     axios.delete(`board/delete/${bno}/admin`, {params: {
@@ -49,7 +49,7 @@ function getList()
         type: type.value,
 				size: size.value,
         path: props.path,
-        category: category.value
+        category: categoryName.value
       }
     })
       .then(res =>
@@ -62,9 +62,15 @@ function getList()
       })
   }
 
+function getCategory()
+  {
+    axios.get(`/getcategory/${props.path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+  }
+
 onMounted(() =>
 {
   getList()
+  getCategory()
 
   watch(page, (newValue) =>
   {
@@ -83,6 +89,20 @@ onMounted(() =>
         history.replaceState({communityname: props.path, size: size.value}, '')
         sendSizeToParent()
         getList()
+      }
+  })
+
+  watch(categoryName, () => {
+    getList()
+  })
+
+  watch(categoryRe, (newValue) =>
+  {
+    if(newValue === true)
+      {
+        categoryRe.value = false;
+        getCategory()
+        sendCategoryReToParent()
       }
   })
 })
@@ -134,12 +154,15 @@ const page = ref(props.page ? props.page : 1)
 const type = ref('t')
 const keyword = ref('')
 
-const category = ref('')
+const categoryName = ref('')
 const pageCount = ref<number>(0)
+
+const categoryRe = ref(props.categoryRe)
 
 const emit = defineEmits<{
   (event: 'sendPage', value: number): void;
   (event: 'sendSize', value: number): void;
+  (event: 'sendCategoryRe', value: boolean): void;
 }>();
 
 const sendPageToParent = () =>
@@ -150,7 +173,19 @@ const sendSizeToParent = () =>
   {
     emit('sendSize', size.value)
   }
+const sendCategoryReToParent = () =>
+  {
+    emit('sendCategoryRe', categoryRe.value)
+		console.log(categoryRe.value)
+  }
 
+watch(() => props.categoryRe, (newValue) =>
+{
+		if(newValue === true)
+    {
+      categoryRe.value = true;
+    }
+})
 
 function formatDate(dateString: string)
   {
@@ -248,13 +283,21 @@ const post = () =>
 				</el-option>
 			</el-select>
 		</div>
-		<div class = "d-inline-block" style = "width: 19.2%; height: 32px">
+		<div class = "d-inline-block" style = "width: 19.2%; height: 32px; margin-right: 3.5em">
 			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
 			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 				<el-icon size = "17">
 					<Search/>
 				</el-icon>
 			</el-button>
+		</div>
+		<div class = "d-inline-block" style="width: 20%">
+			<el-select v-model="categoryName" class = "form-control" placeholder = "Choose category">
+				<el-option label = "All" value = "">All</el-option>
+				<el-option v-for = "category in categories" :key = "category.categoryId" :label="category.categoryName" :value="category.categoryName">
+					{{ category.categoryName }}
+				</el-option>
+			</el-select>
 		</div>
 		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">
