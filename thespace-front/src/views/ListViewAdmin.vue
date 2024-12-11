@@ -8,7 +8,7 @@ import {ElMessageBox} from "element-plus";
 
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
-const props = defineProps(['path', 'page', 'size', 'categoryRe'])
+const props = defineProps(['path', 'page', 'size', 'categoryRe', 'type', 'keyword', 'categoryName'])
 const categories = ref()
 
 const deleteBoardAlert = (bno: number) =>
@@ -72,21 +72,47 @@ onMounted(() =>
   getList()
   getCategory()
 
+  watch(type, (newValue) =>
+  {
+    if (newValue)
+      {
+        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        sendTypeToParent()
+        getList()
+      }
+  })
+  watch(keyword, (newValue) =>
+  {
+    if (newValue)
+      {
+        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        sendKeywordToParent()
+        getList()
+      }
+  })
+  watch(categoryName, (newValue) =>
+  {
+    if (newValue)
+      {
+        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        sendCategoryNameToParent()
+        getList()
+      }
+  })
   watch(page, (newValue) =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value}, '')
+        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendPageToParent()
         getList()
       }
   })
-
   watch(size, (newValue) =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, size: size.value}, '')
+        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendSizeToParent()
         getList()
       }
@@ -151,10 +177,10 @@ const setPage = (val1: number, val2: number) =>
 
 const size = ref(props.size ? props.size : 10)
 const page = ref(props.page ? props.page : 1)
-const type = ref('t')
-const keyword = ref('')
+const type = ref(props.type ? props. type : 't')
+const keyword = ref(props.keyword ? props.keyword : '')
 
-const categoryName = ref('')
+const categoryName = ref(props.categoryName ? props.categoryName : '')
 const pageCount = ref<number>(0)
 
 const categoryRe = ref(props.categoryRe)
@@ -163,8 +189,23 @@ const emit = defineEmits<{
   (event: 'sendPage', value: number): void;
   (event: 'sendSize', value: number): void;
   (event: 'sendCategoryRe', value: boolean): void;
+  (event: 'sendType', value: string): void;
+  (event: 'sendKeyword', value: string): void;
+  (event: 'sendCategoryName', value: string): void;
 }>();
 
+const sendCategoryNameToParent = () =>
+  {
+    emit('sendCategoryName', categoryName.value)
+  }
+const sendKeywordToParent = () =>
+  {
+    emit('sendKeyword', keyword.value)
+  }
+const sendTypeToParent = () =>
+  {
+    emit('sendType', type.value)
+  }
 const sendPageToParent = () =>
   {
     emit('sendPage', page.value)
@@ -284,7 +325,7 @@ const post = () =>
 			</el-select>
 		</div>
 		<div class = "d-inline-block" style = "width: 19.2%; height: 32px; margin-right: 3.5em">
-			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
+			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0" @keydown.enter="getList()"/>
 			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 				<el-icon size = "17">
 					<Search/>

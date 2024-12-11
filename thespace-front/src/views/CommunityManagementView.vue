@@ -7,16 +7,27 @@ import {ElMessageBox} from "element-plus";
 const communityname = history.state.communityname;
 const page = ref(history.state.page)
 const size = ref(history.state.size)
+const categoryName = ref(history.state.categoryName)
+const type = ref(history.state.type)
+const keyword = ref(history.state.keyword)
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
 const roles = JSON.parse(userinfo).roles
 const hasAdmin = roles.includes('ADMIN_'+communityname.toUpperCase())
 const categoryMaker = ref(false)
 
+const getKeywordValue = (value: string) => {
+  keyword.value = value;
+};
+const getTypeValue = (value: string) => {
+  type.value = value;
+};
+const getCategoryNameValue = (value: string) => {
+  categoryName.value = value;
+};
 const getPageValue = (value: number) => {
   page.value = value;
 };
-
 const getSizeValue = (value: number) => {
   size.value = value;
 }
@@ -78,13 +89,13 @@ function done()
 
 function returnHome()
   {
-		router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value}})
+		router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
 	}
 
 const categoryType = ref()
 const communityId = ref()
 const path = ref()
-const categoryName = ref()
+const name = ref()
 
 function createCategory()
   {
@@ -93,14 +104,14 @@ function createCategory()
         categoryType: categoryType.value,
 				communityId: communityId.value,
 				path: path.value,
-				categoryName: categoryName.value
+				categoryName: name.value
 			},
 			{params: {userId: userId}})
 			.then(() =>
       {
         categoryMaker.value = false;
         categoryType.value = '';
-        categoryName.value = '';
+        name.value = '';
         categoryRe.value = true;
       })
 	}
@@ -133,7 +144,7 @@ const getCategoryRe = (value: boolean) => {
 				<div class="my-header">
 					<h4 :id="titleId" :class="titleClass">Create Category!</h4>
 					<div class="m-3">
-						<el-input v-model="categoryName" class="mb-2" placeholder="Enter Category Name">{{categoryName}}</el-input>
+						<el-input v-model="name" class="mb-2" placeholder="Enter Category Name">{{name}}</el-input>
 						<el-input v-model="categoryType" placeholder="Enter Category Type">{{categoryType}}</el-input>
 					</div>
 					<div class="mt-4" style="justify-self: end">
@@ -148,7 +159,7 @@ const getCategoryRe = (value: boolean) => {
 			<el-button color="#00bd7e" round style="z-index: 100; position: fixed; top: 3vh; right: 2vw; width: 10em" @click="returnHome()">Return Home</el-button>
 	</div>
 	
-	<ListViewAdmin :categoryRe="categoryRe" :page="page" :path="communityname" :size="size" @sendCategoryRe="getCategoryRe" @sendPage="getPageValue" @sendSize="getSizeValue"/>
+	<ListViewAdmin :categoryName="categoryName" :categoryRe="categoryRe" :keyword="keyword" :page="page" :path="communityname" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendCategoryRe="getCategoryRe" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
 	</html>
 </template>
 

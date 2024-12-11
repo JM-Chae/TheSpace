@@ -14,10 +14,25 @@ axios.get(`/community/${communityname}`).then(res => community.value = res.data)
 
 const tempSize = history.state.size
 const tempPage = history.state.page
+const tempCategoryName = history.state.categoryName
+const tempType = history.state.type
+const tempKeyword = history.state.keyword
 
 const page = ref(tempPage ? tempPage : 1);
 const size = ref(tempSize ? tempSize : 10)
+const categoryName = ref(tempCategoryName ? tempCategoryName : '')
+const type = ref(tempType ? tempType : 't')
+const keyword = ref(tempKeyword ? tempKeyword : '')
 
+const getKeywordValue = (value: string) => {
+  keyword.value = value;
+};
+const getTypeValue = (value: string) => {
+  type.value = value;
+};
+const getCategoryNameValue = (value: string) => {
+  categoryName.value = value;
+};
 const getPageValue = (value: number) => {
   page.value = value;
 };
@@ -40,7 +55,7 @@ function formatDate(dateString: string)
 
 function management()
   {
-		router.push({path: '/community/management', state: {communityname: communityname, page: page.value, size: size.value}})
+		router.push({path: '/community/management', state: {communityname: communityname, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
 	}
 </script>
 
@@ -51,7 +66,7 @@ function management()
 		<el-text v-if="community" v-model="community" class="p-2" style="font-size: 1.2em">{{community.description}}</el-text><div></div>
 		<el-text v-if="community" v-model="community" class="p-2">{{formatDate(community.createDate)}}</el-text><div><el-button v-if="hasAdmin" class="mb-2 me-2" style="display: flex; margin-left: auto" type="warning" @click="management()">Management</el-button></div>
 	</div>
-	<ListView :page="page" :path="communityname" :size="size" @sendPage="getPageValue" @sendSize="getSizeValue"/>
+	<ListView :categoryName="categoryName" :keyword="keyword" :page="page" :path="communityname" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
 	</html>
 </template>
 
