@@ -30,9 +30,7 @@ public class CustomExceptionHandler
           {
             BindingResult bindingResult = e.getBindingResult();
             bindingResult.getFieldErrors().forEach(fieldError ->
-              {
-                errorMap.put(fieldError.getField(), fieldError.getCode());
-              });
+                errorMap.put(fieldError.getField(), fieldError.getCode()));
           }
         return ResponseEntity.badRequest().body(errorMap);
       }
@@ -49,10 +47,8 @@ public class CustomExceptionHandler
             .validation(e.getValidation() != null ? e.getValidation() : null)
             .build();
 
-        ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
+        return ResponseEntity.status(statusCode)
             .contentType(MediaType.APPLICATION_JSON)
             .body(body);
-
-        return response;
       }
   }

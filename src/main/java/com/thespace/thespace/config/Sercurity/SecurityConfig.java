@@ -2,7 +2,6 @@ package com.thespace.thespace.config.Sercurity;
 
 import com.thespace.thespace.config.Sercurity.handler.AuthSuccessHandler;
 import com.thespace.thespace.config.Sercurity.handler.LogoutSuccessHandler;
-import com.thespace.thespace.domain.User;
 import com.thespace.thespace.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -96,7 +95,6 @@ public class SecurityConfig implements UserDetailsService
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException
       {
         log.info(id);
-        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found"+id));
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found"+id));
       }
   }
