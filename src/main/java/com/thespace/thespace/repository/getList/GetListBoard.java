@@ -1,6 +1,6 @@
 package com.thespace.thespace.repository.getList;
 
-import com.thespace.thespace.dto.BoardDTO;
+import com.thespace.thespace.dto.board.BoardDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

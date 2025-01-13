@@ -6,12 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class ThespaceApplication
-  {
-
-    public static void main(String[] args)
-      {
+public class ThespaceApplication {
+    public static void main(String[] args) {
         SpringApplication.run(ThespaceApplication.class, args);
-      }
-
-  }
+    }
+}

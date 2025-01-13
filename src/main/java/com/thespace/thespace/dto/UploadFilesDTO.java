@@ -10,9 +10,7 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UploadFilesDTO
   {
-    private List<MultipartFile> fileList;
+    private final List<MultipartFile> fileList;
   }

@@ -1,10 +1,9 @@
-package com.thespace.thespace.config.Sercurity.handler;
+package com.thespace.thespace.config.Sercurity;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.io.PrintWriter;
+import org.slf4j.Logger;
 
 public class SuccessHandler
   {

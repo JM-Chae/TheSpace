@@ -11,17 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class BoardFileServiceImpl implements BoardFileService
   {
-    private BoardFileRepository boardFileRepository;
-    private BoardRepository boardRepository;
-
-    @Autowired
-    public void setBoardFileRepository(BoardFileRepository boardFileRepository, BoardRepository boardRepository)
-      {
-        this.boardFileRepository = boardFileRepository;
-        this.boardRepository = boardRepository;
-      }
+    private final BoardFileRepository boardFileRepository;
+    private final BoardRepository boardRepository;
 
     public void deleteBoardFile(String boardFileName)
       {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface BoardFileRepository extends  JpaRepository<BoardFile, String>
   {
     List<BoardFile> findByBoardBno(Long bno);

@@ -9,17 +9,11 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserInfoDTO
   {
-    private String uuid;
-
-    private String id;
-
-    private String name;
-
-    private String email;
-
-    private List<String> roles;
+    private final String uuid;
+    private final String id;
+    private final String name;
+    private final String email;
+    private final List<String> roles;
   }

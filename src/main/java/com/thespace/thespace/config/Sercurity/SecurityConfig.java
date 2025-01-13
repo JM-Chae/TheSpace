@@ -1,8 +1,9 @@
 package com.thespace.thespace.config.Sercurity;
 
-import com.thespace.thespace.config.Sercurity.handler.AuthSuccessHandler;
-import com.thespace.thespace.config.Sercurity.handler.LogoutSuccessHandler;
 import com.thespace.thespace.repository.UserRepository;
+import java.util.Arrays;
+import java.util.Collections;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +23,6 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @RequiredArgsConstructor

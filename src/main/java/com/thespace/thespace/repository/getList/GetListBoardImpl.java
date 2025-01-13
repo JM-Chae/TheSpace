@@ -6,17 +6,16 @@ import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.QBoard;
 import com.thespace.thespace.domain.QReply;
-import com.thespace.thespace.dto.BoardDTO;
+import com.thespace.thespace.dto.board.BoardDTO;
 import com.thespace.thespace.repository.CategoryRepository;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 public class GetListBoardImpl extends QuerydslRepositorySupport implements GetListBoard

@@ -1,4 +1,4 @@
-package com.thespace.thespace.config.Sercurity.handler;
+package com.thespace.thespace.config.Sercurity;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
