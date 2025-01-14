@@ -7,7 +7,7 @@ import router from "@/router";
 
 function getRead()
   {
-    axios.get(`/board/read/${bno}`)
+    axios.get(`/board/${bno}`)
       .then(res =>
       {
         getDto.value = res.data
@@ -24,7 +24,7 @@ function modify()
         {
           title: getDto.value?.title,
           content: getDto.value?.content,
-          categoryName: getDto.value?.categoryName,
+          categoryId: getDto.value?.categoryId,
           bno: bno,
           fileNames: JSON.stringify(getDto.value?.fileNames)
         }
@@ -98,7 +98,7 @@ function boardDelete(isR: number)
   {
     if (isR == 0)
       {
-        axios.delete(`/board/delete/${bno}`, {params: {userUuid: user.uuid}})
+        axios.delete(`/board/${bno}`, {params: {userUuid: user.uuid}})
 					.then(()=> router.back())
       } else
       {
@@ -165,7 +165,8 @@ interface dto
     vote: number,
     writer: string,
     writerUuid: string,
-    rCount: number
+    rCount: number,
+    categoryId: number
   }
 
 interface rdto

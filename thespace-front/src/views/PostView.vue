@@ -88,7 +88,7 @@ const post = async () =>
         try
           {
             await upload();
-            const res = await axios.post("/board/post",
+            const res = await axios.post("/board",
               {
                 title: title.value,
                 content: content.value,

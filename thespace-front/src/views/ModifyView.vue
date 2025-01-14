@@ -16,7 +16,7 @@ onMounted(() => {
 const categories = ref()
 const title = ref<string>(window.history.state.title)
 const content = ref<string>(window.history.state.content)
-const categoryName = ref(window.history.state.categoryName)
+const categoryId = ref(window.history.state.categoryId)
 const bno = ref(window.history.state.bno)
 const fileNames = ref<string[] | null[]>(JSON.parse(window.history.state.fileNames))
 const newFileNames = ref<string[]>()
@@ -47,14 +47,14 @@ const post = async function ()
     
     await upload();
     selectedFiles.value = [];
-    await axios.put("/board/modify",
+    await axios.patch("/board",
       {
         bno: bno.value,
         title: title.value,
         content: content.value,
         writer: user.name,
         writerUuid: user.uuid,
-        categoryName: categoryName.value,
+        categoryId: categoryId.value,
         fileNames: newFileNames.value
       })
       .then(() => router.push({name: "read", state: {bno: bno.value}}))
@@ -110,8 +110,8 @@ const buttonTrigger = () => {
 		<div>
 			<el-row :gutter = "10">
 				<el-col :span = "12">
-					<el-select id = "select-category" v-model = "categoryName" class = "form-control mt-3" placeholder = "Choose category">
-						<el-option v-for = "category in categories" :key = "category.categoryId" :value = "category.categoryName">
+					<el-select id = "select-category" v-model = "categoryId" class = "form-control mt-3" placeholder = "Choose category">
+						<el-option v-for = "category in categories" :key = "category.categoryId" :label = "category.categoryName" :value = "category.categoryId">
 							{{ category.categoryName }}
 						</el-option>
 					</el-select>
