@@ -1,4 +1,4 @@
-package com.thespace.thespace.config.Sercurity;
+package com.thespace.thespace.config.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

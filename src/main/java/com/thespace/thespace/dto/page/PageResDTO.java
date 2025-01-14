@@ -1,13 +1,10 @@
-package com.thespace.thespace.dto;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+package com.thespace.thespace.dto.page;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
-@ToString
 public class PageResDTO<E>
   {
     private int page;
@@ -29,8 +26,8 @@ public class PageResDTO<E>
           {
             return;
           }
-        this.page = pageReqDTO.getPage();
-        this.size = pageReqDTO.getSize();
+        this.page = pageReqDTO.page();
+        this.size = pageReqDTO.size();
 
         this.total = total;
         this.dtoList = dtoList;
