@@ -1,67 +1,42 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.CategoryDTO;
+import com.thespace.thespace.dto.category.CategoryCreateDTO;
+import com.thespace.thespace.dto.category.CategoryDTO;
 import com.thespace.thespace.service.CategoryService;
-import com.thespace.thespace.service.UserRoleService;
-import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
-@Slf4j
-@RestController()
-public class CategoryController
-  {
+@RestController
+@RequestMapping("/category")
+public class CategoryController {
+
     private final CategoryService categoryService;
-    private final UserService userService;
-    private final UserRoleService userRoleService;
 
-    @GetMapping("/getcategory/{path}")
-    public List<CategoryDTO> getCategory(@PathVariable(name = "path") String path)
-      {
-        return categoryService.getAllCategories(path);
-      }
+    @GetMapping("/list")
+    public List<CategoryDTO> list(@RequestParam(name = "path") String path) {
+        return categoryService.list(path);
+    }
 
-    @PostMapping("/category")
-    public void createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @RequestParam("userId") String userId)
-      {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + categoryDTO.getPath())))
-          {
-            if (bindingResult.hasErrors())
-              {
-                redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-                return;
-              }
+    @PostMapping("/admin")
+    public void create(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO,
+        @RequestParam("userId") String userId) {
+        categoryService.create(categoryCreateDTO, userId);
+    }
 
-            categoryService.createCategory(categoryDTO);
-            redirectAttributes.addFlashAttribute("result", "Category created successfully");
-          } else
-          {
-          redirectAttributes.addFlashAttribute("result", "You are not this community Admin");
-          }
-      }
-
-    @DeleteMapping
-    public void deleteCategory(@RequestParam("categoryId") Long categoryId, @RequestParam("userId") String userId, @RequestParam("communityName") String communityName, RedirectAttributes redirectAttributes)
-      {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityName)))
-          {
-            categoryService.deleteCategory(categoryId);
-            redirectAttributes.addFlashAttribute("result", "Category deleted successfully");
-          } else
-          {
-            redirectAttributes.addFlashAttribute("result", "You are not this community Admin");
-          }
-      }
-  }
+    @DeleteMapping("/{categoryId}/admin")
+    public void delete(@PathVariable("categoryId") Long categoryId,
+        @RequestParam("userId") String userId,
+        @RequestParam("communityName") String communityName) {
+        categoryService.deleteCategory(categoryId, userId, communityName);
+    }
+}

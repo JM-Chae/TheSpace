@@ -20,10 +20,11 @@ onMounted(() =>
 
 function getList()
   {
-    axios.get("/community", {
+    axios.get("/community/list", {
       params: {
         page: page.value,
         type: type.value,
+        size: 1000000,
         keyword: keyword.value
       }
     })
@@ -42,7 +43,7 @@ function create()
 
 function hasAdmin()
   {
-  	axios.get(`/community/hasAdmin`, {params: {userId: userId}})
+  	axios.get(`/community/list/admin`, {params: {userId: userId}})
 			.then(res =>
       {
         keyword.value = res.data.toString()

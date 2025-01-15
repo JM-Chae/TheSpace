@@ -1,4 +1,4 @@
-<script lang = "ts" setup>
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\<script lang = "ts" setup>
 import {ref} from 'vue'
 import axios from "axios";
 import router from "@/router";

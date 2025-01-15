@@ -9,17 +9,17 @@ const userId = JSON.parse(userinfo).id;
 
 const communityName = ref("")
 const description = ref("")
-const check = ref(false)
+const nameCheck = ref(false)
 
 watch(communityName, (newValue) =>
 {
   if (newValue)
     {
-      check.value = false;
+      nameCheck.value = false;
     }
 })
 
-watch(check, (newValue) =>
+watch(nameCheck, (newValue) =>
 {
   if (newValue == true)
     {
@@ -47,10 +47,10 @@ function reset()
     description.value = "";
 	}
 
-function checkName(communityName: string)
+function check(communityName: string)
   {
-    axios.get(`community/check`, {params: {communityName: communityName}})
-			.then(res => check.value = res.data)
+    axios.get(`community/nameCheck`, {params: {communityName: communityName}})
+			.then(res => nameCheck.value = res.data)
 	}
 
 function create()
@@ -60,7 +60,7 @@ function create()
         description: description.value
       }, {params:
 					{userid: userId,
-					check: check.value}})
+					check: nameCheck.value}})
 			.then(() => router.push({path: '/community/home', state: {communityname: communityName.value}}))
   }
 
@@ -81,8 +81,8 @@ function create()
 			</div>
 			<div class = "mt-2 pt-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-column-gap: 1em">
 				<el-button class = "float-end m-0" type = "danger" @click="reset()">Reset</el-button>
-				<el-button class = "float-end m-0" color="#00bd7e" type = "success" @click = "checkName(communityName)">Check Name</el-button>
-				<el-button class = "float-end m-0" type = "primary" @click = "create()">Let's Create!</el-button>
+				<el-button class = "float-end m-0" color="#00bd7e" type = "success" @click = "check(communityName)">Check Name</el-button>
+				<el-button :disabled="!nameCheck" class = "float-end m-0" type = "primary" @click = "create()">Let's Create!</el-button>
 			</div>
 		</div>
 	</main>

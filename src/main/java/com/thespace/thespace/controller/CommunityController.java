@@ -1,137 +1,67 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.CategoryDTO;
-import com.thespace.thespace.dto.CommunityDTO;
-import com.thespace.thespace.dto.PageReqDTO;
-import com.thespace.thespace.dto.PageResDTO;
-import com.thespace.thespace.service.CategoryService;
+import com.thespace.thespace.dto.community.CommunityCreateDTO;
+import com.thespace.thespace.dto.community.CommunityDTO;
+import com.thespace.thespace.dto.community.CommunityModifyDTO;
+import com.thespace.thespace.dto.page.PageReqDTO;
+import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.service.CommunityService;
-import com.thespace.thespace.service.UserRoleService;
-import com.thespace.thespace.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
 @RequestMapping("/community")
 @RequiredArgsConstructor
-@Log4j2
-public class CommunityController
-  {
-    private final UserService userService;
-    private final UserRoleService userRoleService;
-    private final CategoryService categoryService;
+public class CommunityController {
     private final CommunityService communityService;
 
-
     @GetMapping("/{communityname}")
-    public CommunityDTO home(@PathVariable("communityname") String communityname)
-      {
+    public CommunityDTO get(@PathVariable("communityname") String communityname) {
         return communityService.getCommunity(communityname);
-      }
+    }
 
+    @GetMapping("/list")
+    public PageResDTO<CommunityDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
+        return communityService.list(pageReqDTO);
+    }
 
-    @GetMapping("")
-    public PageResDTO<CommunityDTO> getCommunityList(@RequestParam("page") int page, @RequestParam("keyword") String keyword, @RequestParam("type") String type)
-      {
-        {
-          PageReqDTO pageReqDTO = PageReqDTO.builder()
-              .page(page)
-              .size(1000)
-              .keyword(keyword)
-              .type(type)
-              .build();
-          PageResDTO<CommunityDTO> getList = communityService.getCommunityList(pageReqDTO);
+    @PostMapping("/admin")
+    public Long create(@RequestBody CommunityCreateDTO communityCreateDTO,
+        @RequestParam("userid") String userid, @RequestParam("nameCheck") boolean nameCheck) {
+        return communityService.create(communityCreateDTO, userid, nameCheck);
+    }
 
-          return getList;
-        }
-      }
-
-    @PostMapping("/create")
-    public Long createCommunity(@RequestBody CommunityDTO communityDTO, @RequestParam("userid") String userid, @RequestParam("check") boolean check, RedirectAttributes redirectAttributes)
-      {
-        if (check)
-          {
-            String communityName = communityDTO.getCommunityName();
-            if (communityName.isEmpty())
-              {
-                communityService.createCommunity(communityDTO);
-                redirectAttributes.addFlashAttribute("errors", "communityName is empty");
-
-                return null;
-              }
-
-            Long CommunityId = communityService.createCommunity(communityDTO);
-            redirectAttributes.addFlashAttribute("result", "Community created successfully");
-
-            userRoleService.register(communityName);
-            userService.setRole(userid, "ADMIN_" + communityName);
-
-            CategoryDTO categoryDTO = CategoryDTO.builder()
-                .communityId(CommunityId)
-                .categoryName("Open Forum")
-                .categoryType("Forum")
-                .build();
-
-            categoryService.createCategory(categoryDTO);
-
-            return CommunityId;
-          }
-        return null;
-      }
-
-    @GetMapping("/check")
-    public boolean check(@RequestParam("communityName") String communityName)
-      {
+    @GetMapping("/nameCheck")
+    public boolean check(@RequestParam("communityName") String communityName) {
         return communityService.check(communityName);
-      }
+    }
 
-    @DeleteMapping
-    public void deleteCommunity(@RequestBody CommunityDTO communityDTO, @RequestParam("userId") String userId, RedirectAttributes redirectAttributes)
-      {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityDTO.getCommunityName())))
-          {
-            communityService.deleteCommunity(communityDTO.getCommunityId());
-            redirectAttributes.addFlashAttribute("result", "Community deleted successfully");
-          } else
-          { // add Exception later
-            redirectAttributes.addFlashAttribute("result", "You are not allowed to delete this community");
-          }
-      }
+    @DeleteMapping("/{communityId}")
+    public void delete(@PathVariable("communityId") Long communityId,
+        @RequestParam("communityName") String communityName,
+        @RequestParam("userId") String userId) {
+        communityService.delete(communityId, userId, communityName);
+    }
 
-    @GetMapping("/hasAdmin")
-    public List<Long> hasAdminCommunity(@RequestParam("userId") String userId)
-      {
-        List<Long> roles = userService.findUserRoles(userId);
-        List<String> roleNames = roles.stream()
-            .map(userRoleService::findRoleNameById)
-            .toList();
-
-        List<Long> findList = new ArrayList<>();
-        roleNames.forEach(roleName -> {
-          if (roleName.contains("ADMIN"))
-            {
-              findList.add(communityService.getCommunityIdByName(roleName.split("_")[1]));
-            }
-        });
-
-        return findList;
-      }
+    @GetMapping("/list/admin")
+    public List<Long> hasAdminList(@RequestParam("userId") String userId) {
+        return communityService.hasAdminList(userId);
+    }
 
     @PutMapping("/modify")
-    public void modify(@RequestBody CommunityDTO communityDTO, @RequestParam("userId") String userId, RedirectAttributes redirectAttributes)
-      {
-        if (userService.findUserRoles(userId).contains(userRoleService.findRoleId("ADMIN_" + communityDTO.getCommunityName())))
-          {
-        communityService.updateCommunity(communityDTO);
-          } else
-          { // add Exception later
-            redirectAttributes.addFlashAttribute("result", "You are not allowed to modify this community");
-          }
-      }
-  }
+    public void modify(@RequestBody CommunityModifyDTO communityModifyDTO,
+        @RequestParam("userId") String userId) {
+        communityService.modify(communityModifyDTO, userId);
+    }
+}
