@@ -37,7 +37,7 @@ const closeDialog = async () =>
                   {
                     const fileid = temp.split('_')[0];
                     const filename = temp.substring(temp.indexOf('_') + 1);
-                    await axios.delete(`/delete/${fileid}/${filename}`);
+                    await axios.delete(`/file/${fileid}/${filename}`);
                   }
               } catch (error)
               {
@@ -145,7 +145,7 @@ const upload = async () =>
 
     try
       {
-        await axios.post('/upload', formData, {
+        await axios.post('/file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -177,7 +177,7 @@ const deleteEditorImage = () =>
                 const fileid = temp.split('_')[0];
                 const filename = temp.substring(temp.indexOf('_') + 1);
 
-                const url = `http://localhost:8080/delete/${fileid}/${filename}`;
+                const url = `http://localhost:8080/file/${fileid}/${filename}`;
 
                 count--;
 
@@ -276,7 +276,7 @@ let count = 0;
         formData.set('fileList', selectedFile);
         
         try {
-          const response = await axios.post('/upload', formData, {
+          const response = await axios.post('/file', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
@@ -285,7 +285,7 @@ let count = 0;
           let fileid: string = response.data[0].fileId;
           let filename: string = response.data[0].fileName;
           
-          let blob = await axios.get(`/get/${fileid}/${filename}`, {responseType: 'blob'})
+          let blob = await axios.get(`/file/${fileid}/${filename}`, {responseType: 'blob'})
           let objectUrl = fileUrl.createObjectURL(blob.data);
           fileNames.push(fileid+'_'+filename)
           count += 1;

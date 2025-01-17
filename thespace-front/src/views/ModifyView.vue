@@ -25,7 +25,7 @@ const deleteFile = function (fileid: string, filename: string, index: number)
   {
     try
       {
-        axios.delete(`/delete/${fileid}/${filename}`)
+        axios.delete(`/file/${fileid}/${filename}`)
           .then(() =>
           {
             fileNames.value[index] = null
@@ -82,7 +82,7 @@ const upload = async () => {
   })
 
   try {
-    await axios.post('/upload',  formData, {headers: {
+    await axios.post('/file',  formData, {headers: {
         'Content-Type': 'multipart/form-data'
       }})
       .then(res => newFileNames.value = res.data.map((list: any) => list.fileId + '_' +list.fileName))

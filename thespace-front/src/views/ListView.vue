@@ -230,7 +230,7 @@ const mouseOver = async function (rowData: dto)
           {
             let fileid = imgArr[i].split("_")[0]
             let filename = imgArr[i].substring(imgArr[i].indexOf('_') + 1);
-            response.value = URL.createObjectURL((await axios.get(`/get/${fileid}/s_${filename}`, {responseType: 'blob'}))?.data)
+            response.value = URL.createObjectURL((await axios.get(`/file/${fileid}/s_${filename}`, {responseType: 'blob'}))?.data)
           }
 
         thumbnails.value = response.value
