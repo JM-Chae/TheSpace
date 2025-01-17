@@ -15,11 +15,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
-@Builder
 public class Board extends BaseEntity {
 
     @Id
@@ -42,15 +40,12 @@ public class Board extends BaseEntity {
     private Category category;
 
     @Setter
-    @ColumnDefault("0")
     private Long viewCount = 0L;
 
     @Setter
-    @ColumnDefault("0")
     private Long vote = 0L;
 
     @Setter
-    @ColumnDefault("0")
     private Long rCount = 0L;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -60,8 +55,9 @@ public class Board extends BaseEntity {
     public Board() {
     }
 
+    @Builder
     public Board(Long bno, String title, String path, String content, String writer,
-        String writerUuid, Category category, Long viewCount, Long vote, Long rCount) {
+        String writerUuid, Category category) {
         this.bno = bno;
         this.title = title;
         this.path = path;
@@ -69,9 +65,6 @@ public class Board extends BaseEntity {
         this.writer = writer;
         this.writerUuid = writerUuid;
         this.category = category;
-        this.viewCount = viewCount;
-        this.vote = vote;
-        this.rCount = rCount;
     }
 
     public void change(String title, String content, Category category) {
