@@ -83,7 +83,7 @@ public class CommunityService {
             .collect(Collectors.toList());
     }
 
-    public CommunityDTO getCommunity(String communityName) {
+    public CommunityDTO get(String communityName) {
         Community community = communityRepository.findByCommunityName(communityName);
         return modelMapper.map(community, CommunityDTO.class);
     }
