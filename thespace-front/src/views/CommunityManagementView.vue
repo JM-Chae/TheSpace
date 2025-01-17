@@ -4,7 +4,7 @@ import axios from "axios";
 import router from "@/router";
 import {ElMessageBox} from "element-plus";
 
-const communityname = history.state.communityname;
+const communityName = history.state.communityName;
 const page = ref(history.state.page)
 const size = ref(history.state.size)
 const categoryName = ref(history.state.categoryName)
@@ -13,7 +13,7 @@ const keyword = ref(history.state.keyword)
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const userId = JSON.parse(userinfo).id
 const roles = JSON.parse(userinfo).roles
-const hasAdmin = roles.includes('ADMIN_'+communityname.toUpperCase())
+const hasAdmin = roles.includes('ADMIN_'+communityName.toUpperCase())
 const categoryMaker = ref(false)
 
 const getKeywordValue = (value: string) => {
@@ -34,12 +34,12 @@ const getSizeValue = (value: number) => {
 
 function getCommunity()
   {
-    axios.get(`/community/${communityname}`).then(res => community.value = res.data)
+    axios.get(`/community/${communityName}`).then(res => community.value = res.data)
       .then(() =>
       {
         des.value = community.value.description;
         communityId.value = community.value.communityId;
-        path.value = communityname;
+        path.value = communityName;
       })
   }
 
@@ -49,7 +49,7 @@ onMounted(() =>
     {
       ElMessageBox.alert('You have not admin role with this community!', {
         confirmButtonText: 'OK',
-        callback: () => { router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value}})}
+        callback: () => { router.push({path: '/community/home', state: {communityName: communityName, size: size.value, page: page.value}})}
 			})
     
     }
@@ -78,7 +78,7 @@ function done()
     axios.put(`community/modify`,
 			{
         communityId: community.value.communityId,
-        communityName: communityname,
+        communityName: communityName,
 				description: des.value
       },
       {params: {userId: userId}})
@@ -89,7 +89,7 @@ function done()
 
 function returnHome()
   {
-		router.push({path: '/community/home', state: {communityname: communityname, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
+		router.push({path: '/community/home', state: {communityName: communityName, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
 	}
 
 const categoryType = ref()
@@ -127,7 +127,7 @@ const getCategoryRe = (value: boolean) => {
 <template>
 	<html v-show="hasAdmin" class = "dark" style="display: grid; justify-content: center">
 	<div class="mb-3" style="display: grid; width: 924px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-text v-if="communityname" v-model="communityname" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityname}}</el-text>
+		<el-text v-if="communityName" v-model="communityName" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityName}}</el-text>
 		<div>
 			<el-input v-if="des" v-model="des" :autosize = "{minRows: 3}" :readonly="desReadOnly" class="p-2" style="font-size: 1.2em; width: 80%" type="textarea">{{des}}</el-input>
 			<el-button v-if="desReadOnly" class="mb-2" style="margin-left: 11%" type="warning" @click="desModify()">Modify</el-button>
@@ -159,7 +159,7 @@ const getCategoryRe = (value: boolean) => {
 			<el-button color="#00bd7e" round style="z-index: 100; position: fixed; top: 3vh; right: 2vw; width: 10em" @click="returnHome()">Return Home</el-button>
 	</div>
 	
-	<ListViewAdmin :categoryName="categoryName" :categoryRe="categoryRe" :keyword="keyword" :page="page" :path="communityname" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendCategoryRe="getCategoryRe" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
+	<ListViewAdmin :categoryName="categoryName" :categoryRe="categoryRe" :keyword="keyword" :page="page" :path="communityName" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendCategoryRe="getCategoryRe" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
 	</html>
 </template>
 

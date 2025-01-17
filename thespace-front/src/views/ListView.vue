@@ -7,7 +7,7 @@ import {Link, Picture, Search} from '@element-plus/icons-vue'
 
 const props = defineProps(['path', 'size', 'page', 'type', 'keyword', 'categoryName'])
 const categories = ref()
-
+const communityName = props.path
 
 function getList()
   {
@@ -35,13 +35,13 @@ onMounted(() =>
 {
   getList()
 	
-  axios.get(`/getcategory/${props.path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+  axios.get(`/community/${communityName}/category`).then(res => categories.value = res.data).catch(error => console.error(error))
 	
   watch(type, (newValue) =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendTypeToParent()
         getList()
       }
@@ -50,7 +50,7 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendKeywordToParent()
         getList()
       }
@@ -59,7 +59,7 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendCategoryNameToParent()
         getList()
       }
@@ -68,7 +68,7 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendPageToParent()
         getList()
       }
@@ -77,7 +77,7 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityname: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
         sendSizeToParent()
         getList()
       }

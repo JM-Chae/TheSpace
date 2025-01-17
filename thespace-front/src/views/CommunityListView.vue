@@ -31,9 +31,9 @@ function getList()
       .then(res => dto.value = res.data.dtoList)
   }
 
-const goHomepage = (communityname: string) =>
+const goHomepage = (communityName: string) =>
   {
-    router.push({path: '/community/home', state: {communityname}})
+    router.push({path: '/community/home', state: {communityName}})
 	}
 
 function create()

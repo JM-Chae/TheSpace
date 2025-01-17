@@ -373,10 +373,10 @@ function returnBack()
 		
 		if(historyURL == '/post')
       {
-       router.push({path: '/community/home', state: {communityname: path.value}})
+       router.push({path: '/community/home', state: {communityName: path.value}})
 			}else
       {
-        history.replaceState({communityname: path.value, size: size.value, page: page.value}, '')
+        history.replaceState({communityName: path.value, size: size.value, page: page.value}, '')
         router.back()
       }
   }

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommunityController {
     private final CommunityService communityService;
 
-    @GetMapping("/{communityName}")
+    @GetMapping("/{communityName}/category")
     public CommunityDTO get(@PathVariable("communityName") String communityName) {
         return communityService.get(communityName);
     }

@@ -1,4 +1,4 @@
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\<script lang = "ts" setup>
+<script lang = "ts" setup>
 import {ref} from 'vue'
 import axios from "axios";
 import router from "@/router";
@@ -6,11 +6,11 @@ import router from "@/router";
 const userinfo = sessionStorage.getItem('userInfo') || ""
 const roles = JSON.parse(userinfo).roles
 
-const communityname = history.state.communityname;
+const communityName = history.state.communityName;
 
-const hasAdmin = roles.includes('ADMIN_'+communityname.toUpperCase())
+const hasAdmin = roles.includes('ADMIN_'+communityName.toUpperCase())
 
-axios.get(`/community/${communityname}`).then(res => community.value = res.data)
+axios.get(`/community/${communityName}`).then(res => community.value = res.data)
 
 const tempSize = history.state.size
 const tempPage = history.state.page
@@ -55,18 +55,18 @@ function formatDate(dateString: string)
 
 function management()
   {
-		router.push({path: '/community/management', state: {communityname: communityname, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
+		router.push({path: '/community/management', state: {communityName: communityName, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
 	}
 </script>
 
 <template>
 	<html class = "dark" style="display: grid; justify-content: center">
 	<div class="mb-3" style="display: grid; grid-template-columns: 1fr 1fr;  width: 924px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-text v-if="communityname" v-model="communityname" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityname}}</el-text><div></div>
+		<el-text v-if="communityName" v-model="communityName" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityName}}</el-text><div></div>
 		<el-text v-if="community" v-model="community" class="p-2" style="font-size: 1.2em">{{community.description}}</el-text><div></div>
 		<el-text v-if="community" v-model="community" class="p-2">{{formatDate(community.createDate)}}</el-text><div><el-button v-if="hasAdmin" class="mb-2 me-2" style="display: flex; margin-left: auto" type="warning" @click="management()">Management</el-button></div>
 	</div>
-	<ListView :categoryName="categoryName" :keyword="keyword" :page="page" :path="communityname" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
+	<ListView :categoryName="categoryName" :keyword="keyword" :page="page" :path="communityName" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
 	</html>
 </template>
 

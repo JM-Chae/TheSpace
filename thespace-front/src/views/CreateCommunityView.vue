@@ -61,7 +61,7 @@ function create()
       }, {params:
 					{userid: userId,
 					check: nameCheck.value}})
-			.then(() => router.push({path: '/community/home', state: {communityname: communityName.value}}))
+			.then(() => router.push({path: '/community/home', state: {communityName: communityName.value}}))
   }
 
 
