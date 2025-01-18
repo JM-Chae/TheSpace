@@ -12,19 +12,29 @@ public record PageReqDTO(int page,
                          String path,
                          String category) {
 
-  public String[] getTypes() {
-    if (type == null || type.isEmpty()) {
-      return null;
+    public PageReqDTO(int page, int size, String type, String keyword, String path,
+        String category) {
+        this.page = page;
+        this.size = size != 0 ? size : 1000000;
+        this.type = type;
+        this.keyword = keyword;
+        this.path = path;
+        this.category = category;
     }
-    return type.split("");
-  }
 
-  public Pageable getPageable(String... props) {
-    if ((Arrays.toString(props)).contains("rno")) {
-      return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());
+    public String[] getTypes() {
+        if (type == null || type.isEmpty()) {
+            return null;
+        }
+        return type.split("");
     }
-    return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
-  }
+
+    public Pageable getPageable(String... props) {
+        if ((Arrays.toString(props)).contains("rno")) {
+            return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());
+        }
+        return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
+    }
 
 //    private String link;
 //

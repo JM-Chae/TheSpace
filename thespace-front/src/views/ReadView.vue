@@ -208,7 +208,6 @@ const reply = function ()
   {
     axios.post(`/board/${bno}/reply`,
       {
-        bno: bno,
         replyContent: replyContent.value,
         replyWriter: user.name,
         replyWriterUuid: user.uuid,
