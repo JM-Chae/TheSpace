@@ -1,8 +1,8 @@
 package com.thespace.thespace.controller;
 
 
-import com.thespace.thespace.dto.UploadFilesDTO;
 import com.thespace.thespace.dto.board.BoardFileDTO;
+import com.thespace.thespace.dto.board.UploadFilesDTO;
 import com.thespace.thespace.service.BoardFileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

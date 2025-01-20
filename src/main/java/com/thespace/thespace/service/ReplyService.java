@@ -61,10 +61,12 @@ public class ReplyService {
         boardRepository.save(board);
     }
 
-    public PageResDTO<ReplyDTO> getListReply(Long bno, PageReqDTO pageReqDTO) {
+    public PageResDTO<ReplyDTO> getListReply(Long bno) {
         if (!boardRepository.existsById(bno)) {
             throw new PostNotFound();
         }
+
+        PageReqDTO pageReqDTO = new PageReqDTO(1, 0, "", "", "", "");
 
         Pageable pageable = pageReqDTO.getPageable("rno");
 
@@ -77,10 +79,12 @@ public class ReplyService {
             .build();
     }
 
-    public PageResDTO<ReplyDTO> getListNestedReply(Long rno, Long bno, PageReqDTO pageReqDTO) {
+    public PageResDTO<ReplyDTO> getListNestedReply(Long rno, Long bno) {
         if (!boardRepository.existsById(bno)) {
             throw new PostNotFound();
         }
+
+        PageReqDTO pageReqDTO = new PageReqDTO(1, 0, "", "", "", "");
 
         Pageable pageable = pageReqDTO.getPageable("rno");
 

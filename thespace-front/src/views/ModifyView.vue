@@ -37,7 +37,7 @@ const deleteFile = function (fileid: string, filename: string, index: number)
   }
 
 const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
-axios.get(`/category/list/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
@@ -138,11 +138,10 @@ const buttonTrigger = () => {
 					:init="{
         toolbar_mode: 'wrap',
         plugins: [
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'mentions', 'tableofcontents', 'footnotes', 'autocorrect', 'typography', 'inlinecss'
-        ],
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
+          ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-     selector: 'textarea', skin: 'oxide-dark', content_css: 'dark'}"
+      selector: 'textarea', skin: 'oxide-dark', content_css: 'dark'}"
 					api-key="578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
 			/>
 		</div>

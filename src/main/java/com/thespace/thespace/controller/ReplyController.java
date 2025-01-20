@@ -1,6 +1,5 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.dto.reply.ReplyDTO;
 import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
@@ -32,15 +31,15 @@ public class ReplyController {
     }
 
     @GetMapping("/board/{bno}/reply")
-    public PageResDTO<ReplyDTO> list(@PathVariable("bno") Long bno, PageReqDTO pageReqDTO) {
+    public PageResDTO<ReplyDTO> list(@PathVariable("bno") Long bno) {
 
-        return replyService.getListReply(bno, pageReqDTO);
+        return replyService.getListReply(bno);
     }
 
     @GetMapping("/board/{bno}/reply/{rno}")
     public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno,
-        @PathVariable("bno") Long bno, PageReqDTO pageReqDTO) {
+        @PathVariable("bno") Long bno) {
 
-        return replyService.getListNestedReply(rno, bno, pageReqDTO);
+        return replyService.getListNestedReply(rno, bno);
     }
 }

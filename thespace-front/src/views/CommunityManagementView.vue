@@ -75,7 +75,7 @@ function cancel()
 
 function done()
   {
-    axios.put(`community/modify`,
+    axios.put(`/community/modify`,
 			{
         communityId: community.value.communityId,
         communityName: communityName,
@@ -99,7 +99,7 @@ const name = ref()
 
 function createCategory()
   {
-    axios.post(`/category`,
+    axios.post(`/category/admin`,
 			{
         categoryType: categoryType.value,
 				communityId: communityId.value,

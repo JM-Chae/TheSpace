@@ -10,6 +10,8 @@ const communityName = history.state.communityName;
 
 const hasAdmin = roles.includes('ADMIN_'+communityName.toUpperCase())
 
+const community = ref()
+
 axios.get(`/community/${communityName}`).then(res => community.value = res.data)
 
 const tempSize = history.state.size
@@ -40,8 +42,6 @@ const getPageValue = (value: number) => {
 const getSizeValue = (value: number) => {
   size.value = value;
 }
-
-const community = ref()
 
 function formatDate(dateString: string)
   {

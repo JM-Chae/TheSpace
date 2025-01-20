@@ -35,7 +35,7 @@ onMounted(() =>
 {
   getList()
 	
-  axios.get(`/community/${communityName}/category`).then(res => categories.value = res.data).catch(error => console.error(error))
+  axios.get(`/category/list`, {params: {path: communityName}}).then(res => categories.value = res.data).catch(error => console.error(error))
 	
   watch(type, (newValue) =>
   {
@@ -183,12 +183,10 @@ const sendSizeToParent = () =>
         });
       } else if (date.getFullYear() == today.getFullYear())
       {
-        return date.getMonth() + '. ' + date.getDate();
+        return (date.getMonth() + 1) + '. ' + date.getDate();
       }
 
-    return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {
-      hour12: true
-    });
+    return date.getFullYear() + '. ' + (date.getMonth() + 1);
   }
 
 const thumbnails = ref();

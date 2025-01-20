@@ -2,8 +2,8 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.BoardFile;
-import com.thespace.thespace.dto.UploadFilesDTO;
 import com.thespace.thespace.dto.board.BoardFileDTO;
+import com.thespace.thespace.dto.board.UploadFilesDTO;
 import com.thespace.thespace.repository.BoardFileRepository;
 import com.thespace.thespace.repository.BoardRepository;
 import java.io.File;
@@ -35,10 +35,10 @@ public class BoardFileService {
     private final BoardRepository boardRepository;
 
     public List<BoardFileDTO> upload(UploadFilesDTO uploadFilesDTO) {
-        if (uploadFilesDTO.getFileList() != null) {
+        if (uploadFilesDTO.fileList() != null) {
             List<BoardFileDTO> list = new ArrayList<>();
 
-            uploadFilesDTO.getFileList().forEach(multipartFile -> {
+            uploadFilesDTO.fileList().forEach(multipartFile -> {
                 String originalFileName = "";
                 if (multipartFile.getOriginalFilename() != null) {
                     originalFileName = multipartFile.getOriginalFilename();

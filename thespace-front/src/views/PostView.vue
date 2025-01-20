@@ -63,7 +63,7 @@ const bno = ref<number>()
 const fileNames = ref<string[]>([])
 
 
-axios.get(`/category/list/${path}`).then(res => categories.value = res.data).catch(error => console.error(error))
+axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
 
 const post = async () =>

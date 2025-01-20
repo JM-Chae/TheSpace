@@ -1,7 +1,9 @@
 package com.thespace.thespace.service;
 
+import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.dto.category.CategoryCreateDTO;
+import com.thespace.thespace.dto.category.CategoryDTO;
 import com.thespace.thespace.dto.community.CommunityCreateDTO;
 import com.thespace.thespace.dto.community.CommunityDTO;
 import com.thespace.thespace.dto.community.CommunityModifyDTO;
@@ -85,7 +87,23 @@ public class CommunityService {
 
     public CommunityDTO get(String communityName) {
         Community community = communityRepository.findByCommunityName(communityName);
-        return modelMapper.map(community, CommunityDTO.class);
+        List<Category> categories = community.getCategory();
+        List<CategoryDTO> categoryDTO = categories.stream().map(category ->
+            new CategoryDTO(category.getCategoryId(),
+                category.getCategoryName(),
+                category.getCategoryType(),
+                category.getPath(),
+                category.getCreateDate(),
+                category.getModDate(),
+                category.getCommunity().getCommunityId()))
+            .toList();
+
+        return new CommunityDTO(community.getCommunityId(),
+            community.getCommunityName(),
+            community.getCreateDate(),
+            community.getModDate(),
+            community.getDescription(),
+            categoryDTO);
     }
 
     public Long getCommunityIdByName(String communityName) {
