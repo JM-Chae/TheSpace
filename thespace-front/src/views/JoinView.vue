@@ -13,6 +13,7 @@ const nameWarn = ref(true)
 const idWarn = ref(true)
 const emailWarn =ref(true)
 const pwWarn = ref(true)
+const idCheck = ref(true)
 
 const pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
 
@@ -87,7 +88,10 @@ const check = () =>
         axios.post('/user/checkid', null, {
           params: {id: id.value}
         })
-          .then(res => isOK.value = res.data)
+          .then(res => {
+            isOK.value = res.data
+            idCheck.value = res.data
+          })
       }
   }
 
@@ -119,6 +123,7 @@ const check = () =>
 				<el-button v-if = "isOK" style = "width: 35%" type = "primary">Checked!</el-button>
 				<el-button class = "float-end" color="#00bd7e" style = "width: 35%" type = "success" @click = "join">Join</el-button>
 			</div>
+      <div v-if="!idCheck" class = "mt-2" style = "color:#c36169">This ID is already existed!</div>
 		</div>
 	</main>
 	</html>

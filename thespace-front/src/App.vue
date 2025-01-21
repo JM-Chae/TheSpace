@@ -25,11 +25,7 @@ onMounted(()=>
     const isRemember = window.document.cookie.split(';').find(cookie=>cookie.startsWith('isRemember='))?.split('=')[1]
 		if(isRemember == 'true' && sessionStorage.getItem('login') != 'ture')
       {
-        axios.get(`/user`, {withCredentials: true})
-          .then(() =>
-          {
-            getInfo();
-          })
+        getInfo();
       }
   }
 )

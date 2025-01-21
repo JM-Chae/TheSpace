@@ -1,91 +1,48 @@
 package com.thespace.thespace.controller;
 
 
-import com.thespace.thespace.dto.UserDTO;
-import com.thespace.thespace.dto.UserInfoDTO;
+import com.thespace.thespace.dto.user.UserInfoDTO;
+import com.thespace.thespace.dto.user.UserRegisterDTO;
 import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController
   {
-    private UserService userService;
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void setUserController(UserService userService, PasswordEncoder passwordEncoder)
-      {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-      }
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/checkid")
-    public boolean check(@RequestParam("id") String id, RedirectAttributes redirectAttributes)
+    public boolean check(@RequestParam("id") String id)
       {
-        boolean check = userService.checkId(id);
-        if (!check)
-          {
-            redirectAttributes.addFlashAttribute("This ID already exists.");
-          }
-        redirectAttributes.addFlashAttribute("Successful Check ID");
-        return check;
-      }
-
-    @GetMapping
-      public void getLogin()
-      {
+          return userService.checkId(id);
       }
 
     @GetMapping("/info")
     public ResponseEntity<UserInfoDTO> getUserInfo(Authentication authentication)
       {
-        if (authentication == null)
-          {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-          }
+        if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         return ResponseEntity.ok(userService.getUserinfoDTO(authentication));
       }
 
 
-
     @PostMapping
-    public void register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult, @RequestParam("checkid") boolean check, RedirectAttributes redirectAttributes) throws Exception
+    public void register(@Valid @RequestBody UserRegisterDTO userRegisterDTO, @RequestParam("checkid") boolean check) throws Exception
       {
-        if (bindingResult.hasErrors())
-          {
-            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            throw new BindException(bindingResult);
-          }
-        String uuid;
-        do
-          {
-            uuid = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
-          } while (!userService.checkUuid(uuid));
-
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userDTO.setUuid(uuid);
-
-        if (check)
-          {
-            userService.register(userDTO);
-            userService.setRole(userDTO.getId(), "ROLE_USER");
-          }
+        userService.register(userRegisterDTO, check);
       }
   }
