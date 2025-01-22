@@ -1,0 +1,13 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/board' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "title" : "test1",
+  "content" : "content1",
+  "writer" : "testUser",
+  "writerUuid" : "testUser",
+  "fileNames" : [ ],
+  "categoryId" : 1
+}'
+----

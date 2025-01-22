@@ -1,0 +1,11 @@
+[source,json,options="nowrap"]
+----
+{
+  "title" : "test1",
+  "content" : "content1",
+  "writer" : "testUser",
+  "writerUuid" : "testUser",
+  "fileNames" : [ ],
+  "categoryId" : 1
+}
+----

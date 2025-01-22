@@ -1,0 +1,12 @@
+[source,bash]
+----
+$ echo '{
+  "title" : "test1",
+  "content" : "content1",
+  "writer" : "testUser",
+  "writerUuid" : "testUser",
+  "fileNames" : [ ],
+  "categoryId" : 1
+}' | http POST 'http://localhost:8080/board' \
+    'Content-Type:application/json;charset=UTF-8'
+----
