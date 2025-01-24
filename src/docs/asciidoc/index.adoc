@@ -1,0 +1,19 @@
+= The Space API Docs
+The Space API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Borad-API]]
+== Board API
+
+[[Board-Post-API]]
+=== Post-API
+operation::board-controller-test/board-post[snippets='http-request,http-response']
+
+return value = Board Number (bno)
+
+operation::board-controller-test/board-post[snippets='request-fields']

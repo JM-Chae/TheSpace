@@ -18,7 +18,6 @@ import lombok.Getter;
 @Getter
 @Entity
 public class Category extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
@@ -38,13 +37,10 @@ public class Category extends BaseEntity {
     private List<Board> board = new ArrayList<>();
 
     public Category() {
-
     }
 
     @Builder
-    public Category(Long categoryId, String path, String categoryName, String categoryType,
-        Community community, List<Board> board) {
-        this.categoryId = categoryId;
+    public Category(String path, String categoryName, String categoryType, Community community, List<Board> board) {
         this.path = path;
         this.categoryName = categoryName;
         this.categoryType = categoryType;

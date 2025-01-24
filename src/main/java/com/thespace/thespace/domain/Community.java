@@ -40,9 +40,8 @@ public class Community extends BaseEntity {
     }
 
     @Builder
-    public Community(Long communityId, String communityName, String description,
+    public Community(String communityName, String description,
         List<Category> category) {
-        this.communityId = communityId;
         this.communityName = communityName;
         this.description = description;
         this.category = category;
