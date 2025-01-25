@@ -55,12 +55,12 @@ function check(communityName: string)
 
 function create()
   {
-    axios.post(`community/create`,
+    axios.post(`community/admin`,
 			{communityName: communityName.value,
         description: description.value
       }, {params:
 					{userid: userId,
-					check: nameCheck.value}})
+            nameCheck: nameCheck.value}})
 			.then(() => router.push({path: '/community/home', state: {communityName: communityName.value}}))
   }
 

@@ -1,4 +1,4 @@
-package com.thespace.thespace.controller;
+package com.thespace.thespace.config;
 
 import io.github.hejow.restdocs.generator.ApiTag;
 

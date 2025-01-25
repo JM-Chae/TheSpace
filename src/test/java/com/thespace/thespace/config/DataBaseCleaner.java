@@ -13,14 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("test")
 public class DataBaseCleaner implements InitializingBean {
-    // 테이블 이름들을 저장할 List
+
     private final List<String> tables = new ArrayList<>();
 
-    // 엔티티 매니저를 선언한다
     @PersistenceContext
     private EntityManager entityManager;
 
-    // 테이블 이름을 조회한다
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void findDatabaseTableNames() {
@@ -28,7 +26,6 @@ public class DataBaseCleaner implements InitializingBean {
             tables.addAll(tableNames);
     }
 
-    // 테이블을 초기화한다
     private void truncate() {
         entityManager.createNativeQuery(String.format("SET FOREIGN_KEY_CHECKS = %d", 0)).executeUpdate();
         for (String tableName : tables) {

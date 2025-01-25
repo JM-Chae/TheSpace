@@ -17,3 +17,10 @@ operation::board-controller-test/board-post[snippets='http-request,http-response
 return value = Board Number (bno)
 
 operation::board-controller-test/board-post[snippets='request-fields']
+
+=== Read-API
+operation::board-controller-test/board-read[snippets='http-request']
+GET: /board/{bno}
+
+operation::board-controller-test/board-read[snippets='http-response,response-fields']
+

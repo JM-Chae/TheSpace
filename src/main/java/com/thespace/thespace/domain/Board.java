@@ -56,9 +56,8 @@ public class Board extends BaseEntity {
     }
 
     @Builder
-    public Board(Long bno, String title, String path, String content, String writer,
+    public Board(String title, String path, String content, String writer,
         String writerUuid, Category category) {
-        this.bno = bno;
         this.title = title;
         this.path = path;
         this.content = content;

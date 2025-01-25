@@ -78,23 +78,23 @@ public class GetListBoard extends QuerydslRepositorySupport {
         List<Board> boardList = selectQuery.fetch();
 
         List<BoardDTO> dtoList = boardList.stream().map(board1 ->
-            BoardDTO.builder()
-                .bno(board1.getBno())
-                .title(board1.getTitle())
-                .content(board1.getContent())
-                .path(board1.getPath())
-                .writer(board1.getWriter())
-                .writerUuid(board1.getWriterUuid())
-                .createDate(board1.getCreateDate())
-                .modDate(board1.getModDate())
-                .viewCount(board1.getViewCount())
-                .vote(board1.getVote())
-                .fileNames(board1.getFileSet().stream().sorted().map(boardFile ->
-                    boardFile.getFileId() + "_" + boardFile.getFileName())
-                    .toList())
-                .categoryId(board1.getCategory().getCategoryId())
-                .rCount(board1.getRCount())
-                .build())
+                BoardDTO.builder()
+                    .bno(board1.getBno())
+                    .title(board1.getTitle())
+                    .content(board1.getContent())
+                    .path(board1.getPath())
+                    .writer(board1.getWriter())
+                    .writerUuid(board1.getWriterUuid())
+                    .createDate(board1.getCreateDate())
+                    .modDate(board1.getModDate())
+                    .viewCount(board1.getViewCount())
+                    .vote(board1.getVote())
+                    .fileNames(board1.getFileSet().stream().sorted().map(boardFile ->
+                            boardFile.getFileId() + "_" + boardFile.getFileName())
+                        .toList())
+                    .categoryId(board1.getCategory().getCategoryId())
+                    .rCount(board1.getRCount())
+                    .build())
             .toList();
 
         long totalCount = selectQuery.fetchCount();
