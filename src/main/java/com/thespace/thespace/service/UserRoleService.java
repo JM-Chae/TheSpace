@@ -1,10 +1,38 @@
 package com.thespace.thespace.service;
 
-public interface UserRoleService
+
+import com.thespace.thespace.domain.UserRole;
+import com.thespace.thespace.repository.UserRoleRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class UserRoleService
   {
-    void register(String roleName);
+    private final UserRoleRepository userRoleRepository;
 
-    Long findRoleId(String roleName);
+    public Long findRoleId(String roleName)
+    {
+      return userRoleRepository.findByRole(roleName).orElseThrow().getId();
+    }
 
-    String findRoleNameById(Long id);
+    public void register(String roleName)
+    {
+      if (!userRoleRepository.existsByRole(roleName))
+      {
+        UserRole role = new UserRole();
+        String roleSetName = "ADMIN_"+roleName.toUpperCase();
+        boolean exist = userRoleRepository.existsByRole(roleSetName);
+        if (!exist)
+        {
+          role.setRole(roleSetName);
+          userRoleRepository.save(role);
+        }
+      }
+    }
+    public String findRoleNameById(Long id)
+    {
+      return userRoleRepository.findById(id).orElseThrow().getRole();
+    }
   }

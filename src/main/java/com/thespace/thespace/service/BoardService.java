@@ -92,17 +92,22 @@ public class BoardService {
         Long bno = boardModifyDTO.bno();
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
-        board.change(boardModifyDTO.title(), boardModifyDTO.content(),
-            categoryRepository.findById(boardModifyDTO.categoryId()).orElseThrow());
 
-        if (boardModifyDTO.fileNames() != null) {
-            boardModifyDTO.fileNames().forEach(fileName -> {
-                String[] array = fileName.split("_", 2);
-                board.addFile(array[0], array[1]);
-            });
+        if (board.getWriter().equals(boardModifyDTO.writer())) {
+
+            board.change(boardModifyDTO.title(), boardModifyDTO.content(),
+                categoryRepository.findById(boardModifyDTO.categoryId()).orElseThrow()
+            );
+
+            if (boardModifyDTO.fileNames() != null) {
+                boardModifyDTO.fileNames().forEach(fileName -> {
+                    String[] array = fileName.split("_", 2);
+                    board.addFile(array[0], array[1]);
+                });
+            }
+
+            boardRepository.save(board);
         }
-
-        boardRepository.save(board);
     }
 
     public void delete(Long bno, String userUuid) {

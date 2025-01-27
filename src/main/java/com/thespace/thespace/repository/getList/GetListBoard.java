@@ -57,7 +57,9 @@ public class GetListBoard extends QuerydslRepositorySupport {
             }
         }
 
-        booleanBuilder.and(board.path.eq(path));
+        if (!path.isEmpty()) {
+            booleanBuilder.and(board.path.eq(path));
+        }
 
         if (!Objects.equals(category, "")) {
             List<Category> categoryList = categoryRepository.findByPath(path);

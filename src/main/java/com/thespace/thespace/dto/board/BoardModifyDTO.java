@@ -10,8 +10,8 @@ public record BoardModifyDTO(Long bno,
                              String title,
                              @NotNull(message = "Content is a required field.")
                              String content,
+                             @NotNull
                              String writer,
-                             String writerUuid,
                              @NotNull(message = "Choose category.")
                              Long categoryId,
                              List<String> fileNames) {

@@ -19,8 +19,16 @@ return value = Board Number (bno)
 operation::board-controller-test/board-post[snippets='request-fields']
 
 === Read-API
-operation::board-controller-test/board-read[snippets='http-request']
-GET: /board/{bno}
+operation::board-controller-test/board-read[snippets='http-request,http-response,path-parameters,response-fields']
 
-operation::board-controller-test/board-read[snippets='http-response,response-fields']
+=== List-API
+operation::board-controller-test/board-list[snippets='http-request,request-fields,response-fields']
 
+=== Modify-API
+operation::board-controller-test/board-modify[snippets='http-request,http-response,request-fields']
+
+=== Delete-API
+operation::board-controller-test/board-delete[snippets='http-request,http-response,path-parameters,form-parameters']
+
+=== Delete with Admin-API
+operation::board-controller-test/board-admin-delete[snippets='http-request,http-response,path-parameters,form-parameters']

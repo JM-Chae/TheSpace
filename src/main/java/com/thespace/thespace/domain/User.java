@@ -1,20 +1,22 @@
 package com.thespace.thespace.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Builder
-@Setter
 @Getter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 public class User extends BaseEntity implements UserDetails
   {
     @Id
@@ -33,12 +35,24 @@ public class User extends BaseEntity implements UserDetails
     @Column(nullable = false)
     private String password;
 
+    @Setter
     @ManyToMany
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @Builder.Default
-    private List<UserRole> roles = new ArrayList<>();
+    private List<UserRole> roles;
 
+    public User() {
+    }
 
+    @Builder
+    public User(String id, String uuid, String name, String email, String password,
+        List<UserRole> roles) {
+      this.id = id;
+      this.uuid = uuid;
+      this.name = name;
+      this.email = email;
+      this.password = password;
+      this.roles = roles == null ? new ArrayList<>() : roles;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
-    private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
     public List<Long> findUserRoles(String userId) {
@@ -52,7 +50,8 @@ public class UserService {
             .build();
     }
 
-    public void register(UserRegisterDTO userRegisterDTO, boolean check) throws Exception {
+    @Transactional
+    public void register(UserRegisterDTO userRegisterDTO, boolean check) {
         if (!check) {
             return;
         }
@@ -83,12 +82,11 @@ public class UserService {
         return !userRepository.existsById(id);
     }
 
+    @Transactional
     public void setRole(String id, String role) {
         UserRole userRole = userRoleRepository.findByRole(role).orElseThrow(UserNotFound::new);
         User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         user.getRoles().add(userRole);
         userRepository.save(user);
     }
-
-
 } //Implement modify User data later

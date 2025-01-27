@@ -53,7 +53,6 @@ const post = async function ()
         title: title.value,
         content: content.value,
         writer: user.name,
-        writerUuid: user.uuid,
         categoryId: categoryId.value,
         fileNames: newFileNames.value
       })
