@@ -10,25 +10,38 @@ The Space API 문서
 [[Borad-API]]
 == Board API
 
-[[Board-Post-API]]
 === Post-API
-operation::board-controller-test/board-post[snippets='http-request,http-response']
+operation::board-controller-test/board-post[snippets='curl-request,http-response']
 
-return value = Board Number (bno)
+|===
+ |return value|Board Number (bno)
+|===
 
 operation::board-controller-test/board-post[snippets='request-fields']
 
 === Read-API
-operation::board-controller-test/board-read[snippets='http-request,http-response,path-parameters,response-fields']
+operation::board-controller-test/board-read[snippets='curl-request,path-parameters,http-response,response-fields']
 
 === List-API
-operation::board-controller-test/board-list[snippets='http-request,request-fields,response-fields']
+operation::board-controller-test/board-list[snippets='curl-request,request-fields,response-fields']
 
 === Modify-API
-operation::board-controller-test/board-modify[snippets='http-request,http-response,request-fields']
+operation::board-controller-test/board-modify[snippets='curl-request,request-fields,http-response']
 
 === Delete-API
-operation::board-controller-test/board-delete[snippets='http-request,http-response,path-parameters,form-parameters']
+operation::board-controller-test/board-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 === Delete with Admin-API
-operation::board-controller-test/board-admin-delete[snippets='http-request,http-response,path-parameters,form-parameters']
+operation::board-controller-test/board-admin-delete[snippets='curl-request,http-response,path-parameters,query-parameters,http-response']
+
+[[Category-API]]
+== Category API
+
+=== List-API
+operation::category-controller-test/category-list[snippets='curl-request,query-parameters,response-fields']
+
+=== Create with Admin-API
+operation::category-controller-test/category-create[snippets='curl-request,query-parameters,request-fields,http-response']
+
+=== Delete with Admin-API
+operation::category-controller-test/category-delete[snippets='curl-request,path-parameters,query-parameters,http-response']

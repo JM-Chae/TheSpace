@@ -3,7 +3,7 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.dto.category.CategoryCreateDTO;
-import com.thespace.thespace.dto.category.CategoryDTO;
+import com.thespace.thespace.dto.category.CategoryListDTO;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import java.util.List;
@@ -20,10 +20,10 @@ public class CategoryService {
     private final UserService userService;
     private final UserRoleService userRoleService;
 
-    public Long create(CategoryCreateDTO categoryCreateDTO, String userId) {
+    public void create(CategoryCreateDTO categoryCreateDTO, String userId) {
         if (!userService.findUserRoles(userId)
             .contains(userRoleService.findRoleId("ADMIN_" + categoryCreateDTO.path()))) {
-            return null;
+            return;
         }
 
         Long communityId = categoryCreateDTO.communityId();
@@ -36,23 +36,25 @@ public class CategoryService {
             .path(community.getCommunityName())
             .build();
 
-        return categoryRepository.save(category).getCategoryId();
+        categoryRepository.save(category);
     }
 
-    public List<CategoryDTO> list(String path) {
+    public List<CategoryListDTO> list(String path) {
         List<Category> result = categoryRepository.findByPath(path);
 
         return result.stream().map(category ->
-                CategoryDTO.builder()
-                    .categoryId(category.getCategoryId())
-                    .categoryName(category.getCategoryName())
-                    .communityId(category.getCommunity().getCommunityId())
-                    .build())
+                new CategoryListDTO(
+                    category.getCategoryId(),
+                    category.getCategoryName(),
+                    category.getCategoryType(),
+                    category.getCommunity().getCommunityId()
+                )
+            )
             .collect(Collectors.toList());
     }
 
-    public void deleteCategory(Long categoryId, String userId, String communityName) {
-        if (userService.findUserRoles(userId)
+    public void delete(Long categoryId, String userId, String communityName) {
+        if (!userService.findUserRoles(userId)
             .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
             return;
         }

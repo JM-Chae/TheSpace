@@ -11,9 +11,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.formParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -363,7 +363,7 @@ class BoardControllerTest {
         ));
 
         //when
-        ResultActions result = mockMvc.perform(delete("/board/{bno}", board.getBno()).param(
+        ResultActions result = mockMvc.perform(delete("/board/{bno}", board.getBno()).queryParam(
             "userUuid",
             board.getWriterUuid()
         ));
@@ -379,7 +379,8 @@ class BoardControllerTest {
         result.andDo(write().document(
             pathParameters(parameterWithName("bno").description(
                 "Number of Board.")),
-            formParameters(parameterWithName("userUuid").description("UUID of the delete performer."))
+            queryParameters(parameterWithName("userUuid").description(
+                "UUID of the delete performer."))
         ));
     }
 
@@ -427,8 +428,8 @@ class BoardControllerTest {
         ResultActions result = mockMvc.perform(delete(
             "/board/{bno}/admin",
             board.getBno()
-        ).param("userId", admin.getId())
-            .param("communityName", community.getCommunityName()));
+        ).queryParam("userId", admin.getId())
+            .queryParam("communityName", community.getCommunityName()));
 
         //then
         result.andExpect(status().isOk());
@@ -441,7 +442,7 @@ class BoardControllerTest {
         result.andDo(write().document(
             pathParameters(parameterWithName("bno").description(
                 "Number of Board.")),
-            formParameters(
+            queryParameters(
                 parameterWithName("userId").description("ID of the delete performer."),
                 parameterWithName("communityName").description("The community name of the post.")
             )

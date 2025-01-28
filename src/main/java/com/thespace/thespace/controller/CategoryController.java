@@ -1,7 +1,7 @@
 package com.thespace.thespace.controller;
 
 import com.thespace.thespace.dto.category.CategoryCreateDTO;
-import com.thespace.thespace.dto.category.CategoryDTO;
+import com.thespace.thespace.dto.category.CategoryListDTO;
 import com.thespace.thespace.service.CategoryService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -23,7 +23,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public List<CategoryDTO> list(@RequestParam(name = "path") String path) {
+    public List<CategoryListDTO> list(@RequestParam(name = "path") String path) {
         return categoryService.list(path);
     }
 
@@ -37,6 +37,6 @@ public class CategoryController {
     public void delete(@PathVariable("categoryId") Long categoryId,
         @RequestParam("userId") String userId,
         @RequestParam("communityName") String communityName) {
-        categoryService.deleteCategory(categoryId, userId, communityName);
+        categoryService.delete(categoryId, userId, communityName);
     }
 }
