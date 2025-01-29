@@ -32,7 +32,7 @@ operation::board-controller-test/board-modify[snippets='curl-request,request-fie
 operation::board-controller-test/board-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 === Delete with Admin-API
-operation::board-controller-test/board-admin-delete[snippets='curl-request,http-response,path-parameters,query-parameters,http-response']
+operation::board-controller-test/board-admin-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 [[Category-API]]
 == Category API
@@ -45,3 +45,18 @@ operation::category-controller-test/category-create[snippets='curl-request,query
 
 === Delete with Admin-API
 operation::category-controller-test/category-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+
+[[Community-API]]
+== Community API
+
+=== Get-API
+operation::community-controller-test/community-get[snippets='curl-request,path-parameters,http-response,response-fields']
+
+=== List-API
+operation::community-controller-test/community-list[snippets='curl-request,request-fields,response-fields']
+
+=== Creat-API
+operation::community-controller-test/community-create[snippets='curl-request,request-fields,query-parameters,http-response']
+
+=== Check-API
+operation::community-controller-test/community-check[snippets='curl-request,query-parameters,http-response']

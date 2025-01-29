@@ -85,8 +85,7 @@ class CategoryControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         for (int i = 1; i <= 10; i++) {
@@ -130,8 +129,7 @@ class CategoryControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         CategoryCreateDTO categoryCreateDTO = new CategoryCreateDTO(
@@ -180,7 +178,7 @@ class CategoryControllerTest {
                 fieldWithPath("communityId").description(
                     "The community ID to which that category will belongs.")
             ),
-            queryParameters(parameterWithName("userId").description("ID of the delete performer."))
+            queryParameters(parameterWithName("userId").description("ID of the create performer."))
         ));
     }
 
@@ -189,8 +187,7 @@ class CategoryControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(

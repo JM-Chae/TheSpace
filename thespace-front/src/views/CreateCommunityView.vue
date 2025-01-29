@@ -55,7 +55,7 @@ function check(communityName: string)
 
 function create()
   {
-    axios.post(`community/admin`,
+    axios.post(`community`,
 			{communityName: communityName.value,
         description: description.value
       }, {params:

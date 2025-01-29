@@ -6,11 +6,11 @@ import com.thespace.thespace.dto.community.CommunityModifyDTO;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.service.CommunityService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,14 +32,14 @@ public class CommunityController {
     }
 
     @GetMapping("/list")
-    public PageResDTO<CommunityDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
+    public PageResDTO<CommunityDTO> list(@RequestBody PageReqDTO pageReqDTO) {
         return communityService.list(pageReqDTO);
     }
 
-    @PostMapping("/admin")
-    public Long create(@RequestBody CommunityCreateDTO communityCreateDTO,
-        @RequestParam("userid") String userid, @RequestParam("nameCheck") boolean nameCheck) {
-        return communityService.create(communityCreateDTO, userid, nameCheck);
+    @PostMapping
+    public Long create(@Valid @RequestBody CommunityCreateDTO communityCreateDTO,
+        @RequestParam("userId") String userId, @RequestParam("nameCheck") boolean nameCheck) {
+        return communityService.create(communityCreateDTO, userId, nameCheck);
     }
 
     @GetMapping("/nameCheck")

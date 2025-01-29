@@ -95,8 +95,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(
@@ -122,6 +121,11 @@ class BoardControllerTest {
 
         //then
         result.andExpect(status().isOk());
+        Board board = boardRepository.findById(1L).orElseThrow();
+        if (!(board.getTitle().equals(boardPostDTO.title()) &&
+            board.getContent().equals(boardPostDTO.content()))) {
+            throw new Exception();
+        }
 
         //docs
         result.andDo(write().document(requestFields(
@@ -139,8 +143,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(
@@ -200,8 +203,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(
@@ -272,8 +274,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(
@@ -341,8 +342,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(
@@ -389,8 +389,7 @@ class BoardControllerTest {
         //given
         Community community = communityRepository.save(new Community(
             "test",
-            "test",
-            new ArrayList<>()
+            "test"
         ));
 
         Category category = categoryRepository.save(new Category(

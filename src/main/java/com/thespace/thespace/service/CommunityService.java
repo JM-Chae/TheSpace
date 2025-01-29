@@ -14,7 +14,6 @@ import com.thespace.thespace.repository.getList.GetListCommunity;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,29 +23,32 @@ import org.springframework.stereotype.Service;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    private final ModelMapper modelMapper;
     private final UserService userService;
     private final UserRoleService userRoleService;
     private final CategoryService categoryService;
     private final GetListCommunity getListCommunity;
 
-    public Long create(CommunityCreateDTO communityCreateDTO, String userid, boolean nameCheck) {
+    public Long create(CommunityCreateDTO communityCreateDTO, String userId, boolean nameCheck) {
         if (!nameCheck) {
             return null;
         }
 
-        Community community = modelMapper.map(communityCreateDTO, Community.class);
+        Community community = new Community(
+            communityCreateDTO.communityName(),
+            communityCreateDTO.description()
+        );
 
         String communityName = communityCreateDTO.communityName();
 
         userRoleService.register(communityName);
-        userService.setRole(userid, "ADMIN_" + communityName);
+        userService.setRole(userId, "ADMIN_" + communityName);
 
         Long communityId = communityRepository.save(community).getCommunityId();
 
         CategoryCreateDTO categoryCreateDTO = new CategoryCreateDTO("Open Forum", "Forum",
-            community.getCommunityName(), communityId);
-        categoryService.create(categoryCreateDTO, userid);
+            community.getCommunityName(), communityId
+        );
+        categoryService.create(categoryCreateDTO, userId);
 
         return communityId;
     }
@@ -89,21 +91,25 @@ public class CommunityService {
         Community community = communityRepository.findByCommunityName(communityName);
         List<Category> categories = community.getCategory();
         List<CategoryDTO> categoryDTO = categories.stream().map(category ->
-            new CategoryDTO(category.getCategoryId(),
-                category.getCategoryName(),
-                category.getCategoryType(),
-                category.getPath(),
-                category.getCreateDate(),
-                category.getModDate(),
-                category.getCommunity().getCommunityId()))
+                new CategoryDTO(
+                    category.getCategoryId(),
+                    category.getCategoryName(),
+                    category.getCategoryType(),
+                    category.getPath(),
+                    category.getCreateDate(),
+                    category.getModDate(),
+                    category.getCommunity().getCommunityId()
+                ))
             .toList();
 
-        return new CommunityDTO(community.getCommunityId(),
+        return new CommunityDTO(
+            community.getCommunityId(),
             community.getCommunityName(),
             community.getCreateDate(),
             community.getModDate(),
             community.getDescription(),
-            categoryDTO);
+            categoryDTO
+        );
     }
 
     public Long getCommunityIdByName(String communityName) {

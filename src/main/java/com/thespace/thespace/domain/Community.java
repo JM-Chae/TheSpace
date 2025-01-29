@@ -40,11 +40,9 @@ public class Community extends BaseEntity {
     }
 
     @Builder
-    public Community(String communityName, String description,
-        List<Category> category) {
+    public Community(String communityName, String description) {
         this.communityName = communityName;
         this.description = description;
-        this.category = category;
     }
 
     public void change(String description) {
