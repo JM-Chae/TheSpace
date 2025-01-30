@@ -2,12 +2,16 @@ package com.thespace.thespace.controller;
 
 import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -18,10 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thespace.thespace.config.DataBaseCleaner;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
+import com.thespace.thespace.domain.UserRole;
 import com.thespace.thespace.dto.community.CommunityCreateDTO;
+import com.thespace.thespace.dto.community.CommunityModifyDTO;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.UserRepository;
+import com.thespace.thespace.repository.UserRoleRepository;
+import com.thespace.thespace.service.UserService;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +63,12 @@ class CommunityControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
     private CommunityRepository communityRepository;
 
     @Autowired
@@ -69,10 +83,7 @@ class CommunityControllerTest {
     @Test
     void communityGet() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
         //when
         ResultActions result = mockMvc.perform(get(
@@ -177,7 +188,8 @@ class CommunityControllerTest {
 
         //docs
         result.andDo(write().document(requestFields(
-            fieldWithPath("communityName").description("Name of community"),
+            fieldWithPath("communityName").description(
+                "Name of community"),
             fieldWithPath("description").description("Description of community")
         ), queryParameters(
             parameterWithName("nameCheck").description("result of name check"),
@@ -205,14 +217,134 @@ class CommunityControllerTest {
     }
 
     @Test
-    void communityDelete() {
+    void communityDelete() throws Exception {
+        //given
+        Community community = communityRepository.save(new Community("test", "test"));
+
+        User admin = userRepository.save(new User(
+            "tester",
+            "aaaa",
+            "aaaa",
+            "1234@asdf.zxc",
+            "1234",
+            new ArrayList<>()
+        ));
+        UserRole userRole = userRoleRepository.save(new UserRole(
+            "ADMIN_" + community.getCommunityName(),
+            new ArrayList<>()
+        ));
+        userService.setRole(admin.getId(), userRole.getRole());
+
+        //when
+        ResultActions result = mockMvc.perform(delete(
+            "/community/{communityId}",
+            community.getCommunityId()
+        ).queryParam("userId", admin.getId())
+            .queryParam("communityName", community.getCommunityName()));
+
+        //then
+        result.andExpect(status().isOk());
+        assertThrows(
+            Exception.class,
+            () -> communityRepository.findById(community.getCommunityId())
+                .orElseThrow(Exception::new)
+        );
+
+        //docs
+        result.andDo(write().document(
+            pathParameters(parameterWithName("communityId").description("CommunityID to delete")),
+            queryParameters(
+                parameterWithName("userId").description("ID of the delete performer."),
+                parameterWithName("communityName").description("Name of community to delete")
+            )
+        ));
     }
 
     @Test
-    void communityHasAdminList() {
+    void communityHasAdminList() throws Exception {
+        //given
+        User admin = userRepository.save(new User(
+            "tester",
+            "aaaa",
+            "aaaa",
+            "1234@asdf.zxc",
+            "1234",
+            new ArrayList<>()
+        ));
+
+        for (int i = 1; i <= 4; i++) {
+            Community community = communityRepository.save(new Community("test" + i, "test" + i));
+
+            UserRole userRole = userRoleRepository.save(new UserRole(
+                "ADMIN_" + community.getCommunityName(),
+                new ArrayList<>()
+            ));
+            userService.setRole(admin.getId(), userRole.getRole());
+        }
+
+        //when
+        ResultActions result = mockMvc.perform(get("/community/list/admin").queryParam(
+            "userId",
+            admin.getId()
+        ));
+
+        //then
+        result.andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(4));
+
+        //docs
+        result.andDo(write().document(
+            queryParameters(parameterWithName("userId").description("ID of the get performer.")),
+            responseFields(fieldWithPath("[]").description(
+                "List of CommunityID what performer has admin role."))
+        ));
     }
 
     @Test
-    void communityModify() {
+    void communityModify() throws Exception {
+        //given
+        Community community = communityRepository.save(new Community(
+            "test",
+            "test"
+        ));
+
+        CommunityModifyDTO communityModifyDTO = new CommunityModifyDTO(
+            community.getCommunityId(),
+            community.getCommunityName(),
+            "modify"
+        );
+
+        User admin = userRepository.save(new User(
+            "tester",
+            "aaaa",
+            "aaaa",
+            "1234@asdf.zxc",
+            "1234",
+            new ArrayList<>()
+        ));
+        UserRole userRole = userRoleRepository.save(new UserRole(
+            "ADMIN_" + community.getCommunityName(),
+            new ArrayList<>()
+        ));
+        userService.setRole(admin.getId(), userRole.getRole());
+
+        //when
+        ResultActions result = mockMvc.perform(patch("/community/modify")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(communityModifyDTO))
+            .queryParam("userId", admin.getId()));
+
+        //then
+        result.andExpect(status().isOk());
+        community = communityRepository.findById(community.getCommunityId()).orElseThrow();
+        if (!community.getDescription().equals(communityModifyDTO.description())) {
+            throw new Exception();
+        }
+
+        result.andDo(write().document(requestFields(
+            fieldWithPath("communityId").description("CommunityID to update"),
+            fieldWithPath("communityName").description("Community name to update"),
+            fieldWithPath("description").description("Description what will change")
+        ), queryParameters(parameterWithName("userId").description("ID of the patch performer.")
+        )));
     }
 }

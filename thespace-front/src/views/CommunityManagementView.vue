@@ -75,7 +75,7 @@ function cancel()
 
 function done()
   {
-    axios.put(`/community/modify`,
+    axios.patch(`/community/modify`,
 			{
         communityId: community.value.communityId,
         communityName: communityName,

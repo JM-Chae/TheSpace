@@ -60,3 +60,12 @@ operation::community-controller-test/community-create[snippets='curl-request,req
 
 === Check-API
 operation::community-controller-test/community-check[snippets='curl-request,query-parameters,http-response']
+
+=== Delete-API
+operation::community-controller-test/community-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+
+=== AdminGetList-API
+operation::community-controller-test/community-has-admin-list[snippets='curl-request,query-parameters,http-response,response-fields']
+
+=== Modify-API
+operation::community-controller-test/community-modify[snippets='curl-request,query-parameters,request-fields,http-response']
