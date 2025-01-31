@@ -5,7 +5,6 @@ import router from "@/router";
 import {Search} from "@element-plus/icons-vue";
 
 const dto = ref()
-const page = ref(1)
 const type = ref('n')
 const keyword = ref('')
 
@@ -22,10 +21,10 @@ function getList()
   {
     axios.get("/community/list", {
       params: {
-        page: page.value,
+        page: 0,
+        size: 0,
         type: type.value,
-        size: 1000000,
-        keyword: keyword.value
+        keyword: keyword.value,
       }
     })
       .then(res => dto.value = res.data.dtoList)
@@ -50,6 +49,7 @@ function hasAdmin()
 				type.value = "i"
         getList();
         keyword.value = ""
+        type.value = "n"
       })
 
   }

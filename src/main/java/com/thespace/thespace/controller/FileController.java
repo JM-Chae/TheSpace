@@ -16,25 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// REST API란 무엇인가?
-// 자원을 어떻게 나타내는가? 어떻게 나타내는게 좋을까?
-
-// URI vs URL
-// URI : Uniform Resource Identifier
-// URL : Uniform Resource Locator
-
-// Http Method(GET, PUT, POST, PATCH, DELETE) 를 기반으로 자원을 표현해주자.
-
-// GET domain/get/{fileid}/{filename}
-// GET domain/files?name=파일명
-
-// 1. 명사를 복수형으로 표현한다.
-// ex) GET /users/1
-// 2. 최대한 동사는 http method로 표현한다.
-// ex) DELETE /users/1
-// 단, HTTP METHOD로 표현할 수 없는 동사는 사용할 수 있다. (Controll URI)
-// ex) 결제와 같이 직관적으로 표현할 수 없을 때는 사용한다.
-// ex) POST /stock/1/pay
 
 @RestController
 @RequiredArgsConstructor

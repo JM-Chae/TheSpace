@@ -7,7 +7,7 @@ spring:
       enabled: true
       max-file-size: "100MB"
       max-request-size: "300MB"
-      location: "/static/files/"
+      location: "C:/Users/CJM/OneDrive/DeskTop/thespace/files"
 
   jpa:
     hibernate:
@@ -34,5 +34,5 @@ logging:
 com:
   thespace:
     upload:
-      path: 'src/main/resources/static/files'
+      path: "C:/Users/CJM/OneDrive/DeskTop/thespace/files"
 

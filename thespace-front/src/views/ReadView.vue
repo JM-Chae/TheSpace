@@ -75,11 +75,6 @@ function getNestedReply(rno: number, i: number)
       .catch(error => console.error(error));
   }
 
-function getFiles()
-  {
-
-  }
-
 function deleteReply(rno: number, isNR: number)
   {
     if (isNR == 0)

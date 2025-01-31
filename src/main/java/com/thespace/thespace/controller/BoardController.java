@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,7 @@ public class BoardController {
     }
 
     @GetMapping("/list")
-    public PageResDTO<BoardDTO> list(@RequestBody PageReqDTO pageReqDTO) {
+    public PageResDTO<BoardDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
         return boardService.list(pageReqDTO);
     }
 

@@ -8,7 +8,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -25,7 +24,6 @@ import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
 import com.thespace.thespace.dto.community.CommunityCreateDTO;
 import com.thespace.thespace.dto.community.CommunityModifyDTO;
-import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.UserRepository;
 import com.thespace.thespace.repository.UserRoleRepository;
@@ -120,11 +118,12 @@ class CommunityControllerTest {
             communityRepository.save(new Community("test" + i, "test" + i));
         }
 
-        PageReqDTO pageReqDTO = new PageReqDTO(0, 0, "n", "3", "", "");
-
         //when
-        ResultActions result = mockMvc.perform(get("/community/list").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(pageReqDTO)));
+        ResultActions result = mockMvc.perform(get("/community/list")
+                .queryParam("page", "0")
+                .queryParam("size", "0")
+            .queryParam("type", "n")
+            .queryParam("keyword", "3"));
 
         //then
         result.andExpect(status().isOk()).andExpectAll(
@@ -136,10 +135,12 @@ class CommunityControllerTest {
         );
 
         //docs
-        result.andDo(write().document(relaxedRequestFields(
-            fieldWithPath("type").description(
+        result.andDo(write().document(queryParameters(
+            parameterWithName("page").description("0"),
+            parameterWithName("size").description("0"),
+            parameterWithName("type").description(
                 "n / Use n to distinguish it from other list lookup APIs."),
-            fieldWithPath("keyword").description("Keywords to search for")
+            parameterWithName("keyword").description("Keywords to search for")
         ), relaxedResponseFields(
             fieldWithPath("page").description(
                 "1 / This is fixed value because it will show the list all on one page."),

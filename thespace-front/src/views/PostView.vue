@@ -13,10 +13,10 @@ const save = () =>
     {
 
       isSubmitted.value = false;
-      const submitButton = document.getElementsByClassName('tox-button');
+      const submitButton = document.querySelector('button.tox-button[title="Save"]');
       if (submitButton)
         {
-          submitButton[10].addEventListener('click', () =>
+          submitButton.addEventListener('click', () =>
           {
             isSubmitted.value = true;
           });
@@ -87,6 +87,8 @@ const post = async () =>
       {
         try
           {
+            window.removeEventListener('beforeunload', deleteEditorImage)
+            window.removeEventListener('popstate', deleteEditorImage)
             await upload();
             const res = await axios.post("/board",
               {
@@ -195,15 +197,9 @@ const deleteEditorImage = () =>
 
 //In the future, on the backend, when a file is initially uploaded, a separate column will be used to store a "temporary save flag."
 //A logic will then be implemented to delete the corresponding data if the "temporary save flag" remains true after the session expiration time.
-window.addEventListener('beforeunload', () => //
-{
-  deleteEditorImage()
-});
+window.addEventListener('beforeunload', deleteEditorImage);
 
-window.addEventListener('popstate', () => //
-{
-  deleteEditorImage()
-});
+window.addEventListener('popstate', deleteEditorImage);
 
 let count = 0;
 
@@ -254,15 +250,15 @@ let count = 0;
      tinycomments_mode: 'embedded',
 	   tinycomments_author: 'Author name',
      file_picker_types: 'image',
-     setup: (editor: any) => {
-          editor.on('OpenWindow', () =>
-           {
-           save()
-           })
-					editor.on('CloseWindow', async () => {
-        		await closeDialog()
-    });
-  },
+  //    setup: (editor: any) => {
+  //         editor.on('OpenWindow', () =>
+  //          {
+  //          save()
+  //          })
+	// 				editor.on('CloseWindow', async () => {
+  //       		await closeDialog()
+  //   });
+  // },
      file_picker_callback: (callback: any, value: any, meta: any) => {
     if (meta.filetype === 'image') {
           const input = fileInput.createElement('input');
@@ -281,17 +277,17 @@ let count = 0;
               'Content-Type': 'multipart/form-data'
             }
           })
-          
+
           let fileid: string = response.data[0].fileId;
           let filename: string = response.data[0].fileName;
-          
-          let blob = await axios.get(`/file/${fileid}/${filename}`, {responseType: 'blob'})
-          let objectUrl = fileUrl.createObjectURL(blob.data);
+
+          let blob = `http://localhost:8080/file/${fileid}/${filename}`
+
           fileNames.push(fileid+'_'+filename)
           count += 1;
 
-          if (objectUrl) {
-            callback (objectUrl, { title: selectedFile.name });
+          if (blob) {
+            callback (blob, { title: selectedFile.name });
           }
         } catch (error) {}
       }
@@ -300,8 +296,6 @@ let count = 0;
   }
    }"
 						api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
-						
-						hidden
 		/>
 		<div class = "mt-3">
 			<el-button style = "margin-right: 1em" type = "warning" @click = "buttonTrigger">File Select</el-button>

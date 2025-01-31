@@ -46,7 +46,7 @@ public class SecurityConfig implements UserDetailsService
     public CorsConfigurationSource corsConfigurationSource() {
       CorsConfiguration configuration = new CorsConfiguration();
       configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-      configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+      configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
       configuration.setAllowCredentials(true);
       configuration.setAllowedHeaders(Collections.singletonList("*"));
 

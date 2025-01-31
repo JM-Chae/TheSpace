@@ -23,7 +23,7 @@ operation::board-controller-test/board-post[snippets='request-fields']
 operation::board-controller-test/board-read[snippets='curl-request,path-parameters,http-response,response-fields']
 
 === List-API
-operation::board-controller-test/board-list[snippets='curl-request,request-fields,response-fields']
+operation::board-controller-test/board-list[snippets='curl-request,query-parameters,response-fields']
 
 === Modify-API
 operation::board-controller-test/board-modify[snippets='curl-request,request-fields,http-response']
@@ -53,7 +53,7 @@ operation::category-controller-test/category-delete[snippets='curl-request,path-
 operation::community-controller-test/community-get[snippets='curl-request,path-parameters,http-response,response-fields']
 
 === List-API
-operation::community-controller-test/community-list[snippets='curl-request,request-fields,response-fields']
+operation::community-controller-test/community-list[snippets='curl-request,query-parameters,response-fields']
 
 === Creat-API
 operation::community-controller-test/community-create[snippets='curl-request,request-fields,query-parameters,http-response']

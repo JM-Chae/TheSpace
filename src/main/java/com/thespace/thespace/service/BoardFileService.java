@@ -19,6 +19,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BoardFileService {
 
-    private final String uploadPath = "${com.thespace.upload.path}";
+    @Value("${com.thespace.upload.path}")
+    private String uploadPath;
     private final BoardFileRepository boardFileRepository;
     private final BoardRepository boardRepository;
 

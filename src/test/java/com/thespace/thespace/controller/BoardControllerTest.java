@@ -26,7 +26,6 @@ import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
 import com.thespace.thespace.dto.board.BoardModifyDTO;
 import com.thespace.thespace.dto.board.BoardPostDTO;
-import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
@@ -225,11 +224,14 @@ class BoardControllerTest {
             ));
         }
 
-        PageReqDTO pageReqDTO = new PageReqDTO(1, 10, "t", "1", "", "");
-
         //when
-        ResultActions result = mockMvc.perform(get("/board/list").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(pageReqDTO)));
+        ResultActions result = mockMvc.perform(get("/board/list")
+            .queryParam("page", "1")
+            .queryParam("size", "10")
+            .queryParam("type", "t")
+            .queryParam("keyword", "1")
+            .queryParam("path", community.getCommunityName())
+            .queryParam("category", ""));
 
         //then
         result.andExpect(status().isOk()).andExpectAll(
@@ -242,19 +244,17 @@ class BoardControllerTest {
         );
 
         //docs
-        result.andDo(write().document(requestFields(
-            fieldWithPath("page").description("Page number to display in the full query results."),
-            fieldWithPath("size").description("Number of rows to display search results."),
-            fieldWithPath("type").description(
+        result.andDo(write().document(queryParameters(
+            parameterWithName("page").description("Page number to display in the full query results."),
+            parameterWithName("size").description("Number of rows to display search results."),
+            parameterWithName("type").description(
                 "Search condition identifier. +" + "\n" + "Operation 'or' for search criteria. +"
                     + "\n" + "t: title +" + "\n" + "c: content +" + "\n" + "w: writer +" + "\n"
                     + "u: uuid +" + "\n" + "r: reply content"),
-            fieldWithPath("types").description(
-                "Just split type, then create a String array to perform a search with it."),
-            fieldWithPath("keyword").description("Search Keyword"),
-            fieldWithPath("path").description("The community to be searched for. +" + "\n"
+            parameterWithName("keyword").description("Search Keyword"),
+            parameterWithName("path").description("The community to be searched for. +" + "\n"
                 + "Operation 'and' for search criteria."),
-            fieldWithPath("category").description("Category of Search Destinations. +" + "\n"
+            parameterWithName("category").description("Category of Search Destinations. +" + "\n"
                 + "Operation 'and' for search criteria.")
         ), relaxedResponseFields(
             fieldWithPath("page").description("Page number to display in the full query results."),

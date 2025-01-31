@@ -17,9 +17,9 @@ public record PageReqDTO(int page,
         this.page = page != 0 ? page : 1;
         this.size = size != 0 ? size : 1000000;
         this.type = type;
-        this.keyword = keyword;
-        this.path = path;
-        this.category = category;
+        this.keyword = keyword != null ? keyword : "";
+        this.path = path != null ? path : "";
+        this.category = category != null ? category : "";
     }
 
     public String[] getTypes() {

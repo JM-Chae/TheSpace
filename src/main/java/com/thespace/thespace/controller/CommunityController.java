@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class CommunityController {
     }
 
     @GetMapping("/list")
-    public PageResDTO<CommunityDTO> list(@RequestBody PageReqDTO pageReqDTO) {
+    public PageResDTO<CommunityDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
         return communityService.list(pageReqDTO);
     }
 
