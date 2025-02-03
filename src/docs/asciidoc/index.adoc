@@ -69,3 +69,16 @@ operation::community-controller-test/community-has-admin-list[snippets='curl-req
 
 === Modify-API
 operation::community-controller-test/community-modify[snippets='curl-request,query-parameters,request-fields,http-response']
+
+[[File-API]]
+== File API
+
+=== Upload-API
+operation::file-controller-test/file-upload[snippets='curl-request,request-parts,http-response,response-fields']
+
+=== Get-API
+operation::file-controller-test/file-get[snippets='curl-request,path-parameters,http-response']
+
+=== Delete-API
+operation::file-controller-test/file-delete[snippets='curl-request,path-parameters,http-response']
+
