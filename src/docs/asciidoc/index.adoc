@@ -82,3 +82,17 @@ operation::file-controller-test/file-get[snippets='curl-request,path-parameters,
 === Delete-API
 operation::file-controller-test/file-delete[snippets='curl-request,path-parameters,http-response']
 
+[[Reply-API]]
+== Reply API
+
+=== Register-APi
+operation::reply-controller-test/reply-register[snippets='curl-request,path-parameters,request-fields,http-response']
+
+=== List-API
+operation::reply-controller-test/reply-list[snippets='curl-request,path-parameters,http-response,response-fields']
+
+=== NestedList-API
+operation::reply-controller-test/reply-nested-list-get[snippets='curl-request,path-parameters,http-response,response-fields']
+
+=== Delete-API
+operation::reply-controller-test/reply-delete[snippets='curl-request,path-parameters,http-response']

@@ -10,33 +10,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/board/{bno}/reply")
 @RequiredArgsConstructor
 public class ReplyController {
 
     private final ReplyService replyService;
 
-    @PostMapping("/board/{bno}/reply")
+    @PostMapping
     public void register(@PathVariable("bno") Long bno,
         @RequestBody ReplyRegisterDTO replyRegisterDTO) {
         replyService.register(bno, replyRegisterDTO);
     }
 
-    @DeleteMapping("/reply/{rno}")
-    public void delete(@PathVariable("rno") Long rno, @RequestParam("bno") Long bno) {
+    @DeleteMapping("/{rno}")
+    public void delete(@PathVariable("bno") Long bno, @PathVariable("rno") Long rno) {
         replyService.delete(bno, rno);
     }
 
-    @GetMapping("/board/{bno}/reply")
+    @GetMapping
     public PageResDTO<ReplyDTO> list(@PathVariable("bno") Long bno) {
 
         return replyService.getListReply(bno);
     }
 
-    @GetMapping("/board/{bno}/reply/{rno}")
+    @GetMapping("/{rno}")
     public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno,
         @PathVariable("bno") Long bno) {
 

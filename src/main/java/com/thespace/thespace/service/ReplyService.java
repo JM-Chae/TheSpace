@@ -29,7 +29,7 @@ public class ReplyService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public Long register(Long bno, ReplyRegisterDTO replyRegisterDTO) {
+    public void register(Long bno, ReplyRegisterDTO replyRegisterDTO) {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
         Long replyCount = board.getRCount() + 1L;
         board.setRCount(replyCount);
@@ -46,7 +46,7 @@ public class ReplyService {
         Reply reply = modelMapper.map(replyRegisterDTO, Reply.class);
         reply.setBoard(board);
 
-        return replyRepository.save(reply).getRno();
+        replyRepository.save(reply);
     }
 
     @Transactional

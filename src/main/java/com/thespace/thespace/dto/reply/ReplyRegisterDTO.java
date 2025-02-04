@@ -6,6 +6,6 @@ public record ReplyRegisterDTO(@NotNull String replyContent,
                                @NotNull String replyWriter,
                                @NotNull String replyWriterUuid,
                                String tag,
-                               String path) {
+                               String path ) { // will change path?
 
 }

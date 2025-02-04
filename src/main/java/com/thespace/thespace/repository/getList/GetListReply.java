@@ -56,7 +56,6 @@ public class GetListReply extends QuerydslRepositorySupport {
         List<ReplyDTO> rdtoList = replyList.stream().map(reply1 ->
             ReplyDTO.builder()
                 .rno(reply1.getRno())
-                .bno(reply1.getBoard().getBno())
                 .replyWriterUuid(reply1.getReplyWriterUuid())
                 .replyContent(reply1.getReplyContent())
                 .replyWriter(reply1.getReplyWriter())

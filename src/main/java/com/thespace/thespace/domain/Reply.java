@@ -44,17 +44,14 @@ public class Reply extends BaseEntity {
     }
 
     @Builder
-    public Reply(Long rno, String path, String replyContent, String replyWriter,
+    public Reply(String path, String replyContent, String replyWriter,
         String replyWriterUuid,
-        String tag, Long vote, Long isNested, Board board) {
-        this.rno = rno;
+        String tag, Board board) {
         this.path = path;
         this.replyContent = replyContent;
         this.replyWriter = replyWriter;
         this.replyWriterUuid = replyWriterUuid;
         this.tag = tag;
-        this.vote = vote;
-        this.isNested = isNested;
         this.board = board;
     }
 }
