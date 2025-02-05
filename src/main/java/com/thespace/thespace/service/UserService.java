@@ -84,7 +84,7 @@ public class UserService {
 
     @Transactional
     public void setRole(String id, String role) {
-        UserRole userRole = userRoleRepository.findByRole(role).orElseThrow(UserNotFound::new);
+        UserRole userRole = userRoleRepository.findByRole(role).orElseThrow();
         User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         user.getRoles().add(userRole);
         userRepository.save(user);

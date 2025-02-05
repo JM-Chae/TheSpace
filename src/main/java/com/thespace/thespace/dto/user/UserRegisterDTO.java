@@ -3,7 +3,6 @@ package com.thespace.thespace.dto.user;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 public record UserRegisterDTO(@NotNull(message = "Please enter your ID.") @Size(min = 6, max = 20, message = "Please enter between 6 and 20 characters.")
                               String id,
@@ -12,7 +11,6 @@ public record UserRegisterDTO(@NotNull(message = "Please enter your ID.") @Size(
                               @NotNull @Email @Size(max = 50, message = "Incorrect email address. Please enter it again.")
                               String email,
                               @NotNull(message = "Please enter your password.") @Size(min = 6, max = 20, message = "Please enter between 6 and 20 characters.")
-                              String password,
-                              LocalDateTime createDate) {
+                              String password) {
 
 }

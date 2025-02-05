@@ -92,6 +92,6 @@ public class SecurityConfig implements UserDetailsService
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException
       {
         log.info(id);
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found"+id));
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found: "+id));
       }
   }

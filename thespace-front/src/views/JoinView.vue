@@ -15,7 +15,7 @@ const emailWarn =ref(true)
 const pwWarn = ref(true)
 const idCheck = ref(true)
 
-const pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
+const pattern = /^[A-Za-z0-9_\\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
 
 watch(pw, (newValue) =>
 {
@@ -85,7 +85,7 @@ const check = () =>
   {
     if (idWarn.value == false)
       {
-        axios.post('/user/checkid', null, {
+        axios.get('/user/checkid', {
           params: {id: id.value}
         })
           .then(res => {

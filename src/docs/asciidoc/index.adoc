@@ -96,3 +96,33 @@ operation::reply-controller-test/reply-nested-list-get[snippets='curl-request,pa
 
 === Delete-API
 operation::reply-controller-test/reply-delete[snippets='curl-request,path-parameters,http-response']
+
+[[Like-API]]
+== Like API
+
+=== Like-API
+operation::like-controller-test/like-like[snippets='curl-request,request-fields,http-response']
+|===
+    |Field|Type|Description
+    |Body|int| If performer has no history of like to target post or reply, 1. +
+But, if performer has a history, -1.
+|===
+
+[[User-API]]
+== User API
+
+=== Register-API
+operation::user-controller-test/user-register[snippets='curl-request,request-fields,http-response']
+
+=== Check-API
+operation::user-controller-test/user-check[snippets='curl-request,query-parameters,http-response']
+|===
+    |Field|Type|Description
+    |Body|boolean|If that ID already exists, false, otherwise true.
+|===
+
+=== GetUserInfo-API
+operation::user-controller-test/user-get-user-info[snippets='curl-request']
+    Authentication information is required.
+
+operation::user-controller-test/user-get-user-info[snippets='http-response,response-fields']
