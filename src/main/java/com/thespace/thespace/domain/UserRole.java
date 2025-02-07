@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class UserRole
     private Long id;
 
     @Setter
+    @NotNull
     private String role;
 
     @ManyToMany(mappedBy = "roles")

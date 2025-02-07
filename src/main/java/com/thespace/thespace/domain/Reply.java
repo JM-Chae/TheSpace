@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,12 +20,16 @@ public class Reply extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rno;
 
+    @NotNull
     private String path;
 
+    @NotNull
     private String replyContent;
 
+    @NotNull
     private String replyWriter;
 
+    @NotNull
     private String replyWriterUuid;
 
     private String tag;

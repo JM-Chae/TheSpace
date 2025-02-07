@@ -35,7 +35,7 @@ const login =  ref(false);
 
 <template>
   <header>
-    <div class="wrapper pb-5">
+    <div class="wrapper pb-5" style="height: 10vh">
       <nav>
         <RouterLink to="/space">Home</RouterLink>
 				<RouterLink to="/community">COMMUNITY</RouterLink>

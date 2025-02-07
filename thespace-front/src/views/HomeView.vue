@@ -1,4 +1,4 @@
-<script lang = "ts" setup>
+<script lang="ts" setup>
 import {RouterView} from 'vue-router'
 import {computed} from "vue";
 
@@ -8,14 +8,52 @@ const login = computed(() => sessionStorage.getItem('login') === "true")
 </script>
 
 <template>
-	<header>
-		<div class = "wrapper">
-
-		</div>
-	</header>
-	
-	<RouterView/>
-	<main>
-	
-	</main>
+  <html>
+  <RouterView/>
+  <main>
+    <div style="display: flex; justify-content: center; height: 80vh">
+      <div style="display: flex;">
+      <svg height="200" overflow="hidden" viewBox="0 0 585 585" width="200">
+        <defs>
+          <clipPath id="clip0">
+            <rect height="585" width="585" x="1908" y="731"/>
+          </clipPath>
+          <linearGradient id="stroke1" gradientUnits="userSpaceOnUse" spreadMethod="reflect" x1="2493.24"
+                          x2="1907.76" y1="730.76" y2="1316.24">
+            <stop offset="0" stop-color="#373737"/>
+            <stop offset="0.2" stop-color="#373737"/>
+            <stop offset="0.5" stop-color="#00DE64"/>
+            <stop offset="0.79" stop-color="#373737"/>
+            <stop offset="1" stop-color="#373737"/>
+          </linearGradient>
+          <linearGradient id="fill2" gradientUnits="userSpaceOnUse" spreadMethod="reflect" x1="2365"
+                          x2="2035" y1="1023.15" y2="1023.15">
+            <stop offset="0" stop-color="#373737"/>
+            <stop offset="0.25" stop-color="#373737"/>
+            <stop offset="0.5" stop-color="#00DE64"/>
+            <stop offset="0.75" stop-color="#373737"/>
+            <stop offset="1" stop-color="#373737"/>
+          </linearGradient>
+        </defs>
+        <g clip-path="url(#clip0)" transform="translate(-1908 -731)">
+          <path
+              d="M1917.5 1023.5C1917.5 867.203 2044.2 740.5 2200.5 740.5 2356.8 740.5 2483.5 867.203 2483.5 1023.5 2483.5 1179.8 2356.8 1306.5 2200.5 1306.5 2044.2 1306.5 1917.5 1179.8 1917.5 1023.5Z"
+              fill="#262626" fill-rule="evenodd" stroke="url(#stroke1)"
+              stroke-linecap="round" stroke-miterlimit="8" stroke-width="19.4792"/>
+          <path
+              d="M2070.77 1062.92 2089.78 1062.92 2089.78 1127.38 2308.6 1127.38 2308.6 1062.92 2327.94 1062.92 2327.94 1146.23 2070.77 1146.23Z"
+              fill="url(#fill2)" fill-rule="evenodd"/>
+          <text fill="#000000" fill-opacity="0" font-family="Arial,Arial_MSFontService,sans-serif"
+                font-size="83.3057" x="2070.77" y="1135.82">␣
+          </text>
+        </g>
+      </svg>
+      </div>
+      <div class="ms-5" style="display: flex; flex-direction: column;">
+        <text style="color: #00DE64; font-size: 7em">The Space</text>
+        <text class="ms-2">Hope to find your own space in The Space.</text>
+      </div>
+    </div>
+  </main>
+  </html>
 </template>

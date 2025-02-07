@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,8 +14,11 @@ public class BoardFile implements Comparable<BoardFile> {
 
     @Id
     private String fileId;
+    @NotNull
     private String fileName;
+    @NotNull
     private String imageChk;
+    @NotNull
     private int ord = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

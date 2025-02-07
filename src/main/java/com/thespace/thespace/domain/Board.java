@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Builder;
@@ -24,15 +25,20 @@ public class Board extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bno;
 
+    @NotNull
     private String title;
 
+    @NotNull
     private String path;
 
     @Column(columnDefinition = "longtext")
+    @NotNull
     private String content;
 
+    @NotNull
     private String writer;
 
+    @NotNull
     private String writerUuid;
 
     @ManyToOne

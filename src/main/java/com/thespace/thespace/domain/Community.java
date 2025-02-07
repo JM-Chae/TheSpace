@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class Community extends BaseEntity {
     private Long communityId;
 
     @Column(unique = true)
+    @NotNull
     private String communityName;
 
     @Column(columnDefinition = "longtext")
