@@ -16,7 +16,7 @@ public class BoardFile implements Comparable<BoardFile> {
     private String fileId;
     @NotNull
     private String fileName;
-    @NotNull
+
     private String imageChk;
     @NotNull
     private int ord = 0;

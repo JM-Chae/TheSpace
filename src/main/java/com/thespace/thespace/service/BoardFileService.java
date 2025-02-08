@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +58,13 @@ public class BoardFileService {
                     }
 
                     multipartFile.transferTo(savePath);
+                    String mimeType = Files.probeContentType(savePath);
 
-                    if (Files.probeContentType(savePath).startsWith("image")) {
+                    if (mimeType.startsWith("image/svg+xml")) {
+                        image = true;
+                        Files.copy(savePath, saveDirectory.resolve("s_" + originalFileName), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    else if (mimeType.startsWith("image")) {
                         image = true;
                         File thumbFile = new File(String.valueOf(saveDirectory),
                             "s_" + originalFileName);

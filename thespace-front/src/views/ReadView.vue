@@ -79,7 +79,7 @@ function deleteReply(rno: number, isNR: number)
   {
     if (isNR == 0)
       {
-        axios.delete(`/reply/${rno}`, {params: {bno: bno}})
+        axios.delete(`/board/${bno}/reply/${rno}`)
           .then(() => getReply())
       } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.', 'Delete Confirmation', // The goal is to prevent comment deletion, but instead, to add an API that allows for arbitrary modification of the comment's information.
       {

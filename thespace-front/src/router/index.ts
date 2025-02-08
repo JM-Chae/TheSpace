@@ -1,8 +1,14 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import axios from "axios";
+import {ref} from "vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/',
+      redirect: '/space',
+    },
     {
       path: '/space',
       name: 'home',
@@ -67,10 +73,27 @@ const router = createRouter({
 })
 
 export default router
+async function getInfo()
+{
+  try
+  {
+    await axios.get("/user/info", {withCredentials: true})
+    .then(res =>
+    {
+      sessionStorage.setItem('login', 'true');
+      sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+    });
+    login.value = sessionStorage.getItem('login') == 'true';
+  } catch (error)
+  {
+    return console.error("Error fetching user info" + error);
+  }
+}
+
+const login =  ref(sessionStorage.getItem('login') == 'true');
 
 router.beforeEach((to, from, next) =>
   {
-
     if (to.meta.login)
       {
         if(sessionStorage.getItem('login')?.split('=')[0] === 'true')
@@ -83,6 +106,9 @@ router.beforeEach((to, from, next) =>
           }
 
       }else {
+        if(login.value) {
+        getInfo();
+        }
       next()
     }
   }

@@ -30,10 +30,10 @@ public record PageReqDTO(int page,
     }
 
     public Pageable getPageable(String... props) {
-        if ((Arrays.toString(props)).contains("rno")) {
-            return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());
+        if ((Arrays.toString(props)).contains("bno")) {
+            return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
         }
-        return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
+        return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());
     }
 
 //    private String link;

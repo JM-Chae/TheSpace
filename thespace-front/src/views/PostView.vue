@@ -49,7 +49,6 @@ const closeDialog = async () =>
 
 const fileInput = window.document;
 const formData = new FormData();
-const fileUrl = URL;
 
 const title = ref("")
 const content = ref("")
@@ -241,11 +240,11 @@ let count = 0;
 						:init = "{
         toolbar_mode: 'wrap',
         plugins: [
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'searchreplace', 'table', 'visualblocks', 'wordcount'
           ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-     skin: 'oxide-dark',
-     content_css: 'dark',
+     skin: 'tinymce-5-dark',
+     content_style: 'body { color: '+ '#fff' +'; background-color: ' + '#181818' + ' }',
      image_title: true,
      tinycomments_mode: 'embedded',
 	   tinycomments_author: 'Author name',

@@ -297,7 +297,7 @@ const post = () =>
 				<template #default = "scope">
 					<el-popover :hide-after = "10" :visible = "scope.row.thumbCheck" :width = "`fit-content`" effect = "dark" placement = "bottom" popper-style = "text-align: center" title = "" trigger = "hover">
 						<template #default>
-							<img :src = "thumbnails" alt = "">
+							<img :src = "thumbnails" alt = "thumbnail" style="width: 200px; height: fit-content;">
 						</template>
 						<template #reference>
 							<div style = "width: 100%" @mouseleave = "mouseLeave(scope.row)" @mouseover = "mouseOver(scope.row)">

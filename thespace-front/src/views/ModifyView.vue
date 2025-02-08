@@ -18,8 +18,10 @@ const title = ref<string>(window.history.state.title)
 const content = ref<string>(window.history.state.content)
 const categoryId = ref(window.history.state.categoryId)
 const bno = ref(window.history.state.bno)
-const fileNames = ref<string[] | null[]>(JSON.parse(window.history.state.fileNames))
+const fileNames = ref<any>(JSON.parse(window.history.state.fileNames))
 const newFileNames = ref<string[]>()
+const fileInput = window.document;
+const formData = new FormData();
 
 const deleteFile = function (fileid: string, filename: string, index: number)
   {
@@ -90,13 +92,48 @@ const upload = async () => {
     }
 }
 
-
 const buttonTrigger = () => {
   const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
   if (fileInput) {
     fileInput.click();
   }
 };
+
+const deleteEditorImage = () =>
+{
+  try
+  {
+    for (let i = 0; i < count; i++)
+    {
+      const temp = fileNames.value.pop();
+      if (temp)
+      {
+        const fileid = temp.split('_')[0];
+        const filename = temp.substring(temp.indexOf('_') + 1);
+
+        const url = `http://localhost:8080/file/${fileid}/${filename}`;
+
+        count--;
+
+        fetch(url, {
+          method: 'DELETE',
+          keepalive: true,
+        })
+      }
+    }
+  } catch (error)
+  {
+    console.error('Error during file deletion on page unload:', error);
+  }
+}
+
+//In the future, on the backend, when a file is initially uploaded, a separate column will be used to store a "temporary save flag."
+//A logic will then be implemented to delete the corresponding data if the "temporary save flag" remains true after the session expiration time.
+window.addEventListener('beforeunload', deleteEditorImage);
+
+window.addEventListener('popstate', deleteEditorImage);
+
+let count = 0;
 </script>
 
 <template>
@@ -132,17 +169,66 @@ const buttonTrigger = () => {
 			<el-input v-model = "title" placeholder = "Enter title" size = "large"/>
 		</div>
 		<div class = "mt-3">
-			<Editor v-if="!loading"
-					v-model="content"
-					:init="{
+      <Editor v-model = "content"
+              :init = "{
         toolbar_mode: 'wrap',
         plugins: [
           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
           ],
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-      selector: 'textarea', skin: 'oxide-dark', content_css: 'dark'}"
-					api-key="578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
-			/>
+     skin: 'tinymce-5-dark',
+     content_style: 'body { color: '+ '#fff' +'; background-color: ' + '#181818' + ' }',
+     image_title: true,
+     tinycomments_mode: 'embedded',
+	   tinycomments_author: 'Author name',
+     file_picker_types: 'image',
+  //    setup: (editor: any) => {
+  //         editor.on('OpenWindow', () =>
+  //          {
+  //          save()
+  //          })
+	// 				editor.on('CloseWindow', async () => {
+  //       		await closeDialog()
+  //   });
+  // },
+     file_picker_callback: (callback: any, value: any, meta: any) => {
+    if (meta.filetype === 'image') {
+          const input = fileInput.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+
+    input.onchange = async () => {
+      let files = input.files;
+      if (files) {
+        let selectedFile = files[0]; //
+        formData.set('fileList', selectedFile);
+
+        try {
+          const response = await axios.post('/file', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+
+          let fileid: string = response.data[0].fileId;
+          let filename: string = response.data[0].fileName;
+
+          let blob = `http://localhost:8080/file/${fileid}/${filename}`
+
+          fileNames.push(fileid + '_' + filename)
+          count += 1;
+
+          if (blob) {
+            callback (blob, { title: selectedFile.name });
+          }
+        } catch (error) {}
+      }
+    };
+    input.click();}
+  }
+   }"
+              api-key = "578wuj2fodmolbfsnxl67toi5ejoa0x1g38prodv7k93380c"
+      />
 		</div>
 		<div class="mt-3">
 			<el-button style="margin-right: 1em" type="warning" @click="buttonTrigger">File Select</el-button>

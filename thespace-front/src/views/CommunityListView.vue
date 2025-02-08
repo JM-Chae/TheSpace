@@ -7,9 +7,13 @@ import {Search} from "@element-plus/icons-vue";
 const dto = ref()
 const type = ref('n')
 const keyword = ref('')
+let userinfo;
+let userId: string;
 
-const userinfo = sessionStorage.getItem('userInfo') || ""
-const userId = JSON.parse(userinfo).id
+if(sessionStorage.getItem('userInfo')) {
+  userinfo = sessionStorage.getItem('userInfo') || ""
+  userId = JSON.parse(userinfo).id
+}
 
 onMounted(() =>
 {
