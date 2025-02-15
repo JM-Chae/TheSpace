@@ -1,15 +1,21 @@
 package com.thespace.thespace.controller;
 
-import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
+import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
+import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,32 +25,40 @@ import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.Reply;
+import com.thespace.thespace.domain.User;
+import com.thespace.thespace.domain.UserRole;
 import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.ReplyRepository;
+import com.thespace.thespace.repository.UserRepository;
+import com.thespace.thespace.repository.UserRoleRepository;
+import com.thespace.thespace.service.UserService;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureRestDocs
 @ExtendWith(RestDocumentationExtension.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 class ReplyControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -57,6 +71,15 @@ class ReplyControllerTest {
     private ReplyRepository replyRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
@@ -65,17 +88,23 @@ class ReplyControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private WebApplicationContext context;
-
-
     @BeforeEach
-    void setup(RestDocumentationContextProvider restDocumentation) {
-        mockMvc = restDocsConfig(context, restDocumentation);
+    void setup() {
         dataBaseCleaner.clear();
+        User user = userRepository.save(new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        ));
+        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
+        userService.setRole(user.getId(), "ROLE_USER");
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void replyRegister() throws Exception {
         //given
         Community community = communityRepository.save(new Community("test", "test"));
@@ -88,19 +117,18 @@ class ReplyControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         ReplyRegisterDTO rDto = new ReplyRegisterDTO(
             "test",
-            "tester",
-            "tester",
             "",
             board.getBno() + "/"
         );
@@ -113,14 +141,13 @@ class ReplyControllerTest {
             .content(objectMapper.writeValueAsString(rDto)));
 
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk()).andDo(print());
 
         //docs
-        result.andDo(write().document(requestFields(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            requestFields(
             fieldWithPath("replyContent").description(
                 "Content of reply"),
-            fieldWithPath("replyWriter").description("Writer name"),
-            fieldWithPath("replyWriterUuid").description("Writer UUID"),
             fieldWithPath("tag").description("The writer name of the tagged reply."),
             fieldWithPath("path").description("{BNO}/{RNO}(optional)/ +" + "\n"
                 + "Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it.")
@@ -128,6 +155,7 @@ class ReplyControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void replyDelete() throws Exception {
         //given
         Community community = communityRepository.save(new Community("test", "test"));
@@ -140,20 +168,20 @@ class ReplyControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User("testerUser", "testerUUID", "tester", "test@test.test", "password", new ArrayList<>());
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         Reply reply = replyRepository.save(new Reply(
             board.getPath() + "/",
             "test",
-            "tester",
-            "tester",
+            user,
             "",
             board
         ));
@@ -166,10 +194,11 @@ class ReplyControllerTest {
         ));
 
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk()).andDo(print());
 
         //docs
-        result.andDo(write().document(pathParameters(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            pathParameters(
             parameterWithName("bno").description("Board Number"),
             parameterWithName("rno").description("Reply Number to delete")
         )));
@@ -188,21 +217,21 @@ class ReplyControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         for (int i = 1; i <= 2; i++) {
             Reply reply = replyRepository.save(new Reply(
                 board.getBno() + "/",
                 "test" + i,
-                "tester" + i,
-                "tester" + i,
+                user,
                 "",
                 board
             ));
@@ -210,9 +239,8 @@ class ReplyControllerTest {
             replyRepository.save(new Reply(
                 board.getBno() + "/" + reply.getRno(),
                 "test" + i,
-                "tester" + i,
-                "tester" + i,
-                reply.getReplyWriter(),
+                user,
+                reply.getUser().getId(),
                 board
             ));
         }
@@ -225,10 +253,11 @@ class ReplyControllerTest {
             jsonPath("$.total").value("2"),
             jsonPath("$.dtoList[0].replyContent").value("test1"),
             jsonPath("$.dtoList[1].replyContent").value("test2")
-        );
+        ).andDo(print());
 
         //docs
-        result.andDo(write().document(pathParameters(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            pathParameters(
             parameterWithName("bno").description("Board Number")
         ), relaxedResponseFields(
             fieldWithPath("total").description("Total number of reply on this board"),
@@ -258,21 +287,21 @@ class ReplyControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         for (int i = 1; i <= 2; i++) {
             Reply reply = replyRepository.save(new Reply(
                 board.getBno() + "/",
                 "test" + i,
-                "tester" + i,
-                "tester" + i,
+                user,
                 "",
                 board
             ));
@@ -282,9 +311,8 @@ class ReplyControllerTest {
                     replyRepository.save(new Reply(
                         board.getBno() + "/" + reply.getRno(),
                         "test" + (i + j),
-                        "tester" + (i + j),
-                        "tester" + (i + j),
-                        reply.getReplyWriter(),
+                        user,
+                        reply.getUser().getId(),
                         board
                     ));
                 }
@@ -298,10 +326,11 @@ class ReplyControllerTest {
         result.andExpect(status().isOk()).andExpectAll(
             jsonPath("$.total").value("2"),
             jsonPath("$.dtoList[0].replyContent").value("test5")
-        );
+        ).andDo(print());
 
         //docs
-        result.andDo(write().document(pathParameters(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            pathParameters(
             parameterWithName("bno").description("Board Number"),
             parameterWithName("rno").description("Reply Number")
         ), relaxedResponseFields(

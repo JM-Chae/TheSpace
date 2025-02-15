@@ -470,7 +470,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_get_api">Get-API</a></li>
 <li><a href="#_list_api_3">List-API</a></li>
-<li><a href="#_creat_api">Creat-API</a></li>
+<li><a href="#_create_api">Create-API</a></li>
 <li><a href="#_check_api">Check-API</a></li>
 <li><a href="#_delete_api_2">Delete-API</a></li>
 <li><a href="#_admingetlist_api">AdminGetList-API</a></li>
@@ -513,6 +513,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_post_api"><a class="link" href="#_post_api">Post-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_post_api_curl_request"><a class="link" href="#_post_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -522,8 +527,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     -d '{
   "title" : "test1",
   "content" : "content1",
-  "writer" : "testUser",
-  "writerUuid" : "testUser",
   "fileNames" : [ ],
   "categoryId" : 1
 }'</code></pre>
@@ -535,7 +538,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 1
 
 1</code></pre>
@@ -548,6 +560,10 @@ Content-Length: 1
 <col style="width: 50%;">
 </colgroup>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">return value</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Board Number (bno)</p></td>
@@ -577,16 +593,6 @@ Content-Length: 1
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Content.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>writer</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>writerUuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WriterUuid.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>fileNames</code></p></td>
@@ -639,18 +645,27 @@ Content-Length: 1
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
-Content-Length: 327
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 328
 
 {
   "bno" : 1,
   "title" : "test",
   "content" : "content",
   "path" : "test",
-  "writer" : "123456",
-  "writerUuid" : "A24WS122A",
-  "createDate" : "2025-02-05T22:05:46.556717",
-  "modDate" : "2025-02-05T22:05:46.556717",
+  "writer" : "tester",
+  "writerUuid" : "testerUUID",
+  "createDate" : "2025-02-15T20:44:27.528768",
+  "modDate" : "2025-02-15T20:44:27.528768",
   "viewCount" : 1,
   "vote" : 0,
   "rCount" : 0,
@@ -697,12 +712,12 @@ Content-Length: 327
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>writer</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Writer ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>writerUuid</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WriterUuid.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Writer UUID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>createDate</code></p></td>
@@ -862,6 +877,11 @@ Operation 'and' for search criteria.</p></td>
 </div>
 <div class="sect2">
 <h3 id="_modify_api"><a class="link" href="#_modify_api">Modify-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_modify_api_curl_request"><a class="link" href="#_modify_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -872,7 +892,7 @@ Operation 'and' for search criteria.</p></td>
   "bno" : 1,
   "title" : "modify",
   "content" : "modify",
-  "writer" : "123456",
+  "writer" : "testerUser",
   "categoryId" : 2,
   "fileNames" : [ ]
 }'</code></pre>
@@ -930,19 +950,32 @@ Operation 'and' for search criteria.</p></td>
 <h4 id="_modify_api_http_response"><a class="link" href="#_modify_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_delete_api"><a class="link" href="#_delete_api">Delete-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_delete_api_curl_request"><a class="link" href="#_delete_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1?userUuid=A24WS122A' -i -X DELETE \
-    -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1' -i -X DELETE</code></pre>
 </div>
 </div>
 </div>
@@ -969,42 +1002,35 @@ Operation 'and' for search criteria.</p></td>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_delete_api_query_parameters"><a class="link" href="#_delete_api_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userUuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UUID of the delete performer.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
 <h4 id="_delete_api_http_response"><a class="link" href="#_delete_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_delete_with_admin_api"><a class="link" href="#_delete_with_admin_api">Delete with Admin-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_curl_request"><a class="link" href="#_delete_with_admin_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/admin?userId=tester&amp;communityName=test' -i -X DELETE \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/admin?communityName=test' -i -X DELETE \
     -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
 </div>
 </div>
@@ -1046,10 +1072,6 @@ Operation 'and' for search criteria.</p></td>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the delete performer.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The community name of the post.</p></td>
 </tr>
@@ -1060,7 +1082,16 @@ Operation 'and' for search criteria.</p></td>
 <h4 id="_delete_with_admin_api_http_response"><a class="link" href="#_delete_with_admin_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1141,11 +1172,16 @@ Operation 'and' for search criteria.</p></td>
 </div>
 <div class="sect2">
 <h3 id="_create_with_admin_api"><a class="link" href="#_create_with_admin_api">Create with Admin-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_create_with_admin_api_curl_request"><a class="link" href="#_create_with_admin_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/admin?userId=tester' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/admin' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "categoryName" : "test",
@@ -1155,27 +1191,6 @@ Operation 'and' for search criteria.</p></td>
 }'</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_create_with_admin_api_query_parameters"><a class="link" href="#_create_with_admin_api_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the create performer.</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="sect3">
 <h4 id="_create_with_admin_api_request_fields"><a class="link" href="#_create_with_admin_api_request_fields">Request fields</a></h4>
@@ -1218,18 +1233,32 @@ Operation 'and' for search criteria.</p></td>
 <h4 id="_create_with_admin_api_http_response"><a class="link" href="#_create_with_admin_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_delete_with_admin_api_2"><a class="link" href="#_delete_with_admin_api_2">Delete with Admin-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_2_curl_request"><a class="link" href="#_delete_with_admin_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/1/admin?userId=tester&amp;communityName=test' -i -X DELETE \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/1/admin?communityName=test' -i -X DELETE \
     -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
 </div>
 </div>
@@ -1271,10 +1300,6 @@ Operation 'and' for search criteria.</p></td>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the delete performer.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The community name to which that category belongs.</p></td>
 </tr>
@@ -1285,7 +1310,16 @@ Operation 'and' for search criteria.</p></td>
 <h4 id="_delete_with_admin_api_2_http_response"><a class="link" href="#_delete_with_admin_api_2_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1332,14 +1366,23 @@ Operation 'and' for search criteria.</p></td>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 195
 
 {
   "communityId" : 1,
   "communityName" : "test",
-  "createDate" : "2025-02-05T22:05:47.588704",
-  "modDate" : "2025-02-05T22:05:47.588704",
+  "createDate" : "2025-02-15T20:44:28.617248",
+  "modDate" : "2025-02-15T20:44:28.617248",
   "description" : "test",
   "category" : [ ]
 }</code></pre>
@@ -1496,12 +1539,17 @@ Content-Length: 195
 </div>
 </div>
 <div class="sect2">
-<h3 id="_creat_api"><a class="link" href="#_creat_api">Creat-API</a></h3>
+<h3 id="_create_api"><a class="link" href="#_create_api">Create-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
-<h4 id="_creat_api_curl_request"><a class="link" href="#_creat_api_curl_request">Curl request</a></h4>
+<h4 id="_create_api_curl_request"><a class="link" href="#_create_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community?userId=tester&amp;nameCheck=true' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community?nameCheck=true' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "communityName" : "test",
@@ -1511,7 +1559,7 @@ Content-Length: 195
 </div>
 </div>
 <div class="sect3">
-<h4 id="_creat_api_request_fields"><a class="link" href="#_creat_api_request_fields">Request fields</a></h4>
+<h4 id="_create_api_request_fields"><a class="link" href="#_create_api_request_fields">Request fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1538,7 +1586,7 @@ Content-Length: 195
 </table>
 </div>
 <div class="sect3">
-<h4 id="_creat_api_query_parameters"><a class="link" href="#_creat_api_query_parameters">Query parameters</a></h4>
+<h4 id="_create_api_query_parameters"><a class="link" href="#_create_api_query_parameters">Query parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -1555,19 +1603,24 @@ Content-Length: 195
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>nameCheck</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">result of name check</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the create performer.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_creat_api_http_response"><a class="link" href="#_creat_api_http_response">HTTP response</a></h4>
+<h4 id="_create_api_http_response"><a class="link" href="#_create_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 1
 
 1</code></pre>
@@ -1611,7 +1664,16 @@ Content-Length: 1
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 4
 
 true</code></pre>
@@ -1621,11 +1683,16 @@ true</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_delete_api_2"><a class="link" href="#_delete_api_2">Delete-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_delete_api_2_curl_request"><a class="link" href="#_delete_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1?userId=tester&amp;communityName=test' -i -X DELETE \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1?communityName=test' -i -X DELETE \
     -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
 </div>
 </div>
@@ -1667,10 +1734,6 @@ true</code></pre>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the delete performer.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name of community to delete</p></td>
 </tr>
@@ -1681,48 +1744,50 @@ true</code></pre>
 <h4 id="_delete_api_2_http_response"><a class="link" href="#_delete_api_2_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_admingetlist_api"><a class="link" href="#_admingetlist_api">AdminGetList-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_admingetlist_api_curl_request"><a class="link" href="#_admingetlist_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list/admin?userId=tester' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list/admin' -i -X GET</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_admingetlist_api_query_parameters"><a class="link" href="#_admingetlist_api_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the get performer.</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="sect3">
 <h4 id="_admingetlist_api_http_response"><a class="link" href="#_admingetlist_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 14
 
 [ 1, 2, 3, 4 ]</code></pre>
@@ -1754,11 +1819,16 @@ Content-Length: 14
 </div>
 <div class="sect2">
 <h3 id="_modify_api_2"><a class="link" href="#_modify_api_2">Modify-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_modify_api_2_curl_request"><a class="link" href="#_modify_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/modify?userId=tester' -i -X PATCH \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/modify' -i -X PATCH \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "communityId" : 1,
@@ -1767,27 +1837,6 @@ Content-Length: 14
 }'</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_modify_api_2_query_parameters"><a class="link" href="#_modify_api_2_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the patch performer.</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="sect3">
 <h4 id="_modify_api_2_request_fields"><a class="link" href="#_modify_api_2_request_fields">Request fields</a></h4>
@@ -1825,7 +1874,16 @@ Content-Length: 14
 <h4 id="_modify_api_2_http_response"><a class="link" href="#_modify_api_2_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1878,12 +1936,12 @@ Content-Type: application/json;charset=UTF-8
 Content-Length: 193
 
 [ {
-  "fileId" : "93feac64",
+  "fileId" : "fc7039a8",
   "fileName" : "test.png",
   "imageChk" : true,
   "ord" : 0
 }, {
-  "fileId" : "f0f249f1",
+  "fileId" : "e7d82d3a",
   "fileName" : "test.txt",
   "imageChk" : false,
   "ord" : 0
@@ -1935,7 +1993,7 @@ Content-Length: 193
 <h4 id="_get_api_2_curl_request"><a class="link" href="#_get_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/f1b596c6/test.png' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/ff926d6f/test.png' -i -X GET</code></pre>
 </div>
 </div>
 </div>
@@ -1986,7 +2044,7 @@ test!</code></pre>
 <h4 id="_delete_api_3_curl_request"><a class="link" href="#_delete_api_3_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/e68f0f94/test.png' -i -X DELETE</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/c6cb15e8/test.png' -i -X DELETE</code></pre>
 </div>
 </div>
 </div>
@@ -2032,6 +2090,11 @@ test!</code></pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_register_api"><a class="link" href="#_register_api">Register-APi</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_register_api_curl_request"><a class="link" href="#_register_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -2040,8 +2103,6 @@ test!</code></pre>
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "replyContent" : "test",
-  "replyWriter" : "tester",
-  "replyWriterUuid" : "tester",
   "tag" : "",
   "path" : "1/"
 }'</code></pre>
@@ -2090,16 +2151,6 @@ test!</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Content of reply</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>replyWriter</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer name</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>replyWriterUuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer UUID</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>tag</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The writer name of the tagged reply.</p></td>
@@ -2117,7 +2168,16 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <h4 id="_register_api_http_response"><a class="link" href="#_register_api_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2159,8 +2219,17 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
-Content-Length: 633
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 638
 
 {
   "page" : 1,
@@ -2173,20 +2242,20 @@ Content-Length: 633
   "dtoList" : [ {
     "rno" : 1,
     "replyContent" : "test1",
-    "replyWriter" : "tester1",
-    "replyWriterUuid" : "tester1",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
     "tag" : "",
-    "replyDate" : "2025-02-05T22:05:49.73958",
+    "replyDate" : "2025-02-15T20:44:33.030486",
     "isNested" : 0,
     "path" : "1/",
     "vote" : 0
   }, {
     "rno" : 3,
     "replyContent" : "test2",
-    "replyWriter" : "tester2",
-    "replyWriterUuid" : "tester2",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
     "tag" : "",
-    "replyDate" : "2025-02-05T22:05:49.745792",
+    "replyDate" : "2025-02-15T20:44:33.039472",
     "isNested" : 0,
     "path" : "1/",
     "vote" : 0
@@ -2305,8 +2374,17 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
-Content-Length: 649
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 660
 
 {
   "page" : 1,
@@ -2319,20 +2397,20 @@ Content-Length: 649
   "dtoList" : [ {
     "rno" : 3,
     "replyContent" : "test5",
-    "replyWriter" : "tester5",
-    "replyWriterUuid" : "tester5",
-    "tag" : "tester2",
-    "replyDate" : "2025-02-05T22:05:49.45306",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
+    "tag" : "testerUser",
+    "replyDate" : "2025-02-15T20:44:32.620449",
     "isNested" : 0,
     "path" : "1/2",
     "vote" : 0
   }, {
     "rno" : 4,
     "replyContent" : "test6",
-    "replyWriter" : "tester6",
-    "replyWriterUuid" : "tester6",
-    "tag" : "tester2",
-    "replyDate" : "2025-02-05T22:05:49.455869",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
+    "tag" : "testerUser",
+    "replyDate" : "2025-02-15T20:44:32.624451",
     "isNested" : 0,
     "path" : "1/2",
     "vote" : 0
@@ -2412,6 +2490,11 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 </div>
 <div class="sect2">
 <h3 id="_delete_api_4"><a class="link" href="#_delete_api_4">Delete-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_delete_api_4_curl_request"><a class="link" href="#_delete_api_4_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -2450,7 +2533,16 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <h4 id="_delete_api_4_http_response"><a class="link" href="#_delete_api_4_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2462,6 +2554,11 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_like_api"><a class="link" href="#_like_api">Like-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_like_api_curl_request"><a class="link" href="#_like_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -2469,7 +2566,6 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/like' -i -X PUT \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
-  "userId" : "tester",
   "bno" : 1,
   "rno" : 0
 }'</code></pre>
@@ -2491,11 +2587,6 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID to performer.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>bno</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">If perform target is Post, its number.</p></td>
@@ -2513,10 +2604,19 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
-Content-Length: 2
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 1
 
--1</code></pre>
+1</code></pre>
 </div>
 </div>
 </div>
@@ -2692,17 +2792,17 @@ true</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_getuserinfo_api"><a class="link" href="#_getuserinfo_api">GetUserInfo-API</a></h3>
+<div class="literalblock">
+<div class="content">
+<pre>Required Authentication</pre>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_getuserinfo_api_curl_request"><a class="link" href="#_getuserinfo_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/user/info' -i -X GET</code></pre>
 </div>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>Authentication information is required.</pre>
 </div>
 </div>
 <div class="sect3">
@@ -2781,7 +2881,7 @@ Content-Length: 136
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-02-05 22:04:55 +0900
+Last updated 2025-02-15 20:44:13 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -38,13 +38,11 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final StringPath replyContent = createString("replyContent");
 
-    public final StringPath replyWriter = createString("replyWriter");
-
-    public final StringPath replyWriterUuid = createString("replyWriterUuid");
-
     public final NumberPath<Long> rno = createNumber("rno", Long.class);
 
     public final StringPath tag = createString("tag");
+
+    public final QUser user;
 
     public final NumberPath<Long> vote = createNumber("vote", Long.class);
 
@@ -67,6 +65,7 @@ public class QReply extends EntityPathBase<Reply> {
     public QReply(Class<? extends Reply> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.board = inits.isInitialized("board") ? new QBoard(forProperty("board"), inits.get("board")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }

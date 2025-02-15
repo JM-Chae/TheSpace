@@ -38,7 +38,7 @@ const deleteFile = function (fileid: string, filename: string, index: number)
       }
   }
 
-const path = "Test Community Name" // Community name -> Switch to reactive when after implementing the Community page.
+const path = window.history.state.path;
 axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const getInfo = sessionStorage.getItem("userInfo") || ""

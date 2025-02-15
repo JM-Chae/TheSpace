@@ -1,10 +1,15 @@
 package com.thespace.thespace.controller;
 
-import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
+import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
+import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,32 +19,38 @@ import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
+import com.thespace.thespace.domain.UserRole;
 import com.thespace.thespace.dto.like.LikeDTO;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.UserRepository;
+import com.thespace.thespace.repository.UserRoleRepository;
+import com.thespace.thespace.service.UserService;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureRestDocs
 @ExtendWith(RestDocumentationExtension.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 class LikeControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -52,6 +63,12 @@ class LikeControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
     private BoardRepository boardRepository;
 
     @Autowired
@@ -60,16 +77,23 @@ class LikeControllerTest {
     @Autowired
     private CommunityRepository communityRepository;
 
-    @Autowired
-    private WebApplicationContext context;
-
     @BeforeEach
-    void setup(RestDocumentationContextProvider restDocumentation) {
-        mockMvc = restDocsConfig(context, restDocumentation);
+    void setup() {
         dataBaseCleaner.clear();
+        User user = userRepository.save(new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        ));
+        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
+        userService.setRole(user.getId(), "ROLE_USER");
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void likeLike() throws Exception {
         //given
         Community community = communityRepository.save(new Community("test", "test"));
@@ -82,25 +106,17 @@ class LikeControllerTest {
             new ArrayList<>()
         ));
 
+        User boardUser = new User("testerUser", "testerUUID", "tester", "test@test.test", "password", new ArrayList<>());
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            boardUser
         ));
 
-        User user = userRepository.save(new User(
-            "tester",
-            "aaaa",
-            "aaaa",
-            "1234@asdf.zxc",
-            "1234",
-            new ArrayList<>()
-        ));
-
-        LikeDTO likeDTO = new LikeDTO(user.getId(), board.getBno(), 0L);
+        LikeDTO likeDTO = new LikeDTO(board.getBno(), 0L);
 
         //when
         ResultActions result1 = mockMvc.perform(put("/like").contentType(MediaType.APPLICATION_JSON)
@@ -113,8 +129,8 @@ class LikeControllerTest {
         result2.andExpect(status().isOk()).andExpect(jsonPath("$").value(-1));
 
         //docs
-        result1.andDo(write().document(requestFields(
-            fieldWithPath("userId").description("ID to performer."),
+        result1.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            requestFields(
             fieldWithPath("bno").description("If perform target is Post, its number."),
             fieldWithPath("rno").description("If perform target is Reply, its number.")
         )));

@@ -7,12 +7,12 @@ import com.thespace.thespace.domain.User;
 import com.thespace.thespace.dto.like.LikeDTO;
 import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.exception.ReplyNotFound;
-import com.thespace.thespace.exception.UserNotFound;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.LikeRepository;
 import com.thespace.thespace.repository.ReplyRepository;
 import com.thespace.thespace.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +26,10 @@ public class LikeService {
     private final ReplyRepository replyRepository;
 
     @Transactional
-    public int like(LikeDTO likeDTO) {
+    public int like(LikeDTO likeDTO, Authentication authentication) {
         String result = likeDTO.bno() > 0L ? "bno" : likeDTO.rno() > 0L ? "rno" : "fail";
-        String userId = likeDTO.userId();
-        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        User user = (User) authentication.getPrincipal();
         int res = 0;
-
         switch (result) {
             case "bno": {
                 Board board = boardRepository.findById(likeDTO.bno())

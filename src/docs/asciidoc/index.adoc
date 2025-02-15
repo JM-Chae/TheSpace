@@ -11,9 +11,11 @@ The Space API 문서
 == Board API
 
 === Post-API
-operation::board-controller-test/board-post[snippets='curl-request,http-response']
+    Required Authentication 
 
+operation::board-controller-test/board-post[snippets='curl-request,http-response']
 |===
+ |field|Description
  |return value|Board Number (bno)
 |===
 
@@ -26,12 +28,18 @@ operation::board-controller-test/board-read[snippets='curl-request,path-paramete
 operation::board-controller-test/board-list[snippets='curl-request,query-parameters,response-fields']
 
 === Modify-API
+    Required Authentication 
+
 operation::board-controller-test/board-modify[snippets='curl-request,request-fields,http-response']
 
 === Delete-API
-operation::board-controller-test/board-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+    Required Authentication 
+
+operation::board-controller-test/board-delete[snippets='curl-request,path-parameters,http-response']
 
 === Delete with Admin-API
+    Required Authentication 
+
 operation::board-controller-test/board-admin-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 [[Category-API]]
@@ -41,9 +49,13 @@ operation::board-controller-test/board-admin-delete[snippets='curl-request,path-
 operation::category-controller-test/category-list[snippets='curl-request,query-parameters,response-fields']
 
 === Create with Admin-API
-operation::category-controller-test/category-create[snippets='curl-request,query-parameters,request-fields,http-response']
+    Required Authentication 
+
+operation::category-controller-test/category-create[snippets='curl-request,request-fields,http-response']
 
 === Delete with Admin-API
+    Required Authentication 
+
 operation::category-controller-test/category-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 [[Community-API]]
@@ -55,20 +67,28 @@ operation::community-controller-test/community-get[snippets='curl-request,path-p
 === List-API
 operation::community-controller-test/community-list[snippets='curl-request,query-parameters,response-fields']
 
-=== Creat-API
+=== Create-API
+    Required Authentication 
+
 operation::community-controller-test/community-create[snippets='curl-request,request-fields,query-parameters,http-response']
 
 === Check-API
 operation::community-controller-test/community-check[snippets='curl-request,query-parameters,http-response']
 
 === Delete-API
+    Required Authentication 
+
 operation::community-controller-test/community-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
 
 === AdminGetList-API
-operation::community-controller-test/community-has-admin-list[snippets='curl-request,query-parameters,http-response,response-fields']
+    Required Authentication 
+
+operation::community-controller-test/community-has-admin-list[snippets='curl-request,http-response,response-fields']
 
 === Modify-API
-operation::community-controller-test/community-modify[snippets='curl-request,query-parameters,request-fields,http-response']
+    Required Authentication 
+
+operation::community-controller-test/community-modify[snippets='curl-request,request-fields,http-response']
 
 [[File-API]]
 == File API
@@ -86,6 +106,8 @@ operation::file-controller-test/file-delete[snippets='curl-request,path-paramete
 == Reply API
 
 === Register-APi
+    Required Authentication 
+
 operation::reply-controller-test/reply-register[snippets='curl-request,path-parameters,request-fields,http-response']
 
 === List-API
@@ -95,12 +117,16 @@ operation::reply-controller-test/reply-list[snippets='curl-request,path-paramete
 operation::reply-controller-test/reply-nested-list-get[snippets='curl-request,path-parameters,http-response,response-fields']
 
 === Delete-API
+    Required Authentication 
+
 operation::reply-controller-test/reply-delete[snippets='curl-request,path-parameters,http-response']
 
 [[Like-API]]
 == Like API
 
 === Like-API
+    Required Authentication 
+
 operation::like-controller-test/like-like[snippets='curl-request,request-fields,http-response']
 |===
     |Field|Type|Description
@@ -122,7 +148,8 @@ operation::user-controller-test/user-check[snippets='curl-request,query-paramete
 |===
 
 === GetUserInfo-API
+    Required Authentication 
+
 operation::user-controller-test/user-get-user-info[snippets='curl-request']
-    Authentication information is required.
 
 operation::user-controller-test/user-get-user-info[snippets='http-response,response-fields']

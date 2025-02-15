@@ -2,6 +2,7 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Reply;
+import com.thespace.thespace.domain.User;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.dto.reply.ReplyDTO;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +31,13 @@ public class ReplyService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public void register(Long bno, ReplyRegisterDTO replyRegisterDTO) {
+    public void register(Long bno, ReplyRegisterDTO replyRegisterDTO, Authentication authentication) {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
         Long replyCount = board.getRCount() + 1L;
         board.setRCount(replyCount);
         boardRepository.save(board);
+
+        User user = (User) authentication.getPrincipal();
 
         if (!Objects.equals(replyRegisterDTO.path(), bno.toString() + '/')) {
             Reply R = replyRepository.findById(Long.valueOf(replyRegisterDTO.path().split("/")[1]))
@@ -45,20 +49,31 @@ public class ReplyService {
         }
         Reply reply = modelMapper.map(replyRegisterDTO, Reply.class);
         reply.setBoard(board);
+        reply.setUser(user);
 
         replyRepository.save(reply);
     }
 
     @Transactional
-    public void delete(Long bno, Long rno) {
+    public void delete(Long bno, Long rno, Authentication authentication) {
         if (!replyRepository.existsById(rno)) {
             throw new ReplyNotFound();
         }
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
+        Reply reply = replyRepository.findById(rno).orElseThrow(ReplyNotFound::new);
+        if(reply.getPath().split("/").length > 1){
+            Reply rootReply = replyRepository.findById((Long.valueOf(reply.getPath().split("/")[1]))).orElseThrow(ReplyNotFound::new);
+            rootReply.setIsNested(rootReply.getIsNested() - 1L);
+            replyRepository.save(rootReply);
+        }
+        User user = (User) authentication.getPrincipal();
+
+        if (user.getUuid().equals(reply.getUser().getUuid())) {
         replyRepository.deleteById(rno);
         Long replyCount = board.getRCount() - 1L;
         board.setRCount(replyCount);
         boardRepository.save(board);
+        }
     }
 
     public PageResDTO<ReplyDTO> getListReply(Long bno) {

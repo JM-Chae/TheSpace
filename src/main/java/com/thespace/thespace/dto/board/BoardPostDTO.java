@@ -8,8 +8,6 @@ public record BoardPostDTO(@NotNull(message = "Title is a required field.")
                            String title,
                            @NotNull(message = "Content is a required field.")
                            String content,
-                           String writer,
-                           String writerUuid,
                            List<String> fileNames, // Since 'FileId' and 'FileName' are now handled separately, it seems more intuitive to divide the field
                            @NotNull(message = "Choose category.")
                            Long categoryId) {

@@ -1,19 +1,24 @@
 package com.thespace.thespace.controller;
 
-import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
+import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,21 +44,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureRestDocs
 @ExtendWith(RestDocumentationExtension.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 class BoardControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -80,16 +88,23 @@ class BoardControllerTest {
     @Autowired
     private CommunityRepository communityRepository;
 
-    @Autowired
-    private WebApplicationContext context;
-
     @BeforeEach
-    void setup(RestDocumentationContextProvider restDocumentation) {
-        mockMvc = restDocsConfig(context, restDocumentation);
+    void setup() {
         dataBaseCleaner.clear();
+        User user = userRepository.save(new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        ));
+        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
+        userService.setRole(user.getId(), "ROLE_USER");
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardPost() throws Exception {
         //given
         Community community = communityRepository.save(new Community(
@@ -108,8 +123,6 @@ class BoardControllerTest {
         BoardPostDTO boardPostDTO = new BoardPostDTO(
             "test1",
             "content1",
-            "testUser",
-            "testUser",
             new ArrayList<>(),
             category.getCategoryId()
         );
@@ -119,7 +132,7 @@ class BoardControllerTest {
             boardPostDTO)).contentType(MediaType.APPLICATION_JSON));
 
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk()).andDo(print());
         Board board = boardRepository.findById(1L).orElseThrow();
         if (!(board.getTitle().equals(boardPostDTO.title()) &&
             board.getContent().equals(boardPostDTO.content()))) {
@@ -127,11 +140,10 @@ class BoardControllerTest {
         }
 
         //docs
-        result.andDo(write().document(requestFields(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            requestFields(
             fieldWithPath("title").description("Title."),
             fieldWithPath("content").description("Content."),
-            fieldWithPath("writer").description("Writer."),
-            fieldWithPath("writerUuid").description("WriterUuid."),
             fieldWithPath("fileNames").description("Name of attached files."),
             fieldWithPath("categoryId").description("Category Id.")
         )));
@@ -153,13 +165,21 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        );
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         //when
@@ -170,20 +190,21 @@ class BoardControllerTest {
             jsonPath("$.title").value(board.getTitle()),
             jsonPath("$.path").value(board.getPath()),
             jsonPath("$.content").value(board.getContent()),
-            jsonPath("$.writer").value("123456"),
-            jsonPath("$.writerUuid").value("A24WS122A"),
+            jsonPath("$.writer").value("tester"),
+            jsonPath("$.writerUuid").value("testerUUID"),
             jsonPath("$.categoryId").value(category.getCategoryId())
-        );
+        ).andDo(print());
 
         //docs
-        result.andDo(write().document(responseFields(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            relaxedResponseFields(
             fieldWithPath("bno").description(
                 "Number of Board."),
             fieldWithPath("title").description("Title."),
             fieldWithPath("path").description("Name of community."),
             fieldWithPath("content").description("Content."),
-            fieldWithPath("writer").description("Writer."),
-            fieldWithPath("writerUuid").description("WriterUuid."),
+            fieldWithPath("writer").description("Writer ID"),
+            fieldWithPath("writerUuid").description("Writer UUID"),
             fieldWithPath("createDate").description("Create date."),
             fieldWithPath("modDate").description("Modified date."),
             fieldWithPath("viewCount").description("View count / def = 0."),
@@ -213,14 +234,22 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User(
+            "testerUser",
+            "testerUUID",
+            "test",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        );
+
         for (int i = 1; i <= 100; i++) {
             boardRepository.save(new Board(
                 "test" + i,
                 community.getCommunityName(),
                 "content" + i,
-                "tester" + i % 3,
-                "tester " + i % 3,
-                category
+                category,
+                user
             ));
         }
 
@@ -231,7 +260,7 @@ class BoardControllerTest {
             .queryParam("type", "t")
             .queryParam("keyword", "1")
             .queryParam("path", community.getCommunityName())
-            .queryParam("category", ""));
+            .queryParam("category", "")).andDo(print());
 
         //then
         result.andExpect(status().isOk()).andExpectAll(
@@ -244,8 +273,10 @@ class BoardControllerTest {
         );
 
         //docs
-        result.andDo(write().document(queryParameters(
-            parameterWithName("page").description("Page number to display in the full query results."),
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            queryParameters(
+            parameterWithName("page").description(
+                "Page number to display in the full query results."),
             parameterWithName("size").description("Number of rows to display search results."),
             parameterWithName("type").description(
                 "Search condition identifier. +" + "\n" + "Operation 'or' for search criteria. +"
@@ -293,27 +324,35 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        );
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         BoardModifyDTO boardModifyDTO = new BoardModifyDTO(
             board.getBno(),
             "modify",
             "modify",
-            board.getWriter(),
+            board.getUser().getId(),
             category2.getCategoryId(),
             new ArrayList<>()
         );
 
         //when
         ResultActions result = mockMvc.perform(patch("/board").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(boardModifyDTO)));
+            .content(objectMapper.writeValueAsString(boardModifyDTO))).andDo(print());
 
         //then
         result.andExpect(status().isOk());
@@ -326,7 +365,8 @@ class BoardControllerTest {
         }
 
         //docs
-        result.andDo(write().document(requestFields(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            requestFields(
             fieldWithPath("bno").description(
                 "Number of Board."),
             fieldWithPath("title").description("Title."),
@@ -338,6 +378,7 @@ class BoardControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardDelete() throws Exception {
         //given
         Community community = communityRepository.save(new Community(
@@ -353,20 +394,26 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        );
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
         //when
-        ResultActions result = mockMvc.perform(delete("/board/{bno}", board.getBno()).queryParam(
-            "userUuid",
-            board.getWriterUuid()
-        ));
+        ResultActions result = mockMvc.perform(delete("/board/{bno}", board.getBno()))
+            .andDo(print());
 
         //then
         result.andExpect(status().isOk());
@@ -376,15 +423,14 @@ class BoardControllerTest {
         );
 
         //docs
-        result.andDo(write().document(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
             pathParameters(parameterWithName("bno").description(
-                "Number of Board.")),
-            queryParameters(parameterWithName("userUuid").description(
-                "UUID of the delete performer."))
+                "Number of Board."))
         ));
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardAdminDelete() throws Exception {
         //given
         Community community = communityRepository.save(new Community(
@@ -400,35 +446,44 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
+        User user = new User(
+            "tester",
+            "tester",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        );
+        userRepository.save(user);
+
         Board board = boardRepository.save(new Board(
             "test",
             community.getCommunityName(),
             "content",
-            "123456",
-            "A24WS122A",
-            category
+            category,
+            user
         ));
 
-        User admin = userRepository.save(new User(
+        User userAdmin = new User(
+            "testerUser",
+            "testerUUID",
             "tester",
-            "aaaa",
-            "aaaa",
-            "1234@asdf.zxc",
-            "1234",
+            "test@test.test",
+            "password",
             new ArrayList<>()
-        ));
+        );
+
         UserRole userRole = userRoleRepository.save(new UserRole(
             "ADMIN_" + community.getCommunityName(),
             new ArrayList<>()
         ));
-        userService.setRole(admin.getId(), userRole.getRole());
+        userService.setRole(userAdmin.getId(), userRole.getRole());
 
         //when
         ResultActions result = mockMvc.perform(delete(
             "/board/{bno}/admin",
             board.getBno()
-        ).queryParam("userId", admin.getId())
-            .queryParam("communityName", community.getCommunityName()));
+        ).queryParam("communityName", community.getCommunityName())).andDo(print());
 
         //then
         result.andExpect(status().isOk());
@@ -438,11 +493,10 @@ class BoardControllerTest {
         );
 
         //docs
-        result.andDo(write().document(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
             pathParameters(parameterWithName("bno").description(
                 "Number of Board.")),
             queryParameters(
-                parameterWithName("userId").description("ID of the delete performer."),
                 parameterWithName("communityName").description("The community name of the post.")
             )
         ));

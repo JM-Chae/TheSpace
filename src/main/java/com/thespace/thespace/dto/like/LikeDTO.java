@@ -3,8 +3,7 @@ package com.thespace.thespace.dto.like;
 import lombok.Builder;
 
 @Builder
-public record LikeDTO(String userId,
-                      Long bno,
+public record LikeDTO(Long bno,
                       Long rno) {
 
 }

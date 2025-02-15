@@ -5,6 +5,7 @@ import com.thespace.thespace.dto.reply.ReplyDTO;
 import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
 import com.thespace.thespace.service.ReplyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,13 +23,13 @@ public class ReplyController {
 
     @PostMapping
     public void register(@PathVariable("bno") Long bno,
-        @RequestBody ReplyRegisterDTO replyRegisterDTO) {
-        replyService.register(bno, replyRegisterDTO);
+        @RequestBody ReplyRegisterDTO replyRegisterDTO, Authentication authentication) {
+        replyService.register(bno, replyRegisterDTO, authentication);
     }
 
     @DeleteMapping("/{rno}")
-    public void delete(@PathVariable("bno") Long bno, @PathVariable("rno") Long rno) {
-        replyService.delete(bno, rno);
+    public void delete(@PathVariable("bno") Long bno, @PathVariable("rno") Long rno, Authentication authentication) {
+        replyService.delete(bno, rno, authentication);
     }
 
     @GetMapping

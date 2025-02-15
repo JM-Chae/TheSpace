@@ -112,7 +112,7 @@ class UserControllerTest {
             fieldWithPath("name").description("Nickname of login user"),
             fieldWithPath("email").description("Email of login user"),
             fieldWithPath("roles").description("Roles(in community) of login user")
-            ), requestHeaders(), responseBody(), requestBody(),httpRequest(), httpResponse(), curlRequest()));
+            ), requestHeaders(), responseBody(), requestBody(), httpRequest(), httpResponse(), curlRequest()));
     }
 
     @Test

@@ -26,11 +26,9 @@ public class Reply extends BaseEntity {
     @NotNull
     private String replyContent;
 
-    @NotNull
-    private String replyWriter;
-
-    @NotNull
-    private String replyWriterUuid;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     private String tag;
 
@@ -49,13 +47,11 @@ public class Reply extends BaseEntity {
     }
 
     @Builder
-    public Reply(String path, String replyContent, String replyWriter,
-        String replyWriterUuid,
+    public Reply(String path, String replyContent, User user,
         String tag, Board board) {
         this.path = path;
         this.replyContent = replyContent;
-        this.replyWriter = replyWriter;
-        this.replyWriterUuid = replyWriterUuid;
+        this.user = user;
         this.tag = tag;
         this.board = board;
     }

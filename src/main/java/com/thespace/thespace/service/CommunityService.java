@@ -2,6 +2,7 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
+import com.thespace.thespace.domain.User;
 import com.thespace.thespace.dto.category.CategoryCreateDTO;
 import com.thespace.thespace.dto.category.CategoryDTO;
 import com.thespace.thespace.dto.community.CommunityCreateDTO;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class CommunityService {
     private final CategoryService categoryService;
     private final GetListCommunity getListCommunity;
 
-    public Long create(CommunityCreateDTO communityCreateDTO, String userId, boolean nameCheck) {
+    public Long create(CommunityCreateDTO communityCreateDTO, Authentication authentication, boolean nameCheck) {
         if (!nameCheck) {
             return null;
         }
@@ -40,15 +42,17 @@ public class CommunityService {
 
         String communityName = communityCreateDTO.communityName();
 
+        User user = (User) authentication.getPrincipal();
+
         userRoleService.register(communityName);
-        userService.setRole(userId, "ADMIN_" + communityName);
+        userService.setRole(user.getId(), "ADMIN_" + communityName);
 
         Long communityId = communityRepository.save(community).getCommunityId();
 
         CategoryCreateDTO categoryCreateDTO = new CategoryCreateDTO("Open Forum", "Forum",
             community.getCommunityName(), communityId
         );
-        categoryService.create(categoryCreateDTO, userId);
+        categoryService.create(categoryCreateDTO, authentication);
 
         return communityId;
     }
@@ -70,8 +74,9 @@ public class CommunityService {
             .build();
     }
 
-    public void delete(Long communityId, String userId, String communityName) {
-        if (!userService.findUserRoles(userId)
+    public void delete(Long communityId, Authentication authentication, String communityName) {
+        User user = (User) authentication.getPrincipal();
+        if (!userService.findUserRoles(user.getId())
             .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
             return;
         }
@@ -79,8 +84,9 @@ public class CommunityService {
         communityRepository.deleteById(communityId);
     }
 
-    public List<Long> hasAdminList(String userId) {
-        return userService.findUserRoles(userId).stream()
+    public List<Long> hasAdminList(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return userService.findUserRoles(user.getId()).stream()
             .map(userRoleService::findRoleNameById)
             .filter(roleName -> roleName.contains("ADMIN"))
             .map(roleName -> getCommunityIdByName(roleName.split("_")[1]))
@@ -116,8 +122,9 @@ public class CommunityService {
         return communityRepository.findCommunityIdByNameIgnoreCase(communityName);
     }
 
-    public void modify(CommunityModifyDTO communityModifyDTO, String userId) {
-        if (!userService.findUserRoles(userId)
+    public void modify(CommunityModifyDTO communityModifyDTO, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        if (!userService.findUserRoles(user.getId())
             .contains(userRoleService.findRoleId("ADMIN_" + communityModifyDTO.communityName()))) {
             return;
         }

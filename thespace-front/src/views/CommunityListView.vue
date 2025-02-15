@@ -46,7 +46,7 @@ function create()
 
 function hasAdmin()
   {
-  	axios.get(`/community/list/admin`, {params: {userId: userId}})
+  	axios.get(`/community/list/admin`, {withCredentials: true})
 			.then(res =>
       {
         keyword.value = res.data.toString()

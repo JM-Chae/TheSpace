@@ -93,11 +93,9 @@ const post = async () =>
               {
                 title: title.value,
                 content: content.value,
-                writer: user.name,
-                writerUuid: user.uuid,
                 categoryId: categoryId.value,
                 fileNames: fileNames.value
-              })
+              }, {withCredentials: true})
             selectedFiles.value = [];
             bno.value = res.data
           } catch (error)

@@ -9,6 +9,7 @@ import com.thespace.thespace.service.CommunityService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,8 +40,8 @@ public class CommunityController {
 
     @PostMapping
     public Long create(@Valid @RequestBody CommunityCreateDTO communityCreateDTO,
-        @RequestParam("userId") String userId, @RequestParam("nameCheck") boolean nameCheck) {
-        return communityService.create(communityCreateDTO, userId, nameCheck);
+        Authentication authentication, @RequestParam("nameCheck") boolean nameCheck) {
+        return communityService.create(communityCreateDTO, authentication, nameCheck);
     }
 
     @GetMapping("/nameCheck")
@@ -51,18 +52,18 @@ public class CommunityController {
     @DeleteMapping("/{communityId}")
     public void delete(@PathVariable("communityId") Long communityId,
         @RequestParam("communityName") String communityName,
-        @RequestParam("userId") String userId) {
-        communityService.delete(communityId, userId, communityName);
+        Authentication authentication) {
+        communityService.delete(communityId, authentication, communityName);
     }
 
     @GetMapping("/list/admin")
-    public List<Long> hasAdminList(@RequestParam("userId") String userId) {
-        return communityService.hasAdminList(userId);
+    public List<Long> hasAdminList(Authentication authentication) {
+        return communityService.hasAdminList(authentication);
     }
 
     @PatchMapping("/modify")
     public void modify(@RequestBody CommunityModifyDTO communityModifyDTO,
-        @RequestParam("userId") String userId) {
-        communityService.modify(communityModifyDTO, userId);
+        Authentication authentication) {
+        communityService.modify(communityModifyDTO, authentication);
     }
 }

@@ -1,17 +1,23 @@
 package com.thespace.thespace.controller;
 
-import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
+import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,21 +39,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureRestDocs
 @ExtendWith(RestDocumentationExtension.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 class CategoryControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -71,13 +80,19 @@ class CategoryControllerTest {
     @Autowired
     private CommunityRepository communityRepository;
 
-    @Autowired
-    private WebApplicationContext context;
-
     @BeforeEach
-    void setup(RestDocumentationContextProvider restDocumentation) {
-        mockMvc = restDocsConfig(context, restDocumentation);
+    void setup() {
         dataBaseCleaner.clear();
+        User user = userRepository.save(new User(
+            "testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>()
+        ));
+        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
+        userService.setRole(user.getId(), "ROLE_USER");
     }
 
     @Test
@@ -110,10 +125,11 @@ class CategoryControllerTest {
             jsonPath("$.[0].categoryName").value("test 1"),
             jsonPath("$.[9].categoryId").value("10"),
             jsonPath("$.[9].categoryName").value("test 10")
-        );
+        ).andDo(print());
 
         //docs
-        result.andDo(write().document(queryParameters(parameterWithName("path").description(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+            queryParameters(parameterWithName("path").description(
             "The community name to which that category belongs.")), relaxedResponseFields(
             fieldWithPath("[].categoryId").description("Category ID"),
             fieldWithPath("[].categoryName").description("Category Name"),
@@ -125,6 +141,7 @@ class CategoryControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void categoryCreate() throws Exception {
         //given
         Community community = communityRepository.save(new Community(
@@ -139,27 +156,18 @@ class CategoryControllerTest {
             community.getCommunityId()
         );
 
-        User admin = userRepository.save(new User(
-            "tester",
-            "aaaa",
-            "aaaa",
-            "1234@asdf.zxc",
-            "1234",
-            new ArrayList<>()
-        ));
         UserRole userRole = userRoleRepository.save(new UserRole(
             "ADMIN_" + community.getCommunityName(),
             new ArrayList<>()
         ));
-        userService.setRole(admin.getId(), userRole.getRole());
+        userService.setRole("testerUser", userRole.getRole());
 
         //when
         ResultActions result = mockMvc.perform(post("/category/admin").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(categoryCreateDTO))
-            .queryParam("userId", admin.getId()));
+            .content(objectMapper.writeValueAsString(categoryCreateDTO)));
 
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk()).andDo(print());
         Category category = categoryRepository.findById(1L).orElseThrow();
         if (!(category.getCategoryName().equals(categoryCreateDTO.categoryName())
             && category.getCategoryType().equals(categoryCreateDTO.categoryType())
@@ -168,7 +176,7 @@ class CategoryControllerTest {
         }
 
         //docs
-        result.andDo(write().document(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
             requestFields(
                 fieldWithPath("categoryName").description(
                     "Category name"),
@@ -177,12 +185,11 @@ class CategoryControllerTest {
                     "The community name to which that category will belongs."),
                 fieldWithPath("communityId").description(
                     "The community ID to which that category will belongs.")
-            ),
-            queryParameters(parameterWithName("userId").description("ID of the create performer."))
-        ));
+            )));
     }
 
     @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void categoryDelete() throws Exception {
         //given
         Community community = communityRepository.save(new Community(
@@ -198,25 +205,16 @@ class CategoryControllerTest {
             new ArrayList<>()
         ));
 
-        User admin = userRepository.save(new User(
-            "tester",
-            "aaaa",
-            "aaaa",
-            "1234@asdf.zxc",
-            "1234",
-            new ArrayList<>()
-        ));
         UserRole userRole = userRoleRepository.save(new UserRole(
             "ADMIN_" + community.getCommunityName(),
             new ArrayList<>()
         ));
-        userService.setRole(admin.getId(), userRole.getRole());
+        userService.setRole("testerUser", userRole.getRole());
 
         //when
         ResultActions result = mockMvc.perform(delete(
             "/category/{categoryId}/admin", category.getCategoryId())
-            .queryParam("userId", admin.getId())
-            .queryParam("communityName", community.getCommunityName()));
+            .queryParam("communityName", community.getCommunityName())).andDo(print());
 
         //then
         result.andExpect(status().isOk());
@@ -226,10 +224,9 @@ class CategoryControllerTest {
         );
 
         //docs
-        result.andDo(write().document(
+        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
             pathParameters(parameterWithName("categoryId").description("Category ID what to delete")),
             queryParameters(
-                parameterWithName("userId").description("ID of the delete performer."),
                 parameterWithName("communityName").description(
                     "The community name to which that category belongs.")
             )

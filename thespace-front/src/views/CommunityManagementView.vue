@@ -81,7 +81,7 @@ function done()
         communityName: communityName,
 				description: des.value
       },
-      {params: {userId: userId}})
+      {withCredentials: true})
 			.then(() => getCommunity());
 		
 		desReadOnly.value = !desReadOnly.value;
@@ -106,7 +106,7 @@ function createCategory()
 				path: path.value,
 				categoryName: name.value
 			},
-			{params: {userId: userId}})
+			{withCredentials: true})
 			.then(() =>
       {
         categoryMaker.value = false;

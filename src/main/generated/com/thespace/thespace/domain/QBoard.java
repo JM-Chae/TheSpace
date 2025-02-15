@@ -42,15 +42,15 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Long> rCount = createNumber("rCount", Long.class);
 
+    public final ListPath<Reply, QReply> reply = this.<Reply, QReply>createList("reply", Reply.class, QReply.class, PathInits.DIRECT2);
+
     public final StringPath title = createString("title");
+
+    public final QUser user;
 
     public final NumberPath<Long> viewCount = createNumber("viewCount", Long.class);
 
     public final NumberPath<Long> vote = createNumber("vote", Long.class);
-
-    public final StringPath writer = createString("writer");
-
-    public final StringPath writerUuid = createString("writerUuid");
 
     public QBoard(String variable) {
         this(Board.class, forVariable(variable), INITS);
@@ -71,6 +71,7 @@ public class QBoard extends EntityPathBase<Board> {
     public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.category = inits.isInitialized("category") ? new QCategory(forProperty("category"), inits.get("category")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }

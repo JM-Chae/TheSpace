@@ -45,10 +45,10 @@ public class GetListBoard extends QuerydslRepositorySupport {
                         booleanBuilder.or(board.content.contains(keyword));
                         break;
                     case "w":
-                        booleanBuilder.or(board.writer.contains(keyword));
+                        booleanBuilder.or(board.user.name.contains(keyword));
                         break;
                     case "u":
-                        booleanBuilder.or(board.writerUuid.contains(keyword));
+                        booleanBuilder.or(board.user.uuid.contains(keyword));
                         break;
                     case "r":
                         booleanBuilder.or(reply.replyContent.contains(keyword));
@@ -85,8 +85,8 @@ public class GetListBoard extends QuerydslRepositorySupport {
                     .title(board1.getTitle())
                     .content(board1.getContent())
                     .path(board1.getPath())
-                    .writer(board1.getWriter())
-                    .writerUuid(board1.getWriterUuid())
+                    .writer(board1.getUser().getName())
+                    .writerUuid(board1.getUser().getUuid())
                     .createDate(board1.getCreateDate())
                     .modDate(board1.getModDate())
                     .viewCount(board1.getViewCount())

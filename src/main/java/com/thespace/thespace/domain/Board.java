@@ -10,7 +10,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,11 +37,9 @@ public class Board extends BaseEntity {
     @NotNull
     private String content;
 
-    @NotNull
-    private String writer;
-
-    @NotNull
-    private String writerUuid;
+    @ManyToOne
+    @JoinColumn(name = "User_Id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "Category_Id")
@@ -58,17 +58,18 @@ public class Board extends BaseEntity {
     @BatchSize(size = 20)
     private Set<BoardFile> fileSet = new HashSet<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> reply = new ArrayList<>();
+
     public Board() {
     }
 
     @Builder
-    public Board(String title, String path, String content, String writer,
-        String writerUuid, Category category) {
+    public Board(String title, String path, String content, Category category, User user) {
         this.title = title;
         this.path = path;
         this.content = content;
-        this.writer = writer;
-        this.writerUuid = writerUuid;
+        this.user = user;
         this.category = category;
     }
 

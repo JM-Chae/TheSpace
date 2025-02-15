@@ -6,6 +6,7 @@ import com.thespace.thespace.service.CategoryService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,14 +30,14 @@ public class CategoryController {
 
     @PostMapping("/admin")
     public void create(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO,
-        @RequestParam("userId") String userId) {
-        categoryService.create(categoryCreateDTO, userId);
+        Authentication authentication) {
+        categoryService.create(categoryCreateDTO, authentication);
     }
 
     @DeleteMapping("/{categoryId}/admin")
     public void delete(@PathVariable("categoryId") Long categoryId,
-        @RequestParam("userId") String userId,
+        Authentication authentication,
         @RequestParam("communityName") String communityName) {
-        categoryService.delete(categoryId, userId, communityName);
+        categoryService.delete(categoryId, authentication, communityName);
     }
 }

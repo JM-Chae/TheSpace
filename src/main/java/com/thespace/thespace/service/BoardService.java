@@ -2,6 +2,7 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
+import com.thespace.thespace.domain.User;
 import com.thespace.thespace.dto.board.BoardDTO;
 import com.thespace.thespace.dto.board.BoardModifyDTO;
 import com.thespace.thespace.dto.board.BoardPostDTO;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,13 +31,14 @@ public class BoardService {
     private final UserService userService;
     private final UserRoleService userRoleService;
 
-    public Board postBoard(BoardPostDTO boardPostDTO) {
+    public Board postBoard(BoardPostDTO boardPostDTO, Authentication authentication) {
         Category category = categoryRepository.findById(boardPostDTO.categoryId()).orElseThrow();
+        User user = (User) authentication.getPrincipal();
+
         Board board = Board.builder()
             .title(boardPostDTO.title())
             .content(boardPostDTO.content())
-            .writer(boardPostDTO.writer())
-            .writerUuid(boardPostDTO.writerUuid())
+            .user(user)
             .category(category)
             .path(category.getPath())
             .build();
@@ -59,8 +62,8 @@ public class BoardService {
             .bno(board.getBno())
             .title(board.getTitle())
             .content(board.getContent())
-            .writer(board.getWriter())
-            .writerUuid(board.getWriterUuid())
+            .writer(board.getUser().getName())
+            .writerUuid(board.getUser().getUuid())
             .path(board.getPath())
             .categoryId(categoryId)
             .vote(board.getVote())
@@ -72,8 +75,8 @@ public class BoardService {
             .build();
     }
 
-    public Long post(BoardPostDTO boardPostDTO) {
-        Board board = postBoard(boardPostDTO);
+    public Long post(BoardPostDTO boardPostDTO, Authentication authentication) {
+        Board board = postBoard(boardPostDTO, authentication);
         return boardRepository.save(board).getBno();
     }
 
@@ -93,8 +96,7 @@ public class BoardService {
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
 
-        if (board.getWriter().equals(boardModifyDTO.writer())) {
-
+        if (board.getUser().getId().equals(boardModifyDTO.writer())) {
             board.change(boardModifyDTO.title(), boardModifyDTO.content(),
                 categoryRepository.findById(boardModifyDTO.categoryId()).orElseThrow()
             );
@@ -110,9 +112,11 @@ public class BoardService {
         }
     }
 
-    public void delete(Long bno, String userUuid) {
+    public void delete(Long bno, Authentication authentication) {
         if (boardRepository.existsById(bno)) {
-            if (writerCheck(bno, userUuid)) {
+            Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
+            User user = (User) authentication.getPrincipal();
+            if (user.getUuid().equals(board.getUser().getUuid())) {
                 boardRepository.deleteById(bno);
             }
             return;
@@ -121,9 +125,10 @@ public class BoardService {
         throw new PostNotFound();
     }
 
-    public void delete(Long bno, String userId, String communityName) {
+    public void delete(Long bno, Authentication authentication, String communityName) {
         if (boardRepository.existsById(bno)) {
-            if (userService.findUserRoles(userId)
+            User user = (User) authentication.getPrincipal();
+            if (userService.findUserRoles(user.getId())
                 .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
                 boardRepository.deleteById(bno);
             }
@@ -148,11 +153,6 @@ public class BoardService {
             .dtoList(list.getContent())
             .total((int) list.getTotalElements())
             .build();
-    }
-
-    public boolean writerCheck(Long bno, String userId) {
-        return boardRepository.findById(bno).orElseThrow(PostNotFound::new).getWriterUuid()
-            .equals(userId);
     }
 }
 

@@ -35,9 +35,8 @@ const deleteBoardAlert = (bno: number) =>
 function deleteAdmin(bno: number)
   {
     axios.delete(`board/${bno}/admin`, {params: {
-      	userId: userId,
 				communityName: props.path
-			}})
+			}, withCredentials: true})
 			.then(() => getList())
 	}
 

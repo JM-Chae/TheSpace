@@ -35,7 +35,7 @@ public class UserService {
         }
 
         User user = (User) authentication.getPrincipal();
-        User data = userRepository.findByIdWithRoles(user.getId()).orElseThrow();
+        User data = userRepository.findByIdWithRoles(user.getId()).orElseThrow(UserNotFound::new);
 
         List<String> roles = data.getRoles().stream()
             .map(UserRole::getRole)

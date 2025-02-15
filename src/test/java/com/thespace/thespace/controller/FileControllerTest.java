@@ -14,23 +14,18 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thespace.thespace.config.DataBaseCleaner;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.dto.board.BoardFileDTO;
-import com.thespace.thespace.dto.board.BoardPostDTO;
 import com.thespace.thespace.dto.board.UploadFilesDTO;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.service.BoardFileService;
-import com.thespace.thespace.service.BoardService;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,17 +61,10 @@ class FileControllerTest {
     private CommunityRepository communityRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private BoardService boardService;
-
-    @Autowired
     private BoardFileService boardFileService;
 
     @Autowired
     private WebApplicationContext context;
-
 
     @BeforeEach
     void setup(RestDocumentationContextProvider restDocumentation) {
@@ -139,27 +127,6 @@ class FileControllerTest {
                     "The number of files in that post when it is posted to a board.")
             )
         ));
-
-        //post test
-        String mvcResult = result.andReturn().getResponse().getContentAsString();
-        List<Map<String, String>> list = objectMapper.readValue(mvcResult, new TypeReference<>() {
-        });
-
-        String result1 = list.get(0).get("fileId") + "_" + list.get(0).get("fileName");
-        String result2 = list.get(1).get("fileId") + "_" + list.get(1).get("fileName");
-        List<String> fileNames = new ArrayList<>();
-        fileNames.add(result1);
-        fileNames.add(result2);
-
-        BoardPostDTO dto = new BoardPostDTO(
-            "test",
-            "test",
-            "test",
-            "test",
-            fileNames,
-            category.getCategoryId()
-        );
-        boardService.post(dto);
     }
 
     @Test
