@@ -36,7 +36,7 @@ API Docs : https://jm-chae.github.io/TheSpace/
 
 ERD
 ---
-![image](https://github.com/user-attachments/assets/5ac897ee-b476-4b47-858c-a439f20fc23d)
+![TheSpace](https://github.com/user-attachments/assets/72e8d780-3802-4e39-b7fb-4e2107b0f248)
 
 Main Features
 ---
