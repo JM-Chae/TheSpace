@@ -3,16 +3,20 @@ import {ref} from 'vue'
 import axios from "axios";
 import router from "@/router";
 
-const userinfo = sessionStorage.getItem('userInfo') || ""
-const roles = JSON.parse(userinfo).roles
-
-const communityName = history.state.communityName;
-
-const hasAdmin = roles.includes('ADMIN_'+communityName.toUpperCase())
-
 const community = ref()
+const communityName = history.state.communityName;
+const hasAdmin = ref(false);
 
-axios.get(`/community/${communityName}`).then(res => community.value = res.data)
+if(sessionStorage.getItem('userInfo') == undefined) {
+} else {
+  const userinfo = sessionStorage.getItem('userInfo') || "";
+  const userId = JSON.parse(userinfo).id;
+  const roles = JSON.parse(userinfo).roles
+
+  hasAdmin.value = roles.includes('ADMIN_' + communityName.toUpperCase())
+
+  axios.get(`/community/${communityName}`).then(res => community.value = res.data)
+}
 
 const tempSize = history.state.size
 const tempPage = history.state.page

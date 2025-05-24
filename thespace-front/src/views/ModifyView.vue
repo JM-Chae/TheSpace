@@ -1,9 +1,9 @@
 <script lang = "ts" setup>
 import {onMounted, ref} from "vue";
 import axios from "axios";
-import router from "@/router";
 import {Delete} from "@element-plus/icons-vue";
 import Editor from '@tinymce/tinymce-vue'
+import {ElMessageBox} from "element-plus";
 
 const loading = ref(true);
 
@@ -58,7 +58,7 @@ const post = async function ()
         categoryId: categoryId.value,
         fileNames: newFileNames.value
       })
-      .then(() => router.push({name: "read", state: {bno: bno.value}}))
+    .then(res => fileNames.value.push(...res.data.map((list: any) => list.fileId + '_' + list.fileName)))
   }
 
 const selectedFiles = ref<File[]>([]);
@@ -200,8 +200,10 @@ let count = 0;
     input.onchange = async () => {
       let files = input.files;
       if (files) {
-        let selectedFile = files[0]; //
+        if(files[0].type.startsWith('image/')) {
+        let selectedFile = files[0];
         formData.set('fileList', selectedFile);
+
 
         try {
           const response = await axios.post('/file', formData, {
@@ -222,6 +224,14 @@ let count = 0;
             callback (blob, { title: selectedFile.name });
           }
         } catch (error) {}
+       } else {
+         await ElMessageBox.alert('You must select image file.', 'Alert',
+        {
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true
+      })
+       }
       }
     };
     input.click();}
@@ -239,7 +249,10 @@ let count = 0;
 				<div style="color: #333333; line-height: 2; margin-right: 0.5em; padding: 0 1em 0 1em; vertical-align: center; height: 32px; display: inline-block; background: rgb(99,195,107); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 					{{files.name}}
 				</div>
-				<el-button type="danger" @click="unSelectFile(index)"><el-icon size="15"><Delete/></el-icon></el-button>
+				<el-button type="danger" @click="unSelectFile(index)"><el-icon size="15">
+          <Delete/>
+        </el-icon>
+        </el-button>
 			</li>
 			<li v-for = "(file, index) in fileNames" class = "mt-3" style = "list-style-type: none;">
 				<div v-if = "file && file[index]">

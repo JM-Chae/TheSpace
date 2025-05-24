@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import {RouterLink, RouterView} from 'vue-router'
-
-const login = sessionStorage.getItem('login') == 'true';
-
+import {login} from '@/main'
 </script>
 
 <template>

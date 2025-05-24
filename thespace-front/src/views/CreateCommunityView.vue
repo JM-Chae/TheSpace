@@ -3,9 +3,24 @@ import {ref, watch} from "vue";
 import axios from "axios";
 import {Check} from '@element-plus/icons-vue'
 import router from "@/router";
+import {ElMessageBox} from "element-plus";
 
-const userinfo = sessionStorage.getItem('userInfo') || "";
-const userId = JSON.parse(userinfo).id;
+if(sessionStorage.getItem('userInfo') == undefined) {
+
+  ElMessageBox.alert('You must to login', 'Alert',
+      {
+        confirmButtonText: 'OK',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true,
+        customClass: '.el-message-box'
+      })
+
+  router.push('/user/login');
+} else {
+  const userinfo = sessionStorage.getItem('userInfo') || "";
+  const userId = JSON.parse(userinfo).id;
+}
 
 const communityName = ref("")
 const description = ref("")

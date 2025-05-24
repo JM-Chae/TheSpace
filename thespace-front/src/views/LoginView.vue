@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import axios from "axios";
 import router from "@/router";
+import {setLogin} from "@/main";
 
 const id = ref("")
 const pw = ref("")
@@ -20,7 +21,8 @@ const login = function ()
           }
         getInfo().then(() =>
         {
-          window.location.href = res.data.redirectUrl
+          setLogin(true)
+          router.back()
         })
       })
       .catch(error =>

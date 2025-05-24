@@ -4,6 +4,7 @@ import axios from "axios";
 import router from "@/router";
 import {Delete} from '@element-plus/icons-vue'
 import Editor from '@tinymce/tinymce-vue'
+import {ElMessageBox} from "element-plus";
 
 const isSubmitted = ref<boolean>(false)
 
@@ -59,8 +60,22 @@ const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 const bno = ref<number>()
-const fileNames = ref<string[]>([])
+const fileNames = ref<any[]>([])
 
+const deleteFile = function (fileid: string, filename: string, index: number)
+{
+  try
+  {
+    axios.delete(`/file/${fileid}/${filename}`)
+    .then(() =>
+    {
+      fileNames.value[index] = null
+    })
+  } catch (error)
+  {
+    console.log(error)
+  }
+}
 
 axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
@@ -89,15 +104,17 @@ const post = async () =>
             window.removeEventListener('beforeunload', deleteEditorImage)
             window.removeEventListener('popstate', deleteEditorImage)
             await upload();
-            const res = await axios.post("/board",
+            axios.post("/board",
               {
                 title: title.value,
                 content: content.value,
                 categoryId: categoryId.value,
                 fileNames: fileNames.value
               }, {withCredentials: true})
-            selectedFiles.value = [];
-            bno.value = res.data
+            .then(res => {
+              selectedFiles.value = []
+              bno.value = res.data
+            })
           } catch (error)
           {
 
@@ -149,7 +166,7 @@ const upload = async () =>
             'Content-Type': 'multipart/form-data'
           }
         })
-          .then(res => fileNames.value = res.data.map((list: any) => list.fileId + '_' + list.fileName))
+          .then(res => fileNames.value.push(...res.data.map((list: any) => list.fileId + '_' + list.fileName)))
       } catch (error)
       {
       }
@@ -265,9 +282,11 @@ let count = 0;
     input.onchange = async () => {
       let files = input.files;
       if (files) {
-        let selectedFile = files[0]; //
+        if(files[0].type.startsWith('image/')) {
+        let selectedFile = files[0];
         formData.set('fileList', selectedFile);
-        
+
+
         try {
           const response = await axios.post('/file', formData, {
             headers: {
@@ -280,13 +299,21 @@ let count = 0;
 
           let blob = `http://localhost:8080/file/${fileid}/${filename}`
 
-          fileNames.push(fileid+'_'+filename)
+          fileNames.push(fileid + '_' + filename)
           count += 1;
 
           if (blob) {
             callback (blob, { title: selectedFile.name });
           }
         } catch (error) {}
+       } else {
+         await ElMessageBox.alert('You must select image file.', 'Alert',
+        {
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true
+      })
+       }
       }
     };
     input.click();}
@@ -300,15 +327,27 @@ let count = 0;
 		</div>
 		<ul class = "p-0 mt-2">
 			<li v-for = "(files, index) in selectedFiles" class = "m-2" style = "list-style-type: none;">
-				<div style = "color: #333333; line-height: 2; margin-right: 0.5em; padding: 0 1em 0 1em; vertical-align: center; height: 32px; display: inline-block; background: #c1c1c1; border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-					{{ files.name }}
-				</div>
+        <div style="color: #333333; line-height: 2; margin-right: 0.5em; padding: 0 1em 0 1em; vertical-align: center; height: 32px; display: inline-block; background: rgb(99,195,107); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+          {{files.name}}
+        </div>
 				<el-button type = "danger" @click = "unSelectFile(index)">
 					<el-icon size = "15">
 						<Delete/>
 					</el-icon>
 				</el-button>
 			</li>
+      <li v-for = "(file, index) in fileNames" class = "mt-3" style = "list-style-type: none;">
+        <div v-if = "file && file[index]">
+          <div style = "color: #333333; line-height: 2; margin-right: 0.5em; padding: 0 1em 0 1em; vertical-align: center; height: 32px; display: inline-block; background: #c1c1c1; border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+            {{ file?.split('_').slice(1).join('_') }}
+          </div>  <!-- If file is image, pop-up thumbnail -->
+          <el-button type = "danger" @click = "deleteFile(`${file?.split('_')[0]}`, `${file?.split('_').slice(1).join('_')}`, index)">
+            <el-icon size = "15">
+              <Delete/>
+            </el-icon>
+          </el-button>
+        </div>
+      </li>
 		</ul>
 		<div class = "mt-3" style = "text-align: end">
 			<el-button size = "large" type = "primary" @click = "post">Submit</el-button>

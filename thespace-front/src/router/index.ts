@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import axios from "axios";
 import {ref} from "vue";
+import {ElMessageBox} from "element-plus";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,7 +102,14 @@ router.beforeEach((to, from, next) =>
             next()
           }else
           {
-            alert('You must to login')
+            ElMessageBox.alert('You must to login', 'Alert',
+                {
+                  confirmButtonText: 'OK',
+                  type: 'warning',
+                  dangerouslyUseHTMLString: true,
+                  center: true,
+                  customClass: '.el-message-box'
+                })
             next('/user/login')
           }
 

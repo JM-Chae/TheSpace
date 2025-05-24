@@ -72,7 +72,7 @@ function hasAdmin()
 				<!--	</el-select>-->
 				<!--</div>-->
 				<div class = "d-inline-block" style = "position: relative; width: 177px; height: 32px; top:-32px">
-					<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0"/>
+					<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0" @keydown.enter = "getList()"/>
 					<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 						<el-icon size = "17">
 							<Search/>

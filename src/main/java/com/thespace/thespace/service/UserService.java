@@ -42,8 +42,6 @@ public class UserService {
             .collect(Collectors.toList());
 
         return UserInfoDTO.builder()
-            .id(user.getId())
-            .email(user.getEmail())
             .name(user.getName())
             .uuid(user.getUuid())
             .roles(roles)

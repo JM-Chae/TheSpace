@@ -76,7 +76,6 @@ public class SecurityConfig implements UserDetailsService
                 .useSecureCookie(false)
                 .authenticationSuccessHandler(authSuccessHandler))
             .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true));
-//        .oauth2Login((oauth2Login) ->oauth2Login.loginPage("/user/login"));
 
         return http.build();
       }
