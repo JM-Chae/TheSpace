@@ -29,8 +29,8 @@ import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.board.BoardModifyDTO;
-import com.thespace.thespace.dto.board.BoardPostDTO;
+import com.thespace.thespace.dto.BoardDTOs.Modify;
+import com.thespace.thespace.dto.BoardDTOs.Post;
 import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
@@ -120,7 +120,7 @@ class BoardControllerTest {
             new ArrayList<>()
         ));
 
-        BoardPostDTO boardPostDTO = new BoardPostDTO(
+        Post postDTO = new Post(
             "test1",
             "content1",
             new ArrayList<>(),
@@ -129,13 +129,13 @@ class BoardControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/board").content(objectMapper.writeValueAsString(
-            boardPostDTO)).contentType(MediaType.APPLICATION_JSON));
+            postDTO)).contentType(MediaType.APPLICATION_JSON));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         Board board = boardRepository.findById(1L).orElseThrow();
-        if (!(board.getTitle().equals(boardPostDTO.title()) &&
-            board.getContent().equals(boardPostDTO.content()))) {
+        if (!(board.getTitle().equals(postDTO.title()) &&
+            board.getContent().equals(postDTO.content()))) {
             throw new Exception();
         }
 
@@ -341,7 +341,7 @@ class BoardControllerTest {
             user
         ));
 
-        BoardModifyDTO boardModifyDTO = new BoardModifyDTO(
+        Modify modifyDTO = new Modify(
             board.getBno(),
             "modify",
             "modify",
@@ -352,7 +352,7 @@ class BoardControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(patch("/board").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(boardModifyDTO))).andDo(print());
+            .content(objectMapper.writeValueAsString(modifyDTO))).andDo(print());
 
         //then
         result.andExpect(status().isOk());

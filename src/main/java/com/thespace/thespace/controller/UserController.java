@@ -1,8 +1,8 @@
 package com.thespace.thespace.controller;
 
 
-import com.thespace.thespace.dto.user.UserInfoDTO;
-import com.thespace.thespace.dto.user.UserRegisterDTO;
+import com.thespace.thespace.dto.UserDTOs;
+import com.thespace.thespace.dto.UserDTOs.Info;
 import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login/me")
-    public ResponseEntity<UserInfoDTO> rememberMe(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Info> rememberMe(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<UserInfoDTO> getUserInfo(Authentication authentication) {
+    public ResponseEntity<Info> getUserInfo(Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @PostMapping
-    public void register(@Valid @RequestBody UserRegisterDTO userRegisterDTO,
+    public void register(@Valid @RequestBody UserDTOs.Register userRegisterDTO,
         @RequestParam("checkid") boolean check) {
         userService.register(userRegisterDTO, check);
     }

@@ -27,7 +27,7 @@ import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.category.CategoryCreateDTO;
+import com.thespace.thespace.dto.CategoryDTOs.Create;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.UserRepository;
@@ -149,7 +149,7 @@ class CategoryControllerTest {
             "test"
         ));
 
-        CategoryCreateDTO categoryCreateDTO = new CategoryCreateDTO(
+        Create categoryCreateDTO = new Create(
             "test",
             "test",
             community.getCommunityName(),

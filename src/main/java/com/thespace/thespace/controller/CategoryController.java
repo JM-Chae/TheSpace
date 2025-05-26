@@ -1,7 +1,6 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.category.CategoryCreateDTO;
-import com.thespace.thespace.dto.category.CategoryListDTO;
+import com.thespace.thespace.dto.CategoryDTOs;
 import com.thespace.thespace.service.CategoryService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -24,14 +23,14 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public List<CategoryListDTO> list(@RequestParam(name = "path") String path) {
+    public List<CategoryDTOs.List> list(@RequestParam(name = "path") String path) {
         return categoryService.list(path);
     }
 
     @PostMapping("/admin")
-    public void create(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO,
+    public void create(@Valid @RequestBody CategoryDTOs.Create CreateDTO,
         Authentication authentication) {
-        categoryService.create(categoryCreateDTO, authentication);
+        categoryService.create(CreateDTO, authentication);
     }
 
     @DeleteMapping("/{categoryId}/admin")

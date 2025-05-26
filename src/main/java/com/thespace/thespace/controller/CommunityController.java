@@ -1,8 +1,7 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.community.CommunityCreateDTO;
-import com.thespace.thespace.dto.community.CommunityDTO;
-import com.thespace.thespace.dto.community.CommunityModifyDTO;
+import com.thespace.thespace.dto.CommunityDTOs;
+import com.thespace.thespace.dto.CommunityDTOs.Info;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.service.CommunityService;
@@ -29,19 +28,19 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @GetMapping("/{communityName}")
-    public CommunityDTO get(@PathVariable("communityName") String communityName) {
+    public Info get(@PathVariable("communityName") String communityName) {
         return communityService.get(communityName);
     }
 
     @GetMapping("/list")
-    public PageResDTO<CommunityDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
+    public PageResDTO<Info> list(@ModelAttribute PageReqDTO pageReqDTO) {
         return communityService.list(pageReqDTO);
     }
 
     @PostMapping
-    public Long create(@Valid @RequestBody CommunityCreateDTO communityCreateDTO,
+    public Long create(@Valid @RequestBody CommunityDTOs.Create createDTO,
         Authentication authentication, @RequestParam("nameCheck") boolean nameCheck) {
-        return communityService.create(communityCreateDTO, authentication, nameCheck);
+        return communityService.create(createDTO, authentication, nameCheck);
     }
 
     @GetMapping("/nameCheck")
@@ -62,8 +61,8 @@ public class CommunityController {
     }
 
     @PatchMapping("/modify")
-    public void modify(@RequestBody CommunityModifyDTO communityModifyDTO,
+    public void modify(@RequestBody CommunityDTOs.Modify modifyDTO,
         Authentication authentication) {
-        communityService.modify(communityModifyDTO, authentication);
+        communityService.modify(modifyDTO, authentication);
     }
 }

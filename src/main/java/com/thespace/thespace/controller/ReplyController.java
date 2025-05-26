@@ -1,8 +1,8 @@
 package com.thespace.thespace.controller;
 
+import com.thespace.thespace.dto.ReplyDTOs;
+import com.thespace.thespace.dto.ReplyDTOs.Info;
 import com.thespace.thespace.dto.page.PageResDTO;
-import com.thespace.thespace.dto.reply.ReplyDTO;
-import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
 import com.thespace.thespace.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -23,7 +23,7 @@ public class ReplyController {
 
     @PostMapping
     public void register(@PathVariable("bno") Long bno,
-        @RequestBody ReplyRegisterDTO replyRegisterDTO, Authentication authentication) {
+        @RequestBody ReplyDTOs.Register replyRegisterDTO, Authentication authentication) {
         replyService.register(bno, replyRegisterDTO, authentication);
     }
 
@@ -33,13 +33,13 @@ public class ReplyController {
     }
 
     @GetMapping
-    public PageResDTO<ReplyDTO> list(@PathVariable("bno") Long bno) {
+    public PageResDTO<Info> list(@PathVariable("bno") Long bno) {
 
         return replyService.getListReply(bno);
     }
 
     @GetMapping("/{rno}")
-    public PageResDTO<ReplyDTO> nestedListGet(@PathVariable("rno") Long rno,
+    public PageResDTO<Info> nestedListGet(@PathVariable("rno") Long rno,
         @PathVariable("bno") Long bno) {
 
         return replyService.getListNestedReply(rno, bno);

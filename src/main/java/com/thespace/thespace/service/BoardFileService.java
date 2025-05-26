@@ -2,11 +2,9 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.BoardFile;
-import com.thespace.thespace.dto.board.BoardFileDTO;
-import com.thespace.thespace.dto.board.UploadFilesDTO;
+import com.thespace.thespace.dto.BoardDTOs;
 import com.thespace.thespace.repository.BoardFileRepository;
 import com.thespace.thespace.repository.BoardRepository;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,9 +35,9 @@ public class BoardFileService {
     private final BoardFileRepository boardFileRepository;
     private final BoardRepository boardRepository;
 
-    public List<BoardFileDTO> upload(UploadFilesDTO uploadFilesDTO) {
+    public List<BoardDTOs.FileInfo> upload(BoardDTOs.UploadFiles uploadFilesDTO) {
         if (uploadFilesDTO.fileList() != null) {
-            List<BoardFileDTO> list = new ArrayList<>();
+            List<BoardDTOs.FileInfo> list = new ArrayList<>();
 
             uploadFilesDTO.fileList().forEach(multipartFile -> {
                 String originalFileName = "";
@@ -66,7 +64,7 @@ public class BoardFileService {
                     }
                     else if (mimeType.startsWith("image")) {
                         image = true;
-                        File thumbFile = new File(String.valueOf(saveDirectory),
+                        java.io.File thumbFile = new java.io.File(String.valueOf(saveDirectory),
                             "s_" + originalFileName);
                         Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200, 200);
                     }
@@ -74,7 +72,7 @@ public class BoardFileService {
                     log.error("Exception while uploading file [Err_Msg]: {}", e.getMessage());
                 }
 
-                list.add(BoardFileDTO.builder()
+                list.add(BoardDTOs.FileInfo.builder()
                     .fileId(uuid)
                     .fileName(originalFileName)
                     .imageChk(image)
@@ -87,7 +85,7 @@ public class BoardFileService {
 
     public ResponseEntity<Resource> get(String fileid, String filename) {
         Resource resource = new FileSystemResource(
-            uploadPath + File.separator + fileid + File.separator + filename);
+            uploadPath + java.io.File.separator + fileid + java.io.File.separator + filename);
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -104,7 +102,7 @@ public class BoardFileService {
     public void delete(String fileid, String filename) {
 
         Resource resource = new FileSystemResource(
-            uploadPath + File.separator + fileid + File.separator + filename);
+            uploadPath + java.io.File.separator + fileid + java.io.File.separator + filename);
 
         try {
             String contentType = Files.probeContentType(resource.getFile().toPath());
@@ -125,11 +123,11 @@ public class BoardFileService {
             }
 
             if (contentType.startsWith("image")) {
-                File thumbnail = new File(
-                    uploadPath + File.separator + fileid + File.separator + "s_" + filename);
+                java.io.File thumbnail = new java.io.File(
+                    uploadPath + java.io.File.separator + fileid + java.io.File.separator + "s_" + filename);
                 Files.deleteIfExists(thumbnail.toPath());
             }
-            Files.deleteIfExists(Paths.get(uploadPath + File.separator + fileid));
+            Files.deleteIfExists(Paths.get(uploadPath + java.io.File.separator + fileid));
         } catch (Exception e) {
             log.error("Exception while deleting file [Err_Msg]: {}", e.getMessage());
         }

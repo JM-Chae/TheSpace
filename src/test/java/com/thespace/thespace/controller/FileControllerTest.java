@@ -17,12 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.thespace.thespace.config.DataBaseCleaner;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
-import com.thespace.thespace.dto.board.BoardFileDTO;
-import com.thespace.thespace.dto.board.UploadFilesDTO;
+import com.thespace.thespace.dto.BoardDTOs.FileInfo;
+import com.thespace.thespace.dto.BoardDTOs.UploadFiles;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.service.BoardFileService;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +73,7 @@ class FileControllerTest {
 
     @AfterEach
     void deleteTemp() throws IOException {
-        File path = new File("src/test/resources/static/files");
+        java.io.File path = new java.io.File("src/test/resources/static/files");
         FileUtils.deleteDirectory(path);
     }
 
@@ -141,9 +140,9 @@ class FileControllerTest {
 
         List<MultipartFile> fileList = new ArrayList<>();
         fileList.add(file);
-        UploadFilesDTO dto = new UploadFilesDTO(fileList);
+        UploadFiles dto = new UploadFiles(fileList);
 
-        List<BoardFileDTO> boardFileDTOList = boardFileService.upload(dto);
+        List<FileInfo> boardFileDTOList = boardFileService.upload(dto);
 
         //when
         ResultActions result = mockMvc.perform(get(
@@ -174,9 +173,9 @@ class FileControllerTest {
 
         List<MultipartFile> fileList = new ArrayList<>();
         fileList.add(file);
-        UploadFilesDTO dto = new UploadFilesDTO(fileList);
+        UploadFiles dto = new UploadFiles(fileList);
 
-        List<BoardFileDTO> boardFileDTOList = boardFileService.upload(dto);
+        List<FileInfo> boardFileDTOList = boardFileService.upload(dto);
 
         //when
         ResultActions result = mockMvc.perform(delete(

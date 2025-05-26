@@ -27,7 +27,7 @@ import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.Reply;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
+import com.thespace.thespace.dto.ReplyDTOs.Register;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
@@ -127,7 +127,7 @@ class ReplyControllerTest {
             user
         ));
 
-        ReplyRegisterDTO rDto = new ReplyRegisterDTO(
+        Register rDto = new Register(
             "test",
             "",
             board.getBno() + "/"

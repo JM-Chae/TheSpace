@@ -2,8 +2,7 @@ package com.thespace.thespace.service;
 
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.user.UserInfoDTO;
-import com.thespace.thespace.dto.user.UserRegisterDTO;
+import com.thespace.thespace.dto.UserDTOs;
 import com.thespace.thespace.exception.UserNotFound;
 import com.thespace.thespace.repository.UserRepository;
 import com.thespace.thespace.repository.UserRoleRepository;
@@ -29,7 +28,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserInfoDTO getUserinfoDTO(Authentication authentication) {
+    public UserDTOs.Info getUserinfoDTO(Authentication authentication) {
         if (authentication == null) {
             throw new UserNotFound();
         }
@@ -41,7 +40,7 @@ public class UserService {
             .map(UserRole::getRole)
             .collect(Collectors.toList());
 
-        return UserInfoDTO.builder()
+        return UserDTOs.Info.builder()
             .name(user.getName())
             .uuid(user.getUuid())
             .roles(roles)
@@ -49,7 +48,7 @@ public class UserService {
     }
 
     @Transactional
-    public void register(UserRegisterDTO userRegisterDTO, boolean check) {
+    public void register(UserDTOs.Register userRegisterDTO, boolean check) {
         if (!check) {
             return;
         }

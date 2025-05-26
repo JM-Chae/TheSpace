@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thespace.thespace.config.DataBaseCleaner;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.user.UserRegisterDTO;
+import com.thespace.thespace.dto.UserDTOs.Register;
 import com.thespace.thespace.repository.UserRepository;
 import com.thespace.thespace.repository.UserRoleRepository;
 import com.thespace.thespace.service.UserService;
@@ -103,14 +103,12 @@ class UserControllerTest {
         ResultActions result = mockMvc.perform(get("/user/info"));
 
         //then
-        result.andExpect(status().isOk()).andExpect(jsonPath("$.id").value("testerUser")).andDo(print());
+        result.andExpect(status().isOk()).andExpect(jsonPath("$.uuid").value("testerUUID")).andDo(print());
 
         //docs
         result.andDo(write().document(responseFields(
                 fieldWithPath("uuid").description("UUID of login user"),
-            fieldWithPath("id").description("ID of login user"),
             fieldWithPath("name").description("Nickname of login user"),
-            fieldWithPath("email").description("Email of login user"),
             fieldWithPath("roles").description("Roles(in community) of login user")
             ), requestHeaders(), responseBody(), requestBody(), httpRequest(), httpResponse(), curlRequest()));
     }
@@ -118,7 +116,7 @@ class UserControllerTest {
     @Test
     void userRegister() throws Exception {
         //given
-        UserRegisterDTO dto = new UserRegisterDTO("AAAAAA", "AAAAAA", "AAAA@AAAA.AAA", "password");
+        Register dto = new Register("AAAAAA", "AAAAAA", "AAAA@AAAA.AAA", "password");
 
         //when
         ResultActions result = mockMvc.perform(post("/user").queryParam("checkid", "true").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto)));

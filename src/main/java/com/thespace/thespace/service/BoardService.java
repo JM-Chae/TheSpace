@@ -3,9 +3,7 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.User;
-import com.thespace.thespace.dto.board.BoardDTO;
-import com.thespace.thespace.dto.board.BoardModifyDTO;
-import com.thespace.thespace.dto.board.BoardPostDTO;
+import com.thespace.thespace.dto.BoardDTOs;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.exception.PostNotFound;
@@ -31,20 +29,20 @@ public class BoardService {
     private final UserService userService;
     private final UserRoleService userRoleService;
 
-    public Board postBoard(BoardPostDTO boardPostDTO, Authentication authentication) {
-        Category category = categoryRepository.findById(boardPostDTO.categoryId()).orElseThrow();
+    public Board postBoard(BoardDTOs.Post postDTO, Authentication authentication) {
+        Category category = categoryRepository.findById(postDTO.categoryId()).orElseThrow();
         User user = (User) authentication.getPrincipal();
 
         Board board = Board.builder()
-            .title(boardPostDTO.title())
-            .content(boardPostDTO.content())
+            .title(postDTO.title())
+            .content(postDTO.content())
             .user(user)
             .category(category)
             .path(category.getPath())
             .build();
 
-        if (boardPostDTO.fileNames() != null) {
-            boardPostDTO.fileNames().forEach(fileName -> {
+        if (postDTO.fileNames() != null) {
+            postDTO.fileNames().forEach(fileName -> {
                 String[] array = fileName.split("_", 2);
                 board.addFile(array[0], array[1]);
             });
@@ -52,13 +50,13 @@ public class BoardService {
         return board;
     }
 
-    public BoardDTO readBoard(Board board) {
+    public BoardDTOs.Info readBoard(Board board) {
         Long categoryId = board.getCategory().getCategoryId();
 
         List<String> fileNames = board.getFileSet().stream().sorted().map(boardFile ->
             boardFile.getFileId() + "_" + boardFile.getFileName()).toList();
 
-        return BoardDTO.builder()
+        return BoardDTOs.Info.builder()
             .bno(board.getBno())
             .title(board.getTitle())
             .content(board.getContent())
@@ -75,13 +73,13 @@ public class BoardService {
             .build();
     }
 
-    public Long post(BoardPostDTO boardPostDTO, Authentication authentication) {
-        Board board = postBoard(boardPostDTO, authentication);
+    public Long post(BoardDTOs.Post postDTO, Authentication authentication) {
+        Board board = postBoard(postDTO, authentication);
         return boardRepository.save(board).getBno();
     }
 
     @Transactional
-    public BoardDTO read(Long bno) {
+    public BoardDTOs.Info read(Long bno) {
         Optional<Board> result = boardRepository.findByIdWithFiles(bno);
         Board board = result.orElseThrow(PostNotFound::new);
         board.setViewCount(board.getViewCount() + 1L);
@@ -90,19 +88,20 @@ public class BoardService {
         return readBoard(board);
     }
 
-    public void modify(BoardModifyDTO boardModifyDTO) {
+    public void modify(BoardDTOs.Modify modifyDTO) {
 
-        Long bno = boardModifyDTO.bno();
+        Long bno = modifyDTO.bno();
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow(PostNotFound::new);
 
-        if (board.getUser().getId().equals(boardModifyDTO.writer())) {
-            board.change(boardModifyDTO.title(), boardModifyDTO.content(),
-                categoryRepository.findById(boardModifyDTO.categoryId()).orElseThrow()
+        if (board.getUser().getId().equals(modifyDTO.writer())) {
+            board.change(
+                modifyDTO.title(), modifyDTO.content(),
+                categoryRepository.findById(modifyDTO.categoryId()).orElseThrow()
             );
 
-            if (boardModifyDTO.fileNames() != null) {
-                boardModifyDTO.fileNames().forEach(fileName -> {
+            if (modifyDTO.fileNames() != null) {
+                modifyDTO.fileNames().forEach(fileName -> {
                     String[] array = fileName.split("_", 2);
                     board.addFile(array[0], array[1]);
                 });
@@ -138,7 +137,7 @@ public class BoardService {
         throw new PostNotFound();
     }
 
-    public PageResDTO<BoardDTO> list(PageReqDTO pageReqDTO) {
+    public PageResDTO<BoardDTOs.Info> list(PageReqDTO pageReqDTO) {
         String[] types = pageReqDTO.getTypes();
         String keyword = pageReqDTO.keyword();
         String path = pageReqDTO.path();
@@ -146,9 +145,9 @@ public class BoardService {
 
         Pageable pageable = pageReqDTO.getPageable("bno");
 
-        Page<BoardDTO> list = getListBoard.getList(types, keyword, pageable, path, category);
+        Page<BoardDTOs.Info> list = getListBoard.getList(types, keyword, pageable, path, category);
 
-        return PageResDTO.<BoardDTO>PageResDTO()
+        return PageResDTO.<BoardDTOs.Info>PageResDTO()
             .pageReqDTO(pageReqDTO)
             .dtoList(list.getContent())
             .total((int) list.getTotalElements())

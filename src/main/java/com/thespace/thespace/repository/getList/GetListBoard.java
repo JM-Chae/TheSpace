@@ -6,7 +6,7 @@ import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.QBoard;
 import com.thespace.thespace.domain.QReply;
-import com.thespace.thespace.dto.board.BoardDTO;
+import com.thespace.thespace.dto.BoardDTOs.Info;
 import com.thespace.thespace.repository.CategoryRepository;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class GetListBoard extends QuerydslRepositorySupport {
         this.categoryRepository = categoryRepository;
     }
 
-    public Page<BoardDTO> getList(String[] types, String keyword, Pageable pageable, String path,
+    public Page<Info> getList(String[] types, String keyword, Pageable pageable, String path,
         String category) {
         QBoard board = QBoard.board;
         QReply reply = QReply.reply;
@@ -79,8 +79,8 @@ public class GetListBoard extends QuerydslRepositorySupport {
         JPQLQuery<Board> selectQuery = boardJPQLQuery.select(board);
         List<Board> boardList = selectQuery.fetch();
 
-        List<BoardDTO> dtoList = boardList.stream().map(board1 ->
-                BoardDTO.builder()
+        List<Info> dtoList = boardList.stream().map(board1 ->
+                Info.builder()
                     .bno(board1.getBno())
                     .title(board1.getTitle())
                     .content(board1.getContent())

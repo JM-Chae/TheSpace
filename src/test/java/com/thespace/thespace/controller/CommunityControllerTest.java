@@ -28,8 +28,8 @@ import com.thespace.thespace.config.DataBaseCleaner;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
 import com.thespace.thespace.domain.UserRole;
-import com.thespace.thespace.dto.community.CommunityCreateDTO;
-import com.thespace.thespace.dto.community.CommunityModifyDTO;
+import com.thespace.thespace.dto.CommunityDTOs.Create;
+import com.thespace.thespace.dto.CommunityDTOs.Modify;
 import com.thespace.thespace.repository.CommunityRepository;
 import com.thespace.thespace.repository.UserRepository;
 import com.thespace.thespace.repository.UserRoleRepository;
@@ -171,18 +171,18 @@ class CommunityControllerTest {
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void communityCreate() throws Exception {
         //given
-        CommunityCreateDTO communityCreateDTO = new CommunityCreateDTO("test", "test");
+        Create createDTO = new Create("test", "test");
 
         //when
         ResultActions result = mockMvc.perform(post("/community").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(communityCreateDTO))
+            .content(objectMapper.writeValueAsString(createDTO))
             .queryParam("nameCheck", "true"));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         Community community = communityRepository.findById(1L).orElseThrow();
-        if (!(community.getCommunityName().equals(communityCreateDTO.communityName())
-            && community.getDescription().equals(communityCreateDTO.description()))) {
+        if (!(community.getCommunityName().equals(createDTO.communityName())
+            && community.getDescription().equals(createDTO.description()))) {
             throw new Exception();
         }
 
@@ -288,7 +288,7 @@ class CommunityControllerTest {
             "test"
         ));
 
-        CommunityModifyDTO communityModifyDTO = new CommunityModifyDTO(
+        Modify modifyDTO = new Modify(
             community.getCommunityId(),
             community.getCommunityName(),
             "modify"
@@ -303,12 +303,12 @@ class CommunityControllerTest {
         //when
         ResultActions result = mockMvc.perform(patch("/community/modify")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(communityModifyDTO)));
+            .content(objectMapper.writeValueAsString(modifyDTO)));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         community = communityRepository.findById(community.getCommunityId()).orElseThrow();
-        if (!community.getDescription().equals(communityModifyDTO.description())) {
+        if (!community.getDescription().equals(modifyDTO.description())) {
             throw new Exception();
         }
 

@@ -3,8 +3,7 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
-import com.thespace.thespace.dto.category.CategoryCreateDTO;
-import com.thespace.thespace.dto.category.CategoryListDTO;
+import com.thespace.thespace.dto.CategoryDTOs;
 import com.thespace.thespace.repository.CategoryRepository;
 import com.thespace.thespace.repository.CommunityRepository;
 import java.util.List;
@@ -22,7 +21,7 @@ public class CategoryService {
     private final UserService userService;
     private final UserRoleService userRoleService;
 
-    public void create(CategoryCreateDTO categoryCreateDTO, Authentication authentication) {
+    public void create(CategoryDTOs.Create categoryCreateDTO, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if (!userService.findUserRoles(user.getId())
             .contains(userRoleService.findRoleId("ADMIN_" + categoryCreateDTO.path()))) {
@@ -42,11 +41,11 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    public List<CategoryListDTO> list(String path) {
+    public List<CategoryDTOs.List> list(String path) {
         List<Category> result = categoryRepository.findByPath(path);
 
         return result.stream().map(category ->
-                new CategoryListDTO(
+                new CategoryDTOs.List(
                     category.getCategoryId(),
                     category.getCategoryName(),
                     category.getCategoryType(),

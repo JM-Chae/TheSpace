@@ -4,13 +4,12 @@ import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Like;
 import com.thespace.thespace.domain.Reply;
 import com.thespace.thespace.domain.User;
-import com.thespace.thespace.dto.like.LikeDTO;
+import com.thespace.thespace.dto.LikeDTO;
 import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.exception.ReplyNotFound;
 import com.thespace.thespace.repository.BoardRepository;
 import com.thespace.thespace.repository.LikeRepository;
 import com.thespace.thespace.repository.ReplyRepository;
-import com.thespace.thespace.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
 
     private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
 

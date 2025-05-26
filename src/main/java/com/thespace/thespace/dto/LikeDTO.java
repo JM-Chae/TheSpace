@@ -1,4 +1,4 @@
-package com.thespace.thespace.dto.like;
+package com.thespace.thespace.dto;
 
 import lombok.Builder;
 

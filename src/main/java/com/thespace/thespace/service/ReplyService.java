@@ -3,10 +3,9 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.Board;
 import com.thespace.thespace.domain.Reply;
 import com.thespace.thespace.domain.User;
+import com.thespace.thespace.dto.ReplyDTOs;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
-import com.thespace.thespace.dto.reply.ReplyDTO;
-import com.thespace.thespace.dto.reply.ReplyRegisterDTO;
 import com.thespace.thespace.exception.PostNotFound;
 import com.thespace.thespace.exception.ReplyNotFound;
 import com.thespace.thespace.repository.BoardRepository;
@@ -31,7 +30,7 @@ public class ReplyService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public void register(Long bno, ReplyRegisterDTO replyRegisterDTO, Authentication authentication) {
+    public void register(Long bno, ReplyDTOs.Register replyRegisterDTO, Authentication authentication) {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
         Long replyCount = board.getRCount() + 1L;
         board.setRCount(replyCount);
@@ -76,7 +75,7 @@ public class ReplyService {
         }
     }
 
-    public PageResDTO<ReplyDTO> getListReply(Long bno) {
+    public PageResDTO<ReplyDTOs.Info> getListReply(Long bno) {
         if (!boardRepository.existsById(bno)) {
             throw new PostNotFound();
         }
@@ -85,16 +84,16 @@ public class ReplyService {
 
         Pageable pageable = pageReqDTO.getPageable("rno");
 
-        Page<ReplyDTO> list = getListReply.getListReply(bno, pageable);
+        Page<ReplyDTOs.Info> list = getListReply.getListReply(bno, pageable);
 
-        return PageResDTO.<ReplyDTO>PageResDTO()
+        return PageResDTO.<ReplyDTOs.Info>PageResDTO()
             .pageReqDTO(pageReqDTO)
             .dtoList(list.getContent())
             .total((int) list.getTotalElements())
             .build();
     }
 
-    public PageResDTO<ReplyDTO> getListNestedReply(Long rno, Long bno) {
+    public PageResDTO<ReplyDTOs.Info> getListNestedReply(Long rno, Long bno) {
         if (!boardRepository.existsById(bno)) {
             throw new PostNotFound();
         }
@@ -103,9 +102,9 @@ public class ReplyService {
 
         Pageable pageable = pageReqDTO.getPageable("rno");
 
-        Page<ReplyDTO> list = getListReply.getListNestedReply(rno, bno, pageable);
+        Page<ReplyDTOs.Info> list = getListReply.getListNestedReply(rno, bno, pageable);
 
-        return PageResDTO.<ReplyDTO>PageResDTO()
+        return PageResDTO.<ReplyDTOs.Info>PageResDTO()
             .pageReqDTO(pageReqDTO)
             .dtoList(list.getContent())
             .total((int) list.getTotalElements())

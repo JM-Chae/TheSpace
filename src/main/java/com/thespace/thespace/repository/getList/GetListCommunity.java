@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.QCommunity;
-import com.thespace.thespace.dto.community.CommunityDTO;
+import com.thespace.thespace.dto.CommunityDTOs.Info;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public class GetListCommunity extends QuerydslRepositorySupport {
         super(Community.class);
     }
 
-    public Page<CommunityDTO> getList(String[] types, String keyword, Pageable pageable) {
+    public Page<Info> getList(String[] types, String keyword, Pageable pageable) {
         QCommunity community = QCommunity.community;
 
         JPQLQuery<Community> communityJPQLQuery = from(community);
@@ -47,8 +47,8 @@ public class GetListCommunity extends QuerydslRepositorySupport {
         JPQLQuery<Community> selectQuery = communityJPQLQuery.select(community);
         List<Community> communityList = selectQuery.fetch();
 
-        List<CommunityDTO> dtoList = communityList.stream().map(community1 ->
-        CommunityDTO.builder()
+        List<Info> dtoList = communityList.stream().map(community1 ->
+        Info.builder()
                 .communityId(community1.getCommunityId())
                 .communityName(community1.getCommunityName())
                 .build())

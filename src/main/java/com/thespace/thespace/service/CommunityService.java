@@ -3,11 +3,8 @@ package com.thespace.thespace.service;
 import com.thespace.thespace.domain.Category;
 import com.thespace.thespace.domain.Community;
 import com.thespace.thespace.domain.User;
-import com.thespace.thespace.dto.category.CategoryCreateDTO;
-import com.thespace.thespace.dto.category.CategoryDTO;
-import com.thespace.thespace.dto.community.CommunityCreateDTO;
-import com.thespace.thespace.dto.community.CommunityDTO;
-import com.thespace.thespace.dto.community.CommunityModifyDTO;
+import com.thespace.thespace.dto.CategoryDTOs;
+import com.thespace.thespace.dto.CommunityDTOs;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.repository.CommunityRepository;
@@ -30,17 +27,17 @@ public class CommunityService {
     private final CategoryService categoryService;
     private final GetListCommunity getListCommunity;
 
-    public Long create(CommunityCreateDTO communityCreateDTO, Authentication authentication, boolean nameCheck) {
+    public Long create(CommunityDTOs.Create createDTO, Authentication authentication, boolean nameCheck) {
         if (!nameCheck) {
             return null;
         }
 
         Community community = new Community(
-            communityCreateDTO.communityName(),
-            communityCreateDTO.description()
+            createDTO.communityName(),
+            createDTO.description()
         );
 
-        String communityName = communityCreateDTO.communityName();
+        String communityName = createDTO.communityName();
 
         User user = (User) authentication.getPrincipal();
 
@@ -49,7 +46,7 @@ public class CommunityService {
 
         Long communityId = communityRepository.save(community).getCommunityId();
 
-        CategoryCreateDTO categoryCreateDTO = new CategoryCreateDTO("Open Forum", "Forum",
+        CategoryDTOs.Create categoryCreateDTO = new CategoryDTOs.Create("Open Forum", "Forum",
             community.getCommunityName(), communityId
         );
         categoryService.create(categoryCreateDTO, authentication);
@@ -61,15 +58,15 @@ public class CommunityService {
         return !communityRepository.existsByCommunityName(communityName);
     }
 
-    public PageResDTO<CommunityDTO> list(PageReqDTO pageReqDTO) {
+    public PageResDTO<CommunityDTOs.Info> list(PageReqDTO pageReqDTO) {
         String[] types = pageReqDTO.getTypes();
         String keyword = pageReqDTO.keyword();
 
         Pageable pageable = pageReqDTO.getPageable("communityId");
 
-        Page<CommunityDTO> list = getListCommunity.getList(types, keyword, pageable);
+        Page<CommunityDTOs.Info> list = getListCommunity.getList(types, keyword, pageable);
 
-        return PageResDTO.<CommunityDTO>PageResDTO()
+        return PageResDTO.<CommunityDTOs.Info>PageResDTO()
             .pageReqDTO(pageReqDTO).dtoList(list.getContent()).total((int) list.getTotalElements())
             .build();
     }
@@ -93,11 +90,11 @@ public class CommunityService {
             .collect(Collectors.toList());
     }
 
-    public CommunityDTO get(String communityName) {
+    public CommunityDTOs.Info get(String communityName) {
         Community community = communityRepository.findByCommunityName(communityName);
         List<Category> categories = community.getCategory();
-        List<CategoryDTO> categoryDTO = categories.stream().map(category ->
-                new CategoryDTO(
+        List<CategoryDTOs.Info> categoryDTO = categories.stream().map(category ->
+                new CategoryDTOs.Info(
                     category.getCategoryId(),
                     category.getCategoryName(),
                     category.getCategoryType(),
@@ -108,7 +105,7 @@ public class CommunityService {
                 ))
             .toList();
 
-        return new CommunityDTO(
+        return new CommunityDTOs.Info(
             community.getCommunityId(),
             community.getCommunityName(),
             community.getCreateDate(),
@@ -122,17 +119,17 @@ public class CommunityService {
         return communityRepository.findCommunityIdByNameIgnoreCase(communityName);
     }
 
-    public void modify(CommunityModifyDTO communityModifyDTO, Authentication authentication) {
+    public void modify(CommunityDTOs.Modify modifyDTO, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleId("ADMIN_" + communityModifyDTO.communityName()))) {
+            .contains(userRoleService.findRoleId("ADMIN_" + modifyDTO.communityName()))) {
             return;
         }
 
-        Community community = communityRepository.findById(communityModifyDTO.communityId())
+        Community community = communityRepository.findById(modifyDTO.communityId())
             .orElseThrow();//add Exception
 
-        community.change(communityModifyDTO.description());
+        community.change(modifyDTO.description());
         communityRepository.save(community);
     }
 }

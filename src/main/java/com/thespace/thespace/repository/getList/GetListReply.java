@@ -3,7 +3,7 @@ package com.thespace.thespace.repository.getList;
 import com.querydsl.jpa.JPQLQuery;
 import com.thespace.thespace.domain.QReply;
 import com.thespace.thespace.domain.Reply;
-import com.thespace.thespace.dto.reply.ReplyDTO;
+import com.thespace.thespace.dto.ReplyDTOs.Info;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,7 +18,7 @@ public class GetListReply extends QuerydslRepositorySupport {
         super(Reply.class);
     }
 
-    public Page<ReplyDTO> getListReply(Long bno, Pageable pageable) {
+    public Page<Info> getListReply(Long bno, Pageable pageable) {
         QReply reply = QReply.reply;
         JPQLQuery<Reply> replyJPQLQuery = from(reply);
 
@@ -34,7 +34,7 @@ public class GetListReply extends QuerydslRepositorySupport {
         return returnList(selectQuery, pageable);
     }
 
-    public Page<ReplyDTO> getListNestedReply(Long rno, Long bno, Pageable pageable) {
+    public Page<Info> getListNestedReply(Long rno, Long bno, Pageable pageable) {
         QReply reply = QReply.reply;
         JPQLQuery<Reply> replyJPQLQuery = from(reply);
 
@@ -49,12 +49,12 @@ public class GetListReply extends QuerydslRepositorySupport {
         return returnList(selectQuery, pageable);
     }
 
-    public Page<ReplyDTO> returnList(JPQLQuery<Reply> selectQuery, Pageable pageable) {
+    public Page<Info> returnList(JPQLQuery<Reply> selectQuery, Pageable pageable) {
 
         List<Reply> replyList = selectQuery.fetch();
 
-        List<ReplyDTO> rdtoList = replyList.stream().map(reply1 ->
-            ReplyDTO.builder()
+        List<Info> rdtoList = replyList.stream().map(reply1 ->
+            Info.builder()
                 .rno(reply1.getRno())
                 .replyWriterUuid(reply1.getUser().getUuid())
                 .replyContent(reply1.getReplyContent())

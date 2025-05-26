@@ -1,8 +1,8 @@
 package com.thespace.thespace.controller;
 
 
-import com.thespace.thespace.dto.board.BoardFileDTO;
-import com.thespace.thespace.dto.board.UploadFilesDTO;
+import com.thespace.thespace.dto.BoardDTOs.FileInfo;
+import com.thespace.thespace.dto.BoardDTOs.UploadFiles;
 import com.thespace.thespace.service.BoardFileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class FileController {
     private final BoardFileService boardFileService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<BoardFileDTO> upload(UploadFilesDTO uploadFilesDTO) {
+    public List<FileInfo> upload(UploadFiles uploadFilesDTO) {
         return boardFileService.upload(uploadFilesDTO);
     }
 

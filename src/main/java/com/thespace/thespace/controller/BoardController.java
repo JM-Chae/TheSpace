@@ -1,8 +1,7 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.board.BoardDTO;
-import com.thespace.thespace.dto.board.BoardModifyDTO;
-import com.thespace.thespace.dto.board.BoardPostDTO;
+import com.thespace.thespace.dto.BoardDTOs;
+import com.thespace.thespace.dto.BoardDTOs.Info;
 import com.thespace.thespace.dto.page.PageReqDTO;
 import com.thespace.thespace.dto.page.PageResDTO;
 import com.thespace.thespace.service.BoardService;
@@ -28,23 +27,23 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping
-    public Long post(@Valid @RequestBody BoardPostDTO boardPostDTO, Authentication authentication) {
-        return boardService.post(boardPostDTO, authentication);
+    public Long post(@Valid @RequestBody BoardDTOs.Post postDTO, Authentication authentication) {
+        return boardService.post(postDTO, authentication);
     }
 
     @GetMapping("/{bno}")
-    public BoardDTO read(@PathVariable("bno") Long bno) {
+    public Info read(@PathVariable("bno") Long bno) {
         return boardService.read(bno);
     }
 
     @GetMapping("/list")
-    public PageResDTO<BoardDTO> list(@ModelAttribute PageReqDTO pageReqDTO) {
+    public PageResDTO<Info> list(@ModelAttribute PageReqDTO pageReqDTO) {
         return boardService.list(pageReqDTO);
     }
 
     @PatchMapping
-    public void modify(@Valid @RequestBody BoardModifyDTO boardModifyDTO) {
-        boardService.modify(boardModifyDTO);
+    public void modify(@Valid @RequestBody BoardDTOs.Modify modifyDTO) {
+        boardService.modify(modifyDTO);
     }
 
     @DeleteMapping("/{bno}")

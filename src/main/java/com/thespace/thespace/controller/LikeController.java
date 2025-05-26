@@ -1,6 +1,6 @@
 package com.thespace.thespace.controller;
 
-import com.thespace.thespace.dto.like.LikeDTO;
+import com.thespace.thespace.dto.LikeDTO;
 import com.thespace.thespace.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
