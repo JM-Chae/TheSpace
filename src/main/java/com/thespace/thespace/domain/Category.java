@@ -1,7 +1,6 @@
 package com.thespace.thespace.domain;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +25,6 @@ public class Category extends BaseEntity {
     @NotNull
     private String path;
 
-    @Column(unique = true)
     @NotNull
     private String categoryName;
 
