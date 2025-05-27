@@ -12,9 +12,17 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import ListView from './views/ListView.vue'
 import ListViewAdmin from './views/ListViewAdmin.vue'
 
-
+//axios config
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = `http://localhost:8080`
+
+export async function loadCsrfToken() {
+  const res = await axios.get('/user/csrf');
+  const csrfToken = res.data.token;
+  const csrfHeader = res.data.headerName;
+
+  axios.defaults.headers.common[csrfHeader] = csrfToken;
+}
 
 export const login = ref(sessionStorage.getItem('login') === 'true')
 
@@ -23,14 +31,21 @@ export function setLogin(state: boolean) {
   sessionStorage.setItem('login', state ? 'true' : 'false')
 }
 
-const app = createApp(App)
-app.use(createPinia())
-app.use(router)
-app.use(ElementPlus)
-app.use(VueDOMPurifyHTML);
-app.component('ListView', ListView)
-app.component('ListViewAdmin', ListViewAdmin)
-app.mount('#app');
+if (sessionStorage.getItem('login') === 'true') {
+  loadCsrfToken();
+}
+
+(async () => {
+  await loadCsrfToken(); // 먼저 토큰을 받아오고
+  const app = createApp(App);
+  app.use(createPinia());
+  app.use(router);
+  app.use(ElementPlus);
+  app.use(VueDOMPurifyHTML);
+  app.component('ListView', ListView);
+  app.component('ListViewAdmin', ListViewAdmin);
+  app.mount('#app');
+})();
 
 //login status
 if (document.cookie.includes('isRemember=true')) {
@@ -41,6 +56,7 @@ if (document.cookie.includes('isRemember=true')) {
       setLogin(true)
       sessionStorage.setItem('login', 'true');
       sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+      loadCsrfToken();
     });
   }
 }

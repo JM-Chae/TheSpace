@@ -2,7 +2,7 @@
 import {ref} from "vue";
 import axios from "axios";
 import router from "@/router";
-import {setLogin} from "@/main";
+import {loadCsrfToken, setLogin} from "@/main";
 
 const id = ref("")
 const pw = ref("")
@@ -17,7 +17,8 @@ const login = function ()
       {
         if(remember.value == true)
           {
-            document.cookie = 'isRemember=true; max-age=604800'
+            document.cookie = 'isRemember=true; path=/; max-age=604800'
+            loadCsrfToken();
           }
         getInfo().then(() =>
         {

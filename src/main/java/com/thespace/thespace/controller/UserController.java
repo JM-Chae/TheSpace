@@ -5,6 +5,7 @@ import com.thespace.thespace.dto.UserDTOs;
 import com.thespace.thespace.dto.UserDTOs.Info;
 import com.thespace.thespace.service.UserService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/csrf")
+    public Map<String, String> csrf(CsrfToken token) {
+        return Map.of(
+            "headerName", token.getHeaderName(),
+            "parameterName", token.getParameterName(),
+            "token", token.getToken()
+        );
+    }
+
 
     @PostMapping("/login/me")
     public ResponseEntity<Info> rememberMe(@AuthenticationPrincipal UserDetails userDetails) {

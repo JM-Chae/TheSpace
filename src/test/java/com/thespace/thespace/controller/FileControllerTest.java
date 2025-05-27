@@ -1,8 +1,8 @@
 package com.thespace.thespace.controller;
 
+import static com.thespace.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBuilders.delete;
 import static com.thespace.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.thespace.config.RestDocsConfig.write;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,7 +105,7 @@ class FileControllerTest {
         ));
 
         //when
-        ResultActions result = mockMvc.perform(multipart("/file").file(file1).file(file2));
+        ResultActions result = mockMvc.perform(multipart("/file").file(file1).file(file2).with(csrf().asHeader()));
 
         //then
         result.andExpect(status().isOk())
