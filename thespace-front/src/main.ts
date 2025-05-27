@@ -37,6 +37,20 @@ if (sessionStorage.getItem('login') === 'true') {
 
 (async () => {
   await loadCsrfToken(); // 먼저 토큰을 받아오고
+
+  //login status
+  if (document.cookie.includes('isRemember=true')) {
+    if (!(sessionStorage.getItem('login') == 'true')) {
+      axios.post("/user/login/me", null,{withCredentials: true})
+      .then(res =>
+      {
+        setLogin(true)
+        sessionStorage.setItem('login', 'true');
+        sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+        loadCsrfToken();
+      });
+    }
+  }
   const app = createApp(App);
   app.use(createPinia());
   app.use(router);
@@ -47,16 +61,3 @@ if (sessionStorage.getItem('login') === 'true') {
   app.mount('#app');
 })();
 
-//login status
-if (document.cookie.includes('isRemember=true')) {
-  if (!(sessionStorage.getItem('login') == 'true')) {
-    axios.post("/user/login/me", null,{withCredentials: true})
-    .then(res =>
-    {
-      setLogin(true)
-      sessionStorage.setItem('login', 'true');
-      sessionStorage.setItem("userInfo", JSON.stringify(res.data));
-      loadCsrfToken();
-    });
-  }
-}

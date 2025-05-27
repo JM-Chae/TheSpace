@@ -67,7 +67,7 @@ function create()
         description: description.value
       }, {params:
 					{nameCheck: nameCheck.value}, withCredentials: true})
-			.then(() => router.push({path: '/community/home', state: {communityName: communityName.value}}))
+			.then(() => router.push({path: '/community/home', state: {communityName: communityName.value}}).catch(err => console.log(err)))
   }
 
 const isOK = ref(false);
