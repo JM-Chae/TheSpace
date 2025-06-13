@@ -28,7 +28,7 @@ const nameCheck = ref(false)
 
 watch(nameCheck, (newValue) =>
 {
-  if (newValue == true)
+  if (newValue)
     {
       const element = document.getElementById('name');
       
@@ -37,7 +37,7 @@ watch(nameCheck, (newValue) =>
           element.parentElement.style.border = "1px solid #00bd7e"
         }
     }
-  if (newValue == false)
+  if (!newValue)
     {
       const element = document.getElementById('name');
 
@@ -57,7 +57,8 @@ function reset()
 function check(communityName: string)
   {
     axios.get(`community/nameCheck`, {params: {communityName: communityName}})
-			.then(res => nameCheck.value = res.data)
+      .then(res => nameCheck.value = res.data)
+      .catch(err => console.log(err))
 	}
 
 function create()

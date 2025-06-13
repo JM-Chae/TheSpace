@@ -1,5 +1,5 @@
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
+import {fileURLToPath, URL} from 'node:url'
+import {defineConfig} from 'vite'
 
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -12,6 +12,9 @@ export default defineConfig({
     vueDevTools()
   ],
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+    open: true,
     proxy: {
       '/**': {
         target: 'http://localhost:8080/', // 백엔드 서버 주소
