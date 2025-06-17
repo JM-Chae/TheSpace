@@ -1,6 +1,6 @@
 package com.thespace.config.security;
 
-import com.thespace.spaceweb.repository.UserRepository;
+import com.thespace.spaceweb.user.UserRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.sql.DataSource;

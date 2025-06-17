@@ -16,13 +16,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.thespace.config.DataBaseCleaner;
-import com.thespace.spaceweb.domain.Category;
-import com.thespace.spaceweb.domain.Community;
-import com.thespace.spaceweb.dto.BoardDTOs.FileInfo;
-import com.thespace.spaceweb.dto.BoardDTOs.UploadFiles;
-import com.thespace.spaceweb.repository.CategoryRepository;
-import com.thespace.spaceweb.repository.CommunityRepository;
-import com.thespace.spaceweb.service.BoardFileService;
+import com.thespace.spaceweb.board.BoardDTOs.FileInfo;
+import com.thespace.spaceweb.board.BoardDTOs.UploadFiles;
+import com.thespace.spaceweb.board.BoardFileService;
+import com.thespace.spaceweb.category.Category;
+import com.thespace.spaceweb.category.CategoryRepository;
+import com.thespace.spaceweb.community.Community;
+import com.thespace.spaceweb.community.CommunityRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

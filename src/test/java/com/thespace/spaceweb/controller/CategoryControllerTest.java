@@ -23,16 +23,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thespace.config.DataBaseCleaner;
-import com.thespace.spaceweb.domain.Category;
-import com.thespace.spaceweb.domain.Community;
-import com.thespace.spaceweb.domain.User;
-import com.thespace.spaceweb.domain.UserRole;
-import com.thespace.spaceweb.dto.CategoryDTOs.Create;
-import com.thespace.spaceweb.repository.CategoryRepository;
-import com.thespace.spaceweb.repository.CommunityRepository;
-import com.thespace.spaceweb.repository.UserRepository;
-import com.thespace.spaceweb.repository.UserRoleRepository;
-import com.thespace.spaceweb.service.UserService;
+import com.thespace.spaceweb.category.Category;
+import com.thespace.spaceweb.category.CategoryDTOs.Create;
+import com.thespace.spaceweb.category.CategoryRepository;
+import com.thespace.spaceweb.community.Community;
+import com.thespace.spaceweb.community.CommunityRepository;
+import com.thespace.spaceweb.user.User;
+import com.thespace.spaceweb.user.UserRepository;
+import com.thespace.spaceweb.user.UserRole;
+import com.thespace.spaceweb.user.UserRoleRepository;
+import com.thespace.spaceweb.user.UserService;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
