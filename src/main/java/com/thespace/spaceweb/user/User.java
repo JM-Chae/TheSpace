@@ -1,7 +1,7 @@
 package com.thespace.spaceweb.user;
 
 import com.thespace.common.BaseEntity;
-import com.thespace.spacechat.room.ChatRoom;
+import com.thespace.spacechat.room.Room;
 import com.thespace.spaceweb.board.Board;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,7 +52,7 @@ public class User extends BaseEntity implements UserDetails
     private List<UserRole> roles;
 
     @ManyToMany(mappedBy = "members")
-    private Set<ChatRoom> chatRooms;
+    private Set<Room> rooms;
 
     public User() {
     }

@@ -3,8 +3,8 @@ package com.thespace.spacechat.room;
 import com.thespace.common.exception.NotMember;
 import com.thespace.common.exception.NotRoomManager;
 import com.thespace.common.exception.RoomNotFound;
-import com.thespace.spacechat.room.ChatRoomDTOs.Info;
-import com.thespace.spacechat.room.ChatRoomDTOs.Summary;
+import com.thespace.spacechat.room.RoomDTOs.Info;
+import com.thespace.spacechat.room.RoomDTOs.Summary;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserDTOs;
 import com.thespace.spaceweb.user.UserRole;
@@ -21,12 +21,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChatRoomService {
+public class RoomService {
 
     private final RoomRepository roomRepository;
     private final UserService userService;
 
-    ChatRoom findRoom(Long rid) {
+    Room findRoom(Long rid) {
         return roomRepository.findById(rid).orElseThrow(RoomNotFound::new);
     }
 
@@ -34,7 +34,7 @@ public class ChatRoomService {
         return userService.getUsersByUuid(dto);
     }
 
-    Info entityToDTO(ChatRoom entity) {
+    Info entityToDTO(Room entity) {
         List<UserDTOs.Info> members = new ArrayList<>(entity.getMembers()
             .stream()
             .map(member -> new UserDTOs.Info(
@@ -64,13 +64,21 @@ public class ChatRoomService {
         );
     }
 
-    public Info create(Authentication creator, ChatRoomDTOs.Create dto) {
+    public boolean existsRoom(Long rid) {
+        return roomRepository.existsById(rid);
+    }
+
+    public boolean existsUserByRoomIdAndUuid(Long rid, String uuid) {
+        return roomRepository.existsUserByRoomIdAndUuid(rid, uuid);
+    }
+
+    public Info create(Authentication creator, RoomDTOs.Create dto) {
 
         Set<User> members = membersListToSet(dto.members());
         User creatorInfo = (User) creator.getPrincipal();
         members.add(creatorInfo);
 
-        ChatRoom res = roomRepository.save(new ChatRoom(
+        Room res = roomRepository.save(new Room(
             dto.name(),
             creatorInfo,
             dto.description(),
@@ -87,8 +95,8 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public Info update(Long rid, Authentication updater, ChatRoomDTOs.Update dto) {
-        ChatRoom room = findRoom(rid);
+    public Info update(Long rid, Authentication updater, RoomDTOs.Update dto) {
+        Room room = findRoom(rid);
 
         User updaterInfo = (User) updater.getPrincipal();
 
@@ -101,9 +109,9 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public Info invite(Long rid, Authentication inviter, ChatRoomDTOs.Invite dto) {
+    public Info invite(Long rid, Authentication inviter, RoomDTOs.Invite dto) {
 
-        ChatRoom room = findRoom(rid);
+        Room room = findRoom(rid);
 
         User inviterInfo = (User) inviter.getPrincipal();
         Set<User> targets = membersListToSet(dto.members());
@@ -121,7 +129,7 @@ public class ChatRoomService {
 
     @Transactional
     public Info kick(Long rid, Authentication kicker, String targetUuid) {
-        ChatRoom room = findRoom(rid);
+        Room room = findRoom(rid);
 
         User kickerInfo = (User) kicker.getPrincipal();
         User target = userService.findUserByUuid(targetUuid);
@@ -141,7 +149,7 @@ public class ChatRoomService {
 
     @Transactional
     public void quit(Long rid, Authentication quitter) {
-        ChatRoom room = findRoom(rid);
+        Room room = findRoom(rid);
         User quitterInfo = (User) quitter.getPrincipal();
 
         if (!room.getMembers().contains(quitterInfo)) {
@@ -155,7 +163,7 @@ public class ChatRoomService {
     public List<Summary> getMyRooms(Authentication me) {
         User myInfo = (User) me.getPrincipal();
 
-        List<ChatRoom> rooms = userService.findRoomIds(myInfo.getUuid())
+        List<Room> rooms = userService.findRoomIds(myInfo.getUuid())
             .stream()
             .map(this::findRoom).toList();
         //Currently, Fail with an exception if even one room does not exist.
@@ -173,7 +181,7 @@ public class ChatRoomService {
 
     @Transactional
     public void delete(Long rid, Authentication deleter) {
-        ChatRoom room = findRoom(rid);
+        Room room = findRoom(rid);
         User deleterInfo = (User) deleter.getPrincipal();
 
         if (!Objects.equals(room.getManager().getUuid(), deleterInfo.getUuid())) {
@@ -185,7 +193,7 @@ public class ChatRoomService {
 
     @Transactional
     public Info delegate(Long rid, Authentication manager, String targetUuid) {
-        ChatRoom room = findRoom(rid);
+        Room room = findRoom(rid);
         User managerInfo = (User) manager.getPrincipal();
         User targetUser = userService.findUserByUuid(targetUuid);
 
@@ -198,6 +206,16 @@ public class ChatRoomService {
         }
 
         room.delegate(targetUser);
+
+        return entityToDTO(room);
+    }
+
+    @Transactional
+    public Info join(Long rid, Authentication joiner) {
+        Room room = findRoom(rid);
+        User joinerInfo = (User) joiner.getPrincipal();
+
+        room.addMember(Set.of(joinerInfo));
 
         return entityToDTO(room);
     }

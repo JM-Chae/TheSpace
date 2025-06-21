@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, String>
   {
     boolean existsByUuid(String uuid);
 
-    @Query("SELECT r.roomId FROM User u JOIN u.chatRooms r WHERE u.uuid = :uuid")
+    @Query("SELECT r.roomId FROM User u JOIN u.rooms r WHERE u.uuid = :uuid")
     List<Long> findRoomIdsByUuid(@Param("uuid") String uuid);
 
     @Query("SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId")

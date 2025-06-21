@@ -12,6 +12,6 @@ public class NotMember extends MainException {
     }
 
     public int getStatusCode() {
-        return 404;
+        return 403;
     }
 }

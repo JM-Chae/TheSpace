@@ -9,7 +9,7 @@ public class ChatMessage {
 
     private Long messageId;
     private Long roomId;
-    private String senderId;
+    private String sender;
     private String content;
     private LocalDateTime sentAt;
     private MessageType type;
@@ -18,11 +18,11 @@ public class ChatMessage {
     }
 
     @Builder
-    public ChatMessage(Long messageId, Long roomId, String senderId, String content,
+    public ChatMessage(Long messageId, Long roomId, String sender, String content,
         LocalDateTime sentAt, MessageType type) {
         this.messageId = messageId;
         this.roomId = roomId;
-        this.senderId = senderId;
+        this.sender = sender;
         this.content = content;
         this.sentAt = sentAt;
         this.type = type;

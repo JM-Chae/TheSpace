@@ -16,7 +16,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-public class ChatRoom {
+public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,15 +28,15 @@ public class ChatRoom {
     @Size(min=4, max=200)
     private String description;
     @ManyToMany
-    @JoinTable(name = "chat_room_members", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "uuid"))
+    @JoinTable(name = "room_members", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "uuid"))
     private Set<User> members;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public ChatRoom() {
+    public Room() {
     }
 
-    public ChatRoom(String name, User manager, String description, Set<User> members, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public Room(String name, User manager, String description, Set<User> members, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.name = name;
         this.manager = manager;
         this.description = description;

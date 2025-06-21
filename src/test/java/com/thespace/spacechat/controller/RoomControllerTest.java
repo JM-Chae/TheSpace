@@ -27,17 +27,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thespace.config.DataBaseCleaner;
-import com.thespace.spacechat.room.ChatRoomDTOs;
-import com.thespace.spacechat.room.ChatRoomDTOs.Info;
-import com.thespace.spacechat.room.ChatRoomService;
+import com.thespace.spacechat.room.Room;
+import com.thespace.spacechat.room.RoomDTOs;
+import com.thespace.spacechat.room.RoomDTOs.Info;
+import com.thespace.spacechat.room.RoomRepository;
+import com.thespace.spacechat.room.RoomService;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
 import com.thespace.spaceweb.user.UserService;
 import jakarta.servlet.http.Cookie;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,15 +64,17 @@ import org.springframework.test.web.servlet.ResultActions;
 @AutoConfigureRestDocs
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
-class ChatRoomControllerTest {
+class RoomControllerTest {
 
-    private static ChatRoomDTOs.Create createDTO;
+    private static RoomDTOs.Create createDTO;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private ChatRoomService chatRoomService;
+    private RoomService roomService;
+    @Autowired
+    private RoomRepository roomRepository;
     @Autowired
     private DataBaseCleaner dataBaseCleaner;
     @Autowired
@@ -94,7 +100,7 @@ class ChatRoomControllerTest {
 
         List<String> members = new ArrayList<>();
 
-        createDTO = new ChatRoomDTOs.Create("Test Room", "Test", members);
+        createDTO = new RoomDTOs.Create("Test Room", "Test", members);
     }
 
     @Test
@@ -142,7 +148,7 @@ class ChatRoomControllerTest {
     void getRoom() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = chatRoomService.create(user ,createDTO).roomId();
+        Long rid = roomService.create(user ,createDTO).roomId();
 
         //when
         ResultActions result = mockMvc.perform(get("/chat/room/{rid}", rid)
@@ -176,8 +182,8 @@ class ChatRoomControllerTest {
     void update() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = chatRoomService.create(user ,createDTO).roomId();
-        ChatRoomDTOs.Update dto = new ChatRoomDTOs.Update("Update Change", "Update test");
+        Long rid = roomService.create(user ,createDTO).roomId();
+        RoomDTOs.Update dto = new RoomDTOs.Update("Update Change", "Update test");
 
         //when
         ResultActions result = mockMvc.perform(put("/chat/room/update/{rid}", rid)
@@ -219,7 +225,7 @@ class ChatRoomControllerTest {
     void invite() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = chatRoomService.create(user ,createDTO).roomId();
+        Long rid = roomService.create(user ,createDTO).roomId();
         List<String> members = new ArrayList<>();
 
         for(int i = 1; i <= 5; i++) {
@@ -236,7 +242,7 @@ class ChatRoomControllerTest {
             members.add("testerUUID" + i);
         }
 
-        ChatRoomDTOs.Invite dto = new ChatRoomDTOs.Invite(members);
+        RoomDTOs.Invite dto = new RoomDTOs.Invite(members);
 
         //when
         ResultActions result = mockMvc.perform(post("/chat/room/{rid}/members", rid)
@@ -293,7 +299,7 @@ class ChatRoomControllerTest {
         }
 
         createDTO.members().addAll(members);
-        Info room = chatRoomService.create(user ,createDTO);
+        Info room = roomService.create(user ,createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}/members", room.roomId())
@@ -334,7 +340,7 @@ class ChatRoomControllerTest {
     void quit() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Info room = chatRoomService.create(user ,createDTO);
+        Info room = roomService.create(user ,createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}/members/me", room.roomId())
@@ -364,7 +370,7 @@ class ChatRoomControllerTest {
     void getMyRooms() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        chatRoomService.create(user ,createDTO);
+        roomService.create(user ,createDTO);
 
         //when
         ResultActions result = mockMvc.perform(get("/chat/room/my")
@@ -398,7 +404,7 @@ class ChatRoomControllerTest {
     void deleteRoom() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Info room = chatRoomService.create(user ,createDTO);
+        Info room = roomService.create(user ,createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}", room.roomId())
@@ -444,7 +450,7 @@ class ChatRoomControllerTest {
         }
 
         createDTO.members().addAll(members);
-        Info room = chatRoomService.create(user ,createDTO);
+        Info room = roomService.create(user ,createDTO);
 
         //when
         ResultActions result = mockMvc.perform(put("/chat/room/{rid}/manager", room.roomId())
@@ -475,6 +481,53 @@ class ChatRoomControllerTest {
             httpResponse(),
             queryParameters(
                 parameterWithName("targetUuid").description("Target to delegate manager.")),
+            requestCookies(
+                cookieWithName("JSESSIONID").description("Authenticated user session ID cookie"))
+        ));
+    }
+
+    @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void join() throws Exception {
+        //given
+        User user = userRepository.save(new User(
+            "testerUser2",
+            "testerUUID2",
+            "tester2",
+            "test@test.test2",
+            "password2",
+            new ArrayList<>()
+        ));
+        userService.setRole(user.getId(), "ROLE_USER");
+
+        Room room = roomRepository.save(new Room("testRoom", user, "test", Set.of(user), LocalDateTime.now(), LocalDateTime.now()));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/chat/room/{rid}/members/me", room.getRoomId())
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
+            .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        result.andExpect(status().isOk()).andDo(print());
+
+        //docs
+        result.andDo(write().document(
+            pathParameters(parameterWithName("rid").description("Room ID")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token")),
+            responseBody(),
+            relaxedResponseFields(
+                fieldWithPath("roomId").description("Room ID"),
+                fieldWithPath("name").description("Room name"),
+                fieldWithPath("manager").description("Room manager"),
+                fieldWithPath("description").description("Room description"),
+                fieldWithPath("members").description("Joined members"),
+                fieldWithPath("createdAt").description("Created time"),
+                fieldWithPath("modifiedAt").description("Last modified time")),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             requestCookies(
                 cookieWithName("JSESSIONID").description("Authenticated user session ID cookie"))
         ));

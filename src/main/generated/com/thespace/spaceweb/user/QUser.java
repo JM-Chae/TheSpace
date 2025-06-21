@@ -24,8 +24,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard> board = this.<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard>createList("board", com.thespace.spaceweb.board.Board.class, com.thespace.spaceweb.board.QBoard.class, PathInits.DIRECT2);
 
-    public final SetPath<com.thespace.spacechat.room.ChatRoom, com.thespace.spacechat.room.QChatRoom> chatRooms = this.<com.thespace.spacechat.room.ChatRoom, com.thespace.spacechat.room.QChatRoom>createSet("chatRooms", com.thespace.spacechat.room.ChatRoom.class, com.thespace.spacechat.room.QChatRoom.class, PathInits.DIRECT2);
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
 
@@ -41,6 +39,8 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath password = createString("password");
 
     public final ListPath<UserRole, QUserRole> roles = this.<UserRole, QUserRole>createList("roles", UserRole.class, QUserRole.class, PathInits.DIRECT2);
+
+    public final SetPath<com.thespace.spacechat.room.Room, com.thespace.spacechat.room.QRoom> rooms = this.<com.thespace.spacechat.room.Room, com.thespace.spacechat.room.QRoom>createSet("rooms", com.thespace.spacechat.room.Room.class, com.thespace.spacechat.room.QRoom.class, PathInits.DIRECT2);
 
     public final StringPath uuid = createString("uuid");
 
