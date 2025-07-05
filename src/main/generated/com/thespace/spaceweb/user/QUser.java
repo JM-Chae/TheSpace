@@ -31,6 +31,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath id = createString("id");
 
+    public final StringPath introduce = createString("introduce");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
@@ -41,6 +43,8 @@ public class QUser extends EntityPathBase<User> {
     public final ListPath<UserRole, QUserRole> roles = this.<UserRole, QUserRole>createList("roles", UserRole.class, QUserRole.class, PathInits.DIRECT2);
 
     public final SetPath<com.thespace.spacechat.room.Room, com.thespace.spacechat.room.QRoom> rooms = this.<com.thespace.spacechat.room.Room, com.thespace.spacechat.room.QRoom>createSet("rooms", com.thespace.spacechat.room.Room.class, com.thespace.spacechat.room.QRoom.class, PathInits.DIRECT2);
+
+    public final StringPath signature = createString("signature");
 
     public final StringPath uuid = createString("uuid");
 
