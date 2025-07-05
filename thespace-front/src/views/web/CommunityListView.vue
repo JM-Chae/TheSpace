@@ -34,9 +34,9 @@ function getList()
       .then(res => dto.value = res.data.dtoList)
   }
 
-const goHomepage = (communityName: string) =>
+const goHomepage = (community: any) =>
   {
-    router.push({path: '/community/home', state: {communityName}})
+    router.push({path: '/community/home', state: {community: JSON.stringify(community)}})
 	}
 
 function create()
@@ -90,7 +90,7 @@ function hasAdmin()
 <div class="pb-2 pt-2" style="display: grid; border: 1px solid rgba(186,186,186,0.24); border-radius: 0.5em; background: rgba(255, 255, 255, 0.06);">
 <ul style="top: 0; height: 100%; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(auto-fit, 1fr)">
 	<li v-for="dtoList in dto" style="grid-row: auto; grid-column: auto">
-		<a @click="goHomepage(dtoList.communityName)">{{dtoList.communityName}}</a>
+		<a @click="goHomepage(dtoList)">{{dtoList.name}}</a>
 	</li>
 </ul>
 </div>

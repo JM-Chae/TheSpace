@@ -8,49 +8,37 @@ const id = ref("")
 const pw = ref("")
 const remember = ref(false)
 
-const login = function ()
-  {
-    axios.post("user/login",
+const login = function () {
+  axios.post("user/login",
       {id: id.value, password: pw.value, remember: remember.value},
       {headers: {"Content-Type": "multipart/form-data"}, withCredentials: true})
-      .then(res =>
-      {
-        if(remember.value == true)
-          {
-            document.cookie = 'isRemember=true; path=/; max-age=604800'
-            loadCsrfToken();
-          }
-        getInfo().then(() =>
-        {
-          setLogin(true)
-          router.back()
-        })
-      })
-      .catch(error =>
-      {
-        console.error(error)
-      })
+  .then(() => {
+    loadCsrfToken();
 
+    if (remember.value == true) {
+      document.cookie = 'isRemember=true; path=/; max-age=604800'
+    }
 
-    async function getInfo()
-      {
-        try
-          {
-            let res = await axios.get("/user/info", {withCredentials: true});
-            return sessionStorage.setItem("userInfo", JSON.stringify(res.data));
-          } catch (error)
-          {
-            return console.error("Error fetching user info" + error);
-          }
-      }
+    getInfo().then(res => {
+      sessionStorage.setItem("userInfo", JSON.stringify(res))
 
-    sessionStorage.setItem("login", "true")
+      sessionStorage.setItem("login", "true")
+      setLogin(true)
+      router.back()
+    })
+  })
+
+  async function getInfo() {
+    return axios.get("/user/info", {withCredentials: true}).then(res => {
+      return res.data;
+    })
   }
+}
 
-const join = () =>
-  {
-    router.push('/user/join')
-	}
+  const join = () =>
+    {
+      router.push('/user/join')
+    }
 </script>
 
 <template>

@@ -9,5 +9,4 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long>
   {
     boolean existsByRole(String name);
     Optional<UserRole> findByRole(String role);
-
   }

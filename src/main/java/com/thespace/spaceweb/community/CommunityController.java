@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommunityController {
     private final CommunityService communityService;
 
-    @GetMapping("/{communityName}")
-    public Info get(@PathVariable("communityName") String communityName) {
-        return communityService.get(communityName);
+    @GetMapping("/{communityId}")
+    public Info get(@PathVariable("communityId") Long communityId) {
+        return communityService.get(communityId);
     }
 
     @GetMapping("/list")
@@ -36,7 +36,7 @@ public class CommunityController {
     }
 
     @PostMapping
-    public Long create(@Valid @RequestBody CommunityDTOs.Create createDTO,
+    public Info create(@Valid @RequestBody CommunityDTOs.Create createDTO,
         Authentication authentication, @RequestParam("nameCheck") boolean nameCheck) {
         return communityService.create(createDTO, authentication, nameCheck);
     }
@@ -58,9 +58,9 @@ public class CommunityController {
         return communityService.hasAdminList(authentication);
     }
 
-    @PatchMapping("/modify")
-    public void modify(@RequestBody CommunityDTOs.Modify modifyDTO,
+    @PatchMapping("/{communityId}/modify")
+    public void modify(@PathVariable(name = "communityId")Long communityId, @RequestBody CommunityDTOs.Modify modifyDTO,
         Authentication authentication) {
-        communityService.modify(modifyDTO, authentication);
+        communityService.modify(communityId, modifyDTO, authentication);
     }
 }

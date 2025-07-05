@@ -2,6 +2,8 @@ package com.thespace.spaceweb.user;
 
 
 import com.thespace.spaceweb.user.UserDTOs.Info;
+import com.thespace.spaceweb.user.UserDTOs.MyPage;
+import com.thespace.spaceweb.user.UserDTOs.UpdateInfo;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,5 +75,17 @@ public class UserController {
     public void register(@Valid @RequestBody UserDTOs.Register userRegisterDTO,
         @RequestParam("checkid") boolean check) {
         userService.register(userRegisterDTO, check);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<MyPage> myPage(@RequestParam("uuid") String uuid) {
+
+        return ResponseEntity.ok(userService.getMyPage(uuid));
+    }
+
+    @PatchMapping("/myinfo")
+    public void updateMyInfo(Authentication user, @RequestBody UpdateInfo dto) {
+
+        userService.updateInfo(dto, (User) user.getPrincipal());
     }
 }

@@ -23,25 +23,9 @@ public class GetListReply extends QuerydslRepositorySupport {
         JPQLQuery<Reply> replyJPQLQuery = from(reply);
 
         replyJPQLQuery.where(reply.board.bno.eq(bno));
-        replyJPQLQuery.where(reply.path.eq(String.valueOf(bno) + '/'));
 
         replyJPQLQuery.groupBy(reply);
 
-        getQuerydsl().applyPagination(pageable, replyJPQLQuery);
-
-        JPQLQuery<Reply> selectQuery = replyJPQLQuery.select(reply);
-
-        return returnList(selectQuery, pageable);
-    }
-
-    public Page<Info> getListNestedReply(Long rno, Long bno, Pageable pageable) {
-        QReply reply = QReply.reply;
-        JPQLQuery<Reply> replyJPQLQuery = from(reply);
-
-        replyJPQLQuery.where(reply.board.bno.eq(bno));
-        replyJPQLQuery.where(reply.path.eq(String.valueOf(bno) + '/' + rno));
-
-        replyJPQLQuery.groupBy(reply);
         getQuerydsl().applyPagination(pageable, replyJPQLQuery);
 
         JPQLQuery<Reply> selectQuery = replyJPQLQuery.select(reply);
@@ -59,10 +43,12 @@ public class GetListReply extends QuerydslRepositorySupport {
                 .replyWriterUuid(reply1.getUser().getUuid())
                 .replyContent(reply1.getReplyContent())
                 .replyWriter(reply1.getUser().getName())
-                .path(reply1.getPath())
+                .childCount(reply1.getChildCount())
+                .taggedCount(reply1.getTaggedCount())
                 .tag(reply1.getTag())
                 .replyDate(reply1.getCreateDate())
-                .isNested(reply1.getIsNested())
+                .parentRno(reply1.getParentRno())
+                .tagRno(reply1.getTagRno())
                 .vote(reply1.getVote())
                 .build()).toList();
 

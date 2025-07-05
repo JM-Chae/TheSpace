@@ -1,21 +1,55 @@
 <script lang = "ts" setup>
-import {ref, watch} from 'vue'
+import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import axios from "axios";
 import router from "@/router";
+import EmojiPicker from 'vue3-emoji-picker';
+import 'vue3-emoji-picker/css';
 
 const id = ref('')
 const pw = ref('')
 const email = ref('')
 const nickname = ref('')
+const introduce = ref('')
+const signature = ref('')
+const showPicker = ref(false)
+const onSelect = (emoji : any) => {
+  signature.value = emoji.i
+  showPicker.value = false
+}
 const isOK = ref(false)
 
 const nameWarn = ref(true)
 const idWarn = ref(true)
 const emailWarn =ref(true)
 const pwWarn = ref(true)
+const snWarn = ref(true)
 const idCheck = ref(true)
 
+const handleOutsideClick = (event: MouseEvent) => {
+  const clickedElement = event.target as HTMLElement;
+
+  if (!clickedElement.closest("#picker")) {
+    showPicker.value = false;
+    return;
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("click", handleOutsideClick);
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("click", handleOutsideClick);
+});
+
 const pattern = /^[A-Za-z0-9_\\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
+
+watch(signature, (newValue) => {
+  if (newValue.length < 1) {
+    snWarn.value = true;
+  } else if (newValue.length > 0) {
+    snWarn.value = false;
+  }
+})
 
 watch(pw, (newValue) =>
 {
@@ -76,6 +110,8 @@ const join = () =>
       password: pw.value,
       email: email.value,
       name: nickname.value,
+      introduce: introduce.value,
+      signature: signature.value,
     }, {params: {checkid: isOK.value}})
       .then(() => router.push({ path: '/user/login' }))
 			.then(() => location.reload())
@@ -143,33 +179,59 @@ const check = () =>
         <text class="ms-1" style="font-size: 0.7em">Hope to find your own space in The Space.</text>
       </div>
     </div>
-		<div class="pt-5" style = "max-width: 300px; justify-self: center;">
-			<div class = "pb-3 pt-3" style="text-align: center">
-        <h2 style="font-size: 1.8em">Welcome to Your Space!</h2>
+    <div style="display: flex; justify-content: center;">
+      <div class="pt-5" style = "max-width: 300px; justify-self: center;">
+        <div class = "pb-3 pt-3" style="text-align: center">
+          <h2 style="font-size: 1.8em">Welcome to Your Space!</h2>
+        </div>
+        <div class = "mt-2">
+          <el-input v-model = "id" placeholder = "Enter ID" type = "text"></el-input>
+          <div v-if = "idWarn" style = "color:#c36169">Please enter between 6 and 20 characters.</div>
+          <div v-if = "!idWarn" style = "color:#00bd7e">Good.</div>
+
+        </div>
+        <div class = "mt-2">
+          <el-input v-model = "pw" placeholder = "Enter Password" type = "password"></el-input>
+          <div v-if = "pwWarn" style = "color:#c36169">Please enter between 6 and 20 characters.</div>
+          <div v-if = "!pwWarn" style = "color:#00bd7e">That's right.</div>
+        </div>
+        <div class = "mt-2">
+          <el-input v-model = "email" placeholder = "Enter E-mail" type = "text"></el-input>
+        </div>
+        <div v-if = "emailWarn" style = "color:#c36169">Incorrect email address.</div>
+        <div v-if = "!emailWarn" style = "color:#00bd7e">Great.</div>
+
+        <div class = "mt-2">
+          <el-input v-model = "nickname" placeholder = "Enter Name" type = "text"></el-input>
+          <div v-if = "nameWarn" style = "color:#c36169">Please enter between 2 and 20 characters.</div>
+          <div v-if = "!nameWarn" style = "color:#00bd7e">Ok.</div>
+        </div>
+        <div class = "mt-2">
+          <el-input v-model = "introduce" :autosize="{minRows: 3}" placeholder = "Tell us about yourself in 200 characters or less." type = "textarea"></el-input>
+        </div>
+        <div class = "mt-2">
+          <el-button v-if = "!isOK" style = "width: 35%" type = "danger" @click = "check">ID Check</el-button>
+          <el-button v-if = "isOK" style = "width: 35%" type = "primary">Checked!</el-button>
+          <el-button class = "float-end" color="#00bd7e" style = "width: 35%" type = "success" @click = "join">Join</el-button>
+        </div>
+        <div v-if="!idCheck" class = "mt-2" style = "color:#c36169">This ID is already existed!</div>
       </div>
-			<div class = "mt-2">
-				<el-input v-model = "id" placeholder = "Enter ID" type = "text"></el-input>
-				<div v-if = "idWarn" style = "color:#c36169">Please enter between 6 and 20 characters.</div>
-			</div>
-			<div class = "mt-2">
-				<el-input v-model = "pw" placeholder = "Enter Password" type = "password"></el-input>
-				<div v-if = "pwWarn" style = "color:#c36169">Please enter between 6 and 20 characters.</div>
-			</div>
-			<div class = "mt-2">
-				<el-input v-model = "email" placeholder = "Enter E-mail" type = "text"></el-input>
-			</div>
-			<div v-if = "emailWarn" style = "color:#c36169">Incorrect email address.</div>
-			<div class = "mt-2">
-				<el-input v-model = "nickname" placeholder = "Enter Name" type = "text"></el-input>
-				<div v-if = "nameWarn" style = "color:#c36169">Please enter between 2 and 20 characters.</div>
-			</div>
-			<div class = "mt-2">
-				<el-button v-if = "!isOK" style = "width: 35%" type = "danger" @click = "check">ID Check</el-button>
-				<el-button v-if = "isOK" style = "width: 35%" type = "primary">Checked!</el-button>
-				<el-button class = "float-end" color="#00bd7e" style = "width: 35%" type = "success" @click = "join">Join</el-button>
-			</div>
-      <div v-if="!idCheck" class = "mt-2" style = "color:#c36169">This ID is already existed!</div>
-		</div>
+
+      <div id="picker" style = "display: flex; flex-direction: column; padding-top: 131px; margin-left: 20px">
+        <el-button v-show="snWarn" color="#343434" round size="large" style="width: 290px; font-size: 1.5em; padding: 1.2em 1em 1em 1em; text-align: center; justify-self: center" type="info" @click="showPicker = !showPicker">
+          😊 Click here!
+        </el-button>
+        <EmojiPicker v-show="showPicker" :native="true" style="margin-top: 0.3em" theme="dark" @select="onSelect"/>
+        <text v-show="!snWarn && !showPicker" style="padding: 0 0 2em 1em;color: #00bd7e">You are......</text>
+        <text v-show="!snWarn && !showPicker" style="padding-bottom: 10px; font-size: 8.8em; text-align: center; border: 1px solid #BABABA3D; border-radius: 0.2em; background-color: #FFFFFF0F;">
+          {{ signature }}
+        </text>
+        <div v-if = "snWarn && !showPicker" style = "color:#00bd7e">Choose an emoji that shows who you are!</div>
+        <el-button v-show="!snWarn && !showPicker" color="#343434" round size="large" style="margin-top: 1.8em; width: 290px; font-size: 1.5em; padding: 1.2em 1em 1em 1em; text-align: center; justify-self: center" type="info" @click="showPicker = !showPicker">
+          Wanna change?
+        </el-button>
+      </div>
+    </div>
 	</main>
 	</html>
 </template>

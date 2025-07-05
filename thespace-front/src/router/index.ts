@@ -13,62 +13,67 @@ const router = createRouter({
     {
       path: '/space',
       name: 'home',
-      component:  () => import('../views/HomeView.vue'),
+      component:  () => import('../views/web/HomeView.vue'),
     },
     {
       path: '/post',
       name: 'post',
-      component: () => import('../views/PostView.vue'),
+      component: () => import('../views/web/PostView.vue'),
       meta: { login: true },
       props: true
     },
     {
       path: '/modify',
       name: 'modify',
-      component: () => import('../views/ModifyView.vue'),
+      component: () => import('../views/web/ModifyView.vue'),
       meta: { roles: ["ROLE_USER"] },
       props: true
     },
     {
       path: '/read',
       name: 'read',
-      component:  () => import('../views/ReadView.vue'),
+      component:  () => import('../views/web/ReadView.vue'),
       props: true
     },
     {
       path: '/user/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/web/LoginView.vue')
     },
     {
       path: '/user/join',
       name: 'join',
-      component: () => import('../views/JoinView.vue')
+      component: () => import('../views/web/JoinView.vue')
     },
     {
       path: '/user/logout',
       name: 'logout',
-      component: () => import('../views/LogoutView.vue')
+      component: () => import('../views/web/LogoutView.vue')
     },
     {
       path: '/community',
       name: 'community',
-      component: () => import('../views/CommunityListView.vue')
+      component: () => import('../views/web/CommunityListView.vue')
     },
     {
       path: '/community/home',
       name: 'communityhome',
-      component: () => import('../views/CommunityHomeView.vue'),
+      component: () => import('../views/web/CommunityHomeView.vue'),
     },
     {
       path: '/community/create',
       name: 'communitycreate',
-      component: () => import('../views/CreateCommunityView.vue')
+      component: () => import('../views/web/CreateCommunityView.vue')
     },
     {
       path: '/community/management',
       name: 'cManagement',
-      component: () => import('../views/CommunityManagementView.vue'),
+      component: () => import('../views/web/CommunityManagementView.vue'),
+    },
+    {
+      path: '/mypage/',
+      name: 'mypage',
+      component: () => import('../views/web/MyPageView.vue'),
     }
   ]
 })

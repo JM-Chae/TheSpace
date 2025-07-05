@@ -1,7 +1,10 @@
 package com.thespace.spaceweb.user;
 
 import com.thespace.common.exception.UserNotFound;
+import com.thespace.spaceweb.user.UserDTOs.MyPage;
+import com.thespace.spaceweb.user.UserDTOs.UpdateInfo;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,8 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserRoleService userRoleService;
+    public final UserRoleService userRoleService;
     private final PasswordEncoder passwordEncoder;
+
+    public User findById(String id) {
+        return userRepository.findById(id).orElseThrow(UserNotFound::new);
+    }
 
     public List<Long> findUserRoles(String userId) {
         return userRepository.findRoleIdsByUserId(userId);
@@ -29,6 +36,13 @@ public class UserService {
 
     public User findUserByUuid(String uuid) {
         return userRepository.findByUuid(uuid).orElseThrow(UserNotFound::new);
+    }
+
+    public UserDTOs.MyPage getMyPage(String uuid) {
+
+        User user = userRepository.findByUuid(uuid).orElseThrow(UserNotFound::new);
+
+        return new MyPage(user.getSignature(), user.getName(), user.getUuid(), user.getIntroduce(), user.getCreateDate());
     }
 
     public Set<User> getUsersByUuid(List<String> dto) {
@@ -71,15 +85,34 @@ public class UserService {
         } while (!checkUuid(uuid));
 
         User user = User.builder()
-            .id(userRegisterDTO.id())
             .uuid(uuid)
+            .password(password)
+            .id(userRegisterDTO.id())
             .name(userRegisterDTO.name())
             .email(userRegisterDTO.email())
-            .password(password)
+            .introduce(userRegisterDTO.introduce())
+            .signature(userRegisterDTO.signature())
             .build();
 
         userRepository.save(user);
-        setRole(user.getId(), "ROLE_USER");
+        userRoleService.setRole(user.getId(), 1L);
+    }
+
+    public void updateInfo(UpdateInfo dto, User user) {
+
+        if (!Objects.equals(dto.name(), "")) {
+            user.updateName(dto.name());
+        }
+
+        if (!Objects.equals(dto.introduce(), "")) {
+            user.updateIntroduce(dto.introduce());
+        }
+
+        if (!Objects.equals(dto.signature(), "")) {
+            user.updateSignature(dto.signature());
+        }
+
+        userRepository.save(user);
     }
 
     public boolean checkUuid(String uuid) {
@@ -89,11 +122,4 @@ public class UserService {
     public boolean checkId(String id) {
         return !userRepository.existsById(id);
     }
-
-    @Transactional
-    public void setRole(String id, String role) {
-        UserRole userRole = userRoleService.findByRoleName(role);
-        User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
-        user.getRoles().add(userRole);
-    }
-} //Implement modify User data later
+}

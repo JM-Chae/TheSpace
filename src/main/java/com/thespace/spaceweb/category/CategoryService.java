@@ -1,5 +1,6 @@
 package com.thespace.spaceweb.category;
 
+import com.thespace.common.exception.CommunityNotFound;
 import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityRepository;
 import com.thespace.spaceweb.user.User;
@@ -22,33 +23,34 @@ public class CategoryService {
 
     public void create(CategoryDTOs.Create categoryCreateDTO, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        Community community = communityRepository.findById(categoryCreateDTO.communityId()).orElseThrow();
+
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleId("ADMIN_" + categoryCreateDTO.path()))) {
+            .contains(userRoleService.findRoleIdByName("ADMIN_" + community.getName()))) {
             return;
         }
 
-        Long communityId = categoryCreateDTO.communityId();
-        Community community = communityRepository.findById(communityId).orElseThrow();
-
         Category category = Category.builder()
-            .categoryName(categoryCreateDTO.categoryName())
-            .categoryType(categoryCreateDTO.categoryType())
+            .name(categoryCreateDTO.name())
+            .type(categoryCreateDTO.type())
             .community(community)
-            .path(community.getCommunityName())
             .build();
 
         categoryRepository.save(category);
     }
 
-    public List<CategoryDTOs.List> list(String path) {
-        List<Category> result = categoryRepository.findByPath(path);
+    public List<CategoryDTOs.List> list(Long communityId) {
+
+        Community community = communityRepository.findById(communityId).orElseThrow(CommunityNotFound::new);
+
+        List<Category> result = categoryRepository.findByCommunity(community);
 
         return result.stream().map(category ->
                 new CategoryDTOs.List(
-                    category.getCategoryId(),
-                    category.getCategoryName(),
-                    category.getCategoryType(),
-                    category.getCommunity().getCommunityId()
+                    category.getId(),
+                    category.getName(),
+                    category.getType(),
+                    category.getCommunity().getId()
                 )
             )
             .collect(Collectors.toList());
@@ -57,7 +59,7 @@ public class CategoryService {
     public void delete(Long categoryId, Authentication authentication, String communityName) {
         User user = (User) authentication.getPrincipal();
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
+            .contains(userRoleService.findRoleIdByName("ADMIN_" + communityName))) {
             return;
         }
 

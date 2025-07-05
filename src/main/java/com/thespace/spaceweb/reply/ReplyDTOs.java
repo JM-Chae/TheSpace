@@ -10,14 +10,15 @@ sealed public interface ReplyDTOs permits Info, Register {
 
     @Builder
     record Info(Long rno, String replyContent, String replyWriter,
-                String replyWriterUuid, String tag, LocalDateTime replyDate, Long isNested,
-                String path, Long vote) implements ReplyDTOs {
+                String replyWriterUuid, String tag, LocalDateTime replyDate, Long childCount, Long taggedCount,
+                Long parentRno, Long tagRno, Long vote) implements ReplyDTOs {
 
     }
 
     record Register(@NotNull String replyContent,
                     String tag,
-                    String path ) implements ReplyDTOs { // will change path?
+                    Long parentRno,
+                    Long tagRno) implements ReplyDTOs { // will change path?
 
     }
 }

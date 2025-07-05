@@ -23,16 +23,13 @@ import lombok.Getter;
 public class Category extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long id;
 
     @NotNull
-    private String path;
+    private String name;
 
     @NotNull
-    private String categoryName;
-
-    @NotNull
-    private String categoryType;
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "Community_Id")
@@ -45,10 +42,9 @@ public class Category extends BaseEntity {
     }
 
     @Builder
-    public Category(String path, String categoryName, String categoryType, Community community, List<Board> board) {
-        this.path = path;
-        this.categoryName = categoryName;
-        this.categoryType = categoryType;
+    public Category(String name, String type, Community community, List<Board> board) {
+        this.name = name;
+        this.type = type;
         this.community = community;
         this.board = board;
     }

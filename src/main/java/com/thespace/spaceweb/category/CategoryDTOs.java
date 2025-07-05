@@ -11,20 +11,18 @@ import lombok.Builder;
 sealed public interface CategoryDTOs permits Info, Create, List {
 
     record Create(@NotNull
-                                    @Size(min = 1, max = 30)
-                                    String categoryName,
-                  String categoryType,
-                  String path,
+                  @Size(min = 1, max = 30)
+                  String name,
+                  String type,
                   @NotNull
-                                    Long communityId) implements CategoryDTOs {
+                  Long communityId) implements CategoryDTOs {
 
     }
 
     @Builder
-    record Info(Long categoryId,
-                String categoryName,
-                String categoryType,
-                String path,
+    record Info(Long id,
+                String name,
+                String type,
                 LocalDateTime createDate,
                 LocalDateTime modDate,
                 Long communityId) implements CategoryDTOs {

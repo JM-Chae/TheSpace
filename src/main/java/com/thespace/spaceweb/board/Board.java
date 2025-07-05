@@ -2,6 +2,7 @@ package com.thespace.spaceweb.board;
 
 import com.thespace.common.BaseEntity;
 import com.thespace.spaceweb.category.Category;
+import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.reply.Reply;
 import com.thespace.spaceweb.user.User;
 import jakarta.persistence.CascadeType;
@@ -34,8 +35,9 @@ public class Board extends BaseEntity {
     @NotNull
     private String title;
 
-    @NotNull
-    private String path;
+    @ManyToOne
+    @JoinColumn(name = "Community_Id")
+    private Community community;
 
     @Column(columnDefinition = "longtext")
     @NotNull
@@ -69,12 +71,12 @@ public class Board extends BaseEntity {
     }
 
     @Builder
-    public Board(String title, String path, String content, Category category, User user) {
+    public Board(String title, String content, Community community,Category category, User user) {
         this.title = title;
-        this.path = path;
         this.content = content;
-        this.user = user;
+        this.community = community;
         this.category = category;
+        this.user = user;
     }
 
     public void change(String title, String content, Category category) {

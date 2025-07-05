@@ -26,21 +26,19 @@ public class QCategory extends EntityPathBase<Category> {
 
     public final ListPath<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard> board = this.<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard>createList("board", com.thespace.spaceweb.board.Board.class, com.thespace.spaceweb.board.QBoard.class, PathInits.DIRECT2);
 
-    public final NumberPath<Long> categoryId = createNumber("categoryId", Long.class);
-
-    public final StringPath categoryName = createString("categoryName");
-
-    public final StringPath categoryType = createString("categoryType");
-
     public final com.thespace.spaceweb.community.QCommunity community;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
 
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
-    public final StringPath path = createString("path");
+    public final StringPath name = createString("name");
+
+    public final StringPath type = createString("type");
 
     public QCategory(String variable) {
         this(Category.class, forVariable(variable), INITS);

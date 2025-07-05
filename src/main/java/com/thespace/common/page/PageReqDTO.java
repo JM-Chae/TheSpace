@@ -9,17 +9,16 @@ public record PageReqDTO(int page,
                          int size,
                          String type,
                          String keyword,
-                         String path,
-                         String category) {
+                         Long communityId,
+                         Long categoryId) {
 
-    public PageReqDTO(int page, int size, String type, String keyword, String path,
-        String category) {
+    public PageReqDTO(int page, int size, String type, String keyword, Long communityId, Long categoryId) {
         this.page = page != 0 ? page : 1;
         this.size = size != 0 ? size : 1000000;
         this.type = type;
         this.keyword = keyword != null ? keyword : "";
-        this.path = path != null ? path : "";
-        this.category = category != null ? category : "";
+        this.communityId = communityId != null ? communityId : 0L;
+        this.categoryId = categoryId != null ? categoryId : 0L;
     }
 
     public String[] getTypes() {

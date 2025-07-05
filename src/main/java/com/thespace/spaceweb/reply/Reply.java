@@ -24,9 +24,6 @@ public class Reply extends BaseEntity {
     private Long rno;
 
     @NotNull
-    private String path;
-
-    @NotNull
     private String replyContent;
 
     @Setter
@@ -36,10 +33,17 @@ public class Reply extends BaseEntity {
     private String tag;
 
     @Setter
-    private Long vote = 0L;
+    private Long childCount = 0L;
 
     @Setter
-    private Long isNested = 0L;
+    private Long vote = 0L;
+
+    private Long parentRno = 0L;
+
+    @Setter
+    private Long taggedCount = 0L;
+
+    private Long tagRno = 0L;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,9 +54,10 @@ public class Reply extends BaseEntity {
     }
 
     @Builder
-    public Reply(String path, String replyContent, User user,
+    public Reply(Long tagRno, Long parentRno, String replyContent, User user,
         String tag, Board board) {
-        this.path = path;
+        this.tagRno = tagRno;
+        this.parentRno = parentRno;
         this.replyContent = replyContent;
         this.user = user;
         this.tag = tag;

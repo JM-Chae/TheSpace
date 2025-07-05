@@ -1,12 +1,13 @@
 package com.thespace.spaceweb.community;
 
 import com.thespace.common.exception.AlreadyExists;
+import com.thespace.common.exception.CommunityNotFound;
 import com.thespace.common.getList.GetListCommunity;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
-import com.thespace.spaceweb.category.Category;
 import com.thespace.spaceweb.category.CategoryDTOs;
 import com.thespace.spaceweb.category.CategoryService;
+import com.thespace.spaceweb.community.CommunityDTOs.Info;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRoleService;
 import com.thespace.spaceweb.user.UserService;
@@ -28,7 +29,15 @@ public class CommunityService {
     private final CategoryService categoryService;
     private final GetListCommunity getListCommunity;
 
-    public Long create(CommunityDTOs.Create createDTO, Authentication authentication, boolean nameCheck) {
+    Info entityToDto(Community community) {
+        return new Info(community.getId(),
+            community.getName(),
+            community.getCreateDate(),
+            community.getModDate(),
+            community.getDescription());
+    }
+
+    public Info create(CommunityDTOs.Create createDTO, Authentication authentication, boolean nameCheck) {
         if (!nameCheck) {
             return null;
         }
@@ -42,21 +51,19 @@ public class CommunityService {
 
         User user = (User) authentication.getPrincipal();
 
-        userRoleService.register(communityName);
-        userService.setRole(user.getId(), "ADMIN_" + communityName);
+        Long roleId = userRoleService.register(communityName);
+        userRoleService.setRole(user.getId(), roleId);
 
-        Long communityId = communityRepository.save(community).getCommunityId();
+        Info res = entityToDto(communityRepository.save(community));
 
-        CategoryDTOs.Create categoryCreateDTO = new CategoryDTOs.Create("Open Forum", "Forum",
-            community.getCommunityName(), communityId
-        );
+        CategoryDTOs.Create categoryCreateDTO = new CategoryDTOs.Create("Open Forum", "Forum", res.id());
         categoryService.create(categoryCreateDTO, authentication);
 
-        return communityId;
+        return res;
     }
 
     public boolean check(String communityName) {
-        boolean check = !communityRepository.existsByCommunityName(communityName);
+        boolean check = !communityRepository.existsByName(communityName);
         if (!check) throw new AlreadyExists();
 
         else return true;
@@ -66,7 +73,7 @@ public class CommunityService {
         String[] types = pageReqDTO.getTypes();
         String keyword = pageReqDTO.keyword();
 
-        Pageable pageable = pageReqDTO.getPageable("communityId");
+        Pageable pageable = pageReqDTO.getPageable("id");
 
         Page<CommunityDTOs.Info> list = getListCommunity.getList(types, keyword, pageable);
 
@@ -78,7 +85,7 @@ public class CommunityService {
     public void delete(Long communityId, Authentication authentication, String communityName) {
         User user = (User) authentication.getPrincipal();
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
+            .contains(userRoleService.findRoleIdByName("ADMIN_" + communityName))) {
             return;
         }
 
@@ -94,28 +101,15 @@ public class CommunityService {
             .collect(Collectors.toList());
     }
 
-    public CommunityDTOs.Info get(String communityName) {
-        Community community = communityRepository.findByCommunityName(communityName);
-        List<Category> categories = community.getCategory();
-        List<CategoryDTOs.Info> categoryDTO = categories.stream().map(category ->
-                new CategoryDTOs.Info(
-                    category.getCategoryId(),
-                    category.getCategoryName(),
-                    category.getCategoryType(),
-                    category.getPath(),
-                    category.getCreateDate(),
-                    category.getModDate(),
-                    category.getCommunity().getCommunityId()
-                ))
-            .toList();
+    public CommunityDTOs.Info get(Long communityId) {
+        Community community = communityRepository.findById(communityId).orElseThrow(CommunityNotFound::new);
 
         return new CommunityDTOs.Info(
-            community.getCommunityId(),
-            community.getCommunityName(),
+            community.getId(),
+            community.getName(),
             community.getCreateDate(),
             community.getModDate(),
-            community.getDescription(),
-            categoryDTO
+            community.getDescription()
         );
     }
 
@@ -123,15 +117,15 @@ public class CommunityService {
         return communityRepository.findCommunityIdByNameIgnoreCase(communityName);
     }
 
-    public void modify(CommunityDTOs.Modify modifyDTO, Authentication authentication) {
+    public void modify(Long communityId, CommunityDTOs.Modify modifyDTO, Authentication authentication) {
+        Community community = communityRepository.findById(communityId)
+            .orElseThrow(CommunityNotFound::new);
+
         User user = (User) authentication.getPrincipal();
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleId("ADMIN_" + modifyDTO.communityName()))) {
+            .contains(userRoleService.findRoleIdByName("ADMIN_" + community.getName()))) {
             return;
         }
-
-        Community community = communityRepository.findById(modifyDTO.communityId())
-            .orElseThrow();//add Exception
 
         community.change(modifyDTO.description());
         communityRepository.save(community);

@@ -37,6 +37,12 @@ public class User extends BaseEntity implements UserDetails
     @Column(nullable = false, length = 20)
     private String name;
 
+    @Column(length = 200)
+    private String introduce;
+
+    @Column(length = 1)
+    private String signature;
+
     @Column(nullable = false, length = 50)
     private String email;
 
@@ -59,13 +65,27 @@ public class User extends BaseEntity implements UserDetails
 
     @Builder
     public User(String id, String uuid, String name, String email, String password,
-        List<UserRole> roles) {
+        List<UserRole> roles, String introduce, String signature) {
       this.id = id;
       this.uuid = uuid;
       this.name = name;
       this.email = email;
       this.password = password;
       this.roles = roles == null ? new ArrayList<>() : roles;
+      this.introduce = introduce;
+      this.signature = signature;
+    }
+
+    public void updateIntroduce(String introduce) {
+      this.introduce = introduce;
+    }
+
+    public void updateName(String name) {
+      this.name = name;
+    }
+
+    public void updateSignature(String signature) {
+      this.signature = signature;
     }
 
     @Override

@@ -32,8 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
-public class SecurityConfig implements UserDetailsService
-  {
+public class SecurityConfig implements UserDetailsService {
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final AuthSuccessHandler authSuccessHandler;
@@ -42,67 +41,76 @@ public class SecurityConfig implements UserDetailsService
     private final DataSource dataSource;
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-      {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-      }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-      CorsConfiguration configuration = new CorsConfiguration();
-      configuration.setAllowedOrigins(Collections.singletonList("http://58.188.13.211:5173"));
-      configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-      configuration.setAllowCredentials(true);
-      configuration.setAllowedHeaders(Arrays.asList("X-CSRF-TOKEN", "X-XSRF-TOKEN", "Content-Type", "Authorization"));
-
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      source.registerCorsConfiguration("/**", configuration);
-      return source;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-      {
-        http
-            .cors(Customizer.withDefaults())
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+        ));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList(
+            "X-CSRF-TOKEN",
+            "X-XSRF-TOKEN",
+            "Content-Type",
+            "Authorization"
+        ));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.ignoringRequestMatchers(
-                    new AntPathRequestMatcher("/user"),
-                    new AntPathRequestMatcher("/user/login"),
-                    new AntPathRequestMatcher("/user/logout"),
-                    new AntPathRequestMatcher("/user/login/me"))
-                .csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-            .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers("/**").permitAll())
+                new AntPathRequestMatcher("/user"),
+                new AntPathRequestMatcher("/user/login"),
+                new AntPathRequestMatcher("/user/logout"),
+                new AntPathRequestMatcher("/user/login/me")
+            ).csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
+            .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
+                "/**").permitAll())
             .exceptionHandling((exception) -> exception.accessDeniedHandler(accessDeniedHandler))
             .httpBasic(AbstractHttpConfigurer::disable)
-            .formLogin(formLogin -> formLogin
-                .loginPage("/user/login")
+            .formLogin(formLogin -> formLogin.loginPage("/user/login")
                 .usernameParameter("id")
                 .passwordParameter("password")
                 .successHandler(authSuccessHandler)
                 .failureHandler(new CustomAuthenticationFailureHandler()))
-            .rememberMe(rememberMe -> rememberMe
-                .key("13TGT3gr@%g21$")
+            .rememberMe(rememberMe -> rememberMe.key("13TGT3gr@%g21$")
                 .rememberMeParameter("remember")
-                .tokenValiditySeconds(60*60*24*7)
+                .tokenValiditySeconds(60 * 60 * 24 * 7)
                 .tokenRepository(persistentTokenRepository())
                 .useSecureCookie(false)
                 .authenticationSuccessHandler(authSuccessHandler))
-            .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true));
+            .logout(logout -> logout.logoutUrl("/user/logout")
+                .logoutSuccessHandler(logoutSuccessHandler)
+                .invalidateHttpSession(true));
 
         return http.build();
-      }
+    }
 
     @Bean
-    public PersistentTokenRepository persistentTokenRepository()
-      {
+    public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         return tokenRepository;
-      }
+    }
 
-    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException
-      {
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         log.info(id);
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User Not Found: "+id));
-      }
-  }
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UsernameNotFoundException("User Not Found: " + id));
+    }
+}

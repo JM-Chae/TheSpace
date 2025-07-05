@@ -5,7 +5,10 @@ import com.thespace.common.getList.GetListBoard;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.category.Category;
+import com.thespace.spaceweb.category.CategoryDTOs;
 import com.thespace.spaceweb.category.CategoryRepository;
+import com.thespace.spaceweb.community.Community;
+import com.thespace.spaceweb.community.CommunityDTOs;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRoleService;
 import com.thespace.spaceweb.user.UserService;
@@ -37,7 +40,7 @@ public class BoardService {
             .content(postDTO.content())
             .user(user)
             .category(category)
-            .path(category.getPath())
+            .community(category.getCommunity())
             .build();
 
         if (postDTO.fileNames() != null) {
@@ -50,7 +53,8 @@ public class BoardService {
     }
 
     public BoardDTOs.Info readBoard(Board board) {
-        Long categoryId = board.getCategory().getCategoryId();
+        Community community = board.getCommunity();
+        Category category = board.getCategory();
 
         List<String> fileNames = board.getFileSet().stream().sorted().map(boardFile ->
             boardFile.getFileId() + "_" + boardFile.getFileName()).toList();
@@ -61,8 +65,17 @@ public class BoardService {
             .content(board.getContent())
             .writer(board.getUser().getName())
             .writerUuid(board.getUser().getUuid())
-            .path(board.getPath())
-            .categoryId(categoryId)
+            .communityInfo(new CommunityDTOs.Info(community.getId(),
+                community.getName(),
+                community.getCreateDate(),
+                community.getModDate(),
+                community.getDescription()))
+            .categoryInfo(new CategoryDTOs.Info(category.getId(),
+                category.getName(),
+                category.getType(),
+                category.getCreateDate(),
+                category.getModDate(),
+                category.getCommunity().getId()))
             .vote(board.getVote())
             .viewCount(board.getViewCount())
             .modDate(board.getModDate())
@@ -123,11 +136,13 @@ public class BoardService {
         throw new PostNotFound();
     }
 
-    public void delete(Long bno, Authentication authentication, String communityName) {
+    public void deleteByAdmin(Long bno, Authentication authentication) {
         if (boardRepository.existsById(bno)) {
             User user = (User) authentication.getPrincipal();
+            String communityName = boardRepository.findById(bno).orElseThrow(PostNotFound::new).getCommunity().getName();
+
             if (userService.findUserRoles(user.getId())
-                .contains(userRoleService.findRoleId("ADMIN_" + communityName))) {
+                .contains(userRoleService.findRoleIdByName("ADMIN_" + communityName))) {
                 boardRepository.deleteById(bno);
             }
             return;
@@ -139,12 +154,12 @@ public class BoardService {
     public PageResDTO<BoardDTOs.Info> list(PageReqDTO pageReqDTO) {
         String[] types = pageReqDTO.getTypes();
         String keyword = pageReqDTO.keyword();
-        String path = pageReqDTO.path();
-        String category = pageReqDTO.category();
+        Long communityId = pageReqDTO.communityId();
+        Long categoryId = pageReqDTO.categoryId();
 
         Pageable pageable = pageReqDTO.getPageable("bno");
 
-        Page<BoardDTOs.Info> list = getListBoard.getList(types, keyword, pageable, path, category);
+        Page<BoardDTOs.Info> list = getListBoard.getList(types, keyword, pageable, communityId, categoryId);
 
         return PageResDTO.<BoardDTOs.Info>PageResDTO()
             .pageReqDTO(pageReqDTO)

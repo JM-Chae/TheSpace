@@ -1,25 +1,29 @@
 package com.thespace.spaceweb.user;
 
 
-import lombok.RequiredArgsConstructor;
+import com.thespace.common.exception.RoleNotFound;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class UserRoleService
   {
     private final UserRoleRepository userRoleRepository;
+    private final UserService userService;
 
-    public UserRole findByRoleName(String roleName) {
-      return userRoleRepository.findByRole(roleName).orElseThrow();
+    public UserRoleService(UserRoleRepository userRoleRepository, @Lazy UserService userService) {
+      this.userRoleRepository = userRoleRepository;
+      this.userService = userService;
     }
 
-    public Long findRoleId(String roleName)
+
+    public Long findRoleIdByName(String roleName)
     {
-      return userRoleRepository.findByRole(roleName).orElseThrow().getId();
+      return userRoleRepository.findByRole(roleName).orElseThrow(RoleNotFound::new).getId();
     }
 
-    public void register(String roleName)
+    public Long register(String roleName)
     {
       if (!userRoleRepository.existsByRole(roleName))
       {
@@ -29,12 +33,21 @@ public class UserRoleService
         if (!exist)
         {
           role.setRole(roleSetName);
-          userRoleRepository.save(role);
+          return userRoleRepository.save(role).getId();
         }
       }
+
+      return findRoleIdByName(roleName);
     }
     public String findRoleNameById(Long id)
     {
       return userRoleRepository.findById(id).orElseThrow().getRole();
+    }
+
+    @Transactional
+    public void setRole(String id, Long roleId) {
+        UserRole userRole = userRoleRepository.findById(roleId).orElseThrow(RoleNotFound::new);
+        User user = userService.findById(id);
+        user.getRoles().add(userRole);
     }
   }

@@ -4,16 +4,16 @@ import axios from "axios";
 import router from "@/router";
 import {ElMessageBox} from "element-plus";
 
-const communityName = history.state.communityName;
+const community = ref(JSON.parse(history.state.community));
 const page = ref(history.state.page)
 const size = ref(history.state.size)
-const categoryName = ref(history.state.categoryName)
+const categoryId = ref(history.state.categoryId)
 const type = ref(history.state.type)
 const keyword = ref(history.state.keyword)
 const userinfo = sessionStorage.getItem('userInfo') || ""
-const userId = JSON.parse(userinfo).id
 const roles = JSON.parse(userinfo).roles
-const hasAdmin = roles.includes('ADMIN_'+communityName.toUpperCase())
+
+const hasAdmin = ref(roles.includes('ADMIN_'+ community.value.name.toUpperCase()))
 const categoryMaker = ref(false)
 
 const getKeywordValue = (value: string) => {
@@ -22,8 +22,8 @@ const getKeywordValue = (value: string) => {
 const getTypeValue = (value: string) => {
   type.value = value;
 };
-const getCategoryNameValue = (value: string) => {
-  categoryName.value = value;
+const getCategoryIdValue = (value: number) => {
+  categoryId.value = value;
 };
 const getPageValue = (value: number) => {
   page.value = value;
@@ -34,12 +34,10 @@ const getSizeValue = (value: number) => {
 
 function getCommunity()
   {
-    axios.get(`/community/${communityName}`).then(res => community.value = res.data)
+    axios.get(`/community/${community.value.id}`).then(res => community.value = res.data)
       .then(() =>
       {
-        des.value = community.value.description;
-        communityId.value = community.value.communityId;
-        path.value = communityName;
+        hasAdmin.value = roles.includes('ADMIN_'+ community.value.name.toUpperCase())
       })
   }
 
@@ -49,16 +47,14 @@ onMounted(() =>
     {
       ElMessageBox.alert('You have not admin role with this community!', {
         confirmButtonText: 'OK',
-        callback: () => { router.push({path: '/community/home', state: {communityName: communityName, size: size.value, page: page.value}})}
+        callback: () => { router.push({path: '/community/home', state: {community: JSON.stringify(community.value), size: size.value, page: page.value}})}
 			})
     
     }
-		getCommunity();
 })
 
-const community = ref()
 const desReadOnly = ref(true)
-const des = ref()
+const des = ref(community.value.description)
 const temp = ref()
 
 function desModify()
@@ -75,10 +71,8 @@ function cancel()
 
 function done()
   {
-    axios.patch(`/community/modify`,
+    axios.patch(`/community/${community.value.id}/modify`,
 			{
-        communityId: community.value.communityId,
-        communityName: communityName,
 				description: des.value
       },
       {withCredentials: true})
@@ -89,29 +83,26 @@ function done()
 
 function returnHome()
   {
-		router.push({path: '/community/home', state: {communityName: communityName, size: size.value, page: page.value, categoryName: categoryName.value, type: type.value, keyword: keyword.value}})
+		router.push({path: '/community/home', state: {community: JSON.stringify(community.value), size: size.value, page: page.value, categoryName: categoryId.value, type: type.value, keyword: keyword.value}})
 	}
 
 const categoryType = ref()
-const communityId = ref()
-const path = ref()
-const name = ref()
+const categoryName = ref()
 
 function createCategory()
   {
     axios.post(`/category/admin`,
 			{
-        categoryType: categoryType.value,
-				communityId: communityId.value,
-				path: path.value,
-				categoryName: name.value
+        type: categoryType.value,
+				communityId: community.value.id,
+				name: categoryName.value
 			},
 			{withCredentials: true})
 			.then(() =>
       {
         categoryMaker.value = false;
         categoryType.value = '';
-        name.value = '';
+        categoryName.value = '';
         categoryRe.value = true;
       })
 	}
@@ -120,16 +111,15 @@ const categoryRe = ref(false)
 
 const getCategoryRe = (value: boolean) => {
   categoryRe.value = value;
-  console.log(categoryRe.value)
 }
 </script>
 
 <template>
 	<html v-show="hasAdmin" class = "dark" style="display: grid; justify-content: center">
 	<div class="mb-3" style="display: grid; width: 924px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-		<el-text v-if="communityName" v-model="communityName" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{communityName}}</el-text>
+		<el-text v-if="community" v-model="community.name" class="p-2" size="large" style="color: #00bd7e; font-size: 1.5em">{{community.name}}</el-text>
 		<div>
-			<el-input v-if="des" v-model="des" :autosize = "{minRows: 3}" :readonly="desReadOnly" class="p-2" style="font-size: 1.2em; width: 80%" type="textarea">{{des}}</el-input>
+			<el-input v-if="community" v-model="des" :autosize = "{minRows: 3}" :readonly="desReadOnly" class="p-2" style="font-size: 1.2em; width: 80%" type="textarea">{{des}}</el-input>
 			<el-button v-if="desReadOnly" class="mb-2" style="margin-left: 11%" type="warning" @click="desModify()">Modify</el-button>
 			<div v-if="!desReadOnly" style="display: inline-block; margin-left: 0.7em">
 				<el-button class="mb-2 ms-1" color="#00bd7e" style="width: 40%;" type="success" @click="done()">Done</el-button>
@@ -144,7 +134,7 @@ const getCategoryRe = (value: boolean) => {
 				<div class="my-header">
 					<h4 :id="titleId" :class="titleClass">Create Category!</h4>
 					<div class="m-3">
-						<el-input v-model="name" class="mb-2" placeholder="Enter Category Name">{{name}}</el-input>
+						<el-input v-model="categoryName" class="mb-2" placeholder="Enter Category Name">{{categoryName}}</el-input>
 						<el-input v-model="categoryType" placeholder="Enter Category Type">{{categoryType}}</el-input>
 					</div>
 					<div class="mt-4" style="justify-self: end">
@@ -159,7 +149,7 @@ const getCategoryRe = (value: boolean) => {
 			<el-button color="#00bd7e" round style="z-index: 100; position: fixed; top: 3vh; right: 2vw; width: 10em" @click="returnHome()">Return Home</el-button>
 	</div>
 	
-	<ListViewAdmin :categoryName="categoryName" :categoryRe="categoryRe" :keyword="keyword" :page="page" :path="communityName" :size="size" :type="type" @sendCategoryName="getCategoryNameValue" @sendCategoryRe="getCategoryRe" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
+	<ListViewAdmin v-if="community" :categoryId="categoryId" :categoryRe="categoryRe" :community="community" :keyword="keyword" :page="page" :size="size" :type="type" @sendCategoryId="getCategoryIdValue" @sendCategoryRe="getCategoryRe" @sendKeyword="getKeywordValue" @sendPage="getPageValue" @sendSize="getSizeValue" @sendType="getTypeValue"/>
 	</html>
 </template>
 

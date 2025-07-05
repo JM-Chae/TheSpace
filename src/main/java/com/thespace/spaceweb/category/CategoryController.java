@@ -21,8 +21,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public List<CategoryDTOs.List> list(@RequestParam(name = "path") String path) {
-        return categoryService.list(path);
+    public List<CategoryDTOs.List> list(@RequestParam(name = "communityId") Long communityId) {
+        return categoryService.list(communityId);
     }
 
     @PostMapping("/admin")

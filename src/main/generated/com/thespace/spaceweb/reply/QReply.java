@@ -26,21 +26,25 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final com.thespace.spaceweb.board.QBoard board;
 
+    public final NumberPath<Long> childCount = createNumber("childCount", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
-
-    public final NumberPath<Long> isNested = createNumber("isNested", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
-    public final StringPath path = createString("path");
+    public final NumberPath<Long> parentRno = createNumber("parentRno", Long.class);
 
     public final StringPath replyContent = createString("replyContent");
 
     public final NumberPath<Long> rno = createNumber("rno", Long.class);
 
     public final StringPath tag = createString("tag");
+
+    public final NumberPath<Long> taggedCount = createNumber("taggedCount", Long.class);
+
+    public final NumberPath<Long> tagRno = createNumber("tagRno", Long.class);
 
     public final com.thespace.spaceweb.user.QUser user;
 

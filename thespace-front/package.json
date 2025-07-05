@@ -22,6 +22,7 @@
     "vue": "^3.4.29",
     "vue-dompurify-html": "^5.1.0",
     "vue-router": "^4.3.3",
+    "vue3-emoji-picker": "^1.1.8",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

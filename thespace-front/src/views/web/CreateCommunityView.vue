@@ -17,9 +17,6 @@ if(sessionStorage.getItem('userInfo') == undefined) {
       })
 
   router.push('/user/login');
-} else {
-  const userinfo = sessionStorage.getItem('userInfo') || "";
-  const userId = JSON.parse(userinfo).id;
 }
 
 const communityName = ref("")
@@ -68,7 +65,12 @@ function create()
         description: description.value
       }, {params:
 					{nameCheck: nameCheck.value}, withCredentials: true})
-			.then(() => router.push({path: '/community/home', state: {communityName: communityName.value}}).catch(err => console.log(err)))
+			.then(res => {
+        const userinfo: any = JSON.parse(sessionStorage.getItem('userInfo') || '')
+        userinfo.roles.push("ADMIN_"+res.data.name.toUpperCase())
+        sessionStorage.setItem("userInfo" , JSON.stringify(userinfo))
+        router.push({path: '/community/home', state: {community: JSON.stringify(res.data)}})
+      }).catch(err => console.log(err))
   }
 
 const isOK = ref(false);

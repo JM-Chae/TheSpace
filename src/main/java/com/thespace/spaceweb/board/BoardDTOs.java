@@ -5,6 +5,8 @@ import com.thespace.spaceweb.board.BoardDTOs.Info;
 import com.thespace.spaceweb.board.BoardDTOs.Modify;
 import com.thespace.spaceweb.board.BoardDTOs.Post;
 import com.thespace.spaceweb.board.BoardDTOs.UploadFiles;
+import com.thespace.spaceweb.category.CategoryDTOs;
+import com.thespace.spaceweb.community.CommunityDTOs;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -20,7 +22,6 @@ sealed public interface BoardDTOs permits Info, FileInfo, Modify, Post,
         Long bno,
         String title,
         String content,
-        String path,
         String writer,
         String writerUuid,
         LocalDateTime createDate,
@@ -29,7 +30,8 @@ sealed public interface BoardDTOs permits Info, FileInfo, Modify, Post,
         Long vote,
         Long rCount,
         List<String> fileNames,
-        Long categoryId) implements BoardDTOs {
+        CommunityDTOs.Info communityInfo,
+        CategoryDTOs.Info categoryInfo) implements BoardDTOs {
 
     }
 

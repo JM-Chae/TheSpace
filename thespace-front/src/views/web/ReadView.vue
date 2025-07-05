@@ -4,12 +4,13 @@ import {Delete, Edit, Expand, Hide, View} from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
+import type {CategoryInfo, CommunityInfo} from "@/types/domain";
 
 function getRead() {
   axios.get(`/board/${bno}`)
   .then(res => {
     getDto.value = res.data
-    path.value = getDto.value?.path || ''
+    community.value = getDto.value?.communityInfo
   })
   .catch(error => console.error(error));
 
@@ -21,45 +22,20 @@ function modify() {
         {
           title: getDto.value?.title,
           content: getDto.value?.content,
-          categoryId: getDto.value?.categoryId,
+          categoryId: getDto.value?.categoryInfo.id,
           bno: bno,
           fileNames: JSON.stringify(getDto.value?.fileNames),
-          path: path.value
+          community: JSON.stringify(community.value)
         }
   });
 }
 
 function getReply() {
   axios.get(`/board/${bno}/reply`)
-  .then(res => rDtoList.value = res.data)
-  .then(res => {
-        if (res.dtoList != undefined)
-          rno.value = res.dtoList.map((rnoV: rdto) => rnoV.rno)
-      }
-  )
-  .then(() => getNestedReplyFunction())
-  .catch(error => console.error(error));
-}
-
-function getNestedReplyFunction() {
-  for (let i = 0; i < rno.value.length; i++) {
-    getNestedReply(rno.value[i], i)
-  }
-}
-
-
-function getNestedReply(rno: number, i: number) {
-  axios.get(`/board/${bno}/reply/${rno}`)
-  .then(res => nrDtoList.value[i] = res.data)
+  .then(res => rdtoList.value = res.data)
   .then(() => {
-    if (nrDtoList.value[i].total != 0 && nrDtoList.value[i].total != undefined) {
-      isNested.value[i] = true
-      nrWriterCheck.value[i] = new Array(nrDtoList.value.length).fill(false)
-      for (let n = 0; n < nrDtoList.value[i].dtoList.length; n++) {
-        nrWriterCheck.value[i][n] = user.uuid == nrDtoList.value[i].dtoList[n].replyWriterUuid;
-      }
-      tagName.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[0])
-      tagUuid.value[i] = nrDtoList.value[i].dtoList.map(V => V.tag.split(' ')[1])
+    if (rdtoList.value) {
+      rdtoList?.value
     }
   })
   .catch(error => console.error(error));
@@ -68,7 +44,10 @@ function getNestedReply(rno: number, i: number) {
 function deleteReply(rno: number, isNR: number) {
   if (isNR == 0) {
     axios.delete(`/board/${bno}/reply/${rno}`, {withCredentials: true})
-    .then(() => getReply())
+    .then(() => {
+      getReply()
+      if (getDto.value) {getDto.value.rCount--;}
+    })
   } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.', 'Delete Confirmation', // The goal is to prevent comment deletion, but instead, to add an API that allows for arbitrary modification of the comment's information.
       {
         type: 'warning',
@@ -80,7 +59,7 @@ function deleteReply(rno: number, isNR: number) {
 function boardDelete(isR: number) {
   if (isR == 0) {
     axios.delete(`/board/${bno}`, {withCredentials: true})
-    .then(() => router.back())
+    .then(() => router.push({path: '/community/home', state: {community: JSON.stringify(community.value)}}))
   } else {
     ElMessageBox.alert('You cannot delete a board that has a reply.', 'Delete Confirmation',
         {
@@ -99,7 +78,6 @@ const deleteBoardAlert = (isR: number) => {
         type: 'warning',
         dangerouslyUseHTMLString: true,
         center: true,
-        customClass: '.el-message-box'
       })
   .then(() => {
     boardDelete(isR)
@@ -116,7 +94,6 @@ const deleteReplyAlert = (rno: number, isNR: number) => {
         type: 'warning',
         dangerouslyUseHTMLString: true,
         center: true,
-        customClass: '.el-message-box'
       })
   .then(() => {
     deleteReply(rno, isNR);
@@ -127,7 +104,7 @@ const deleteReplyAlert = (rno: number, isNR: number) => {
 
 interface dto {
   bno: number,
-  categoryName: string,
+  categoryInfo: CategoryInfo,
   content: string,
   createDate: string,
   fileNames: string[],
@@ -139,7 +116,7 @@ interface dto {
   writer: string,
   writerUuid: string,
   rCount: number,
-  categoryId: number
+  communityInfo: CommunityInfo
 }
 
 interface rdto {
@@ -149,38 +126,90 @@ interface rdto {
   replyWriter: string,
   replyWriterUuid: string,
   replyDate: string,
-  path: string,
+  parentRno: number,
   vote: number,
   tag: string,
-  isNested: number
+  childCount: number
+  taggedCount: number,
+  tagRno: number,
+  child?: rdto[]
 }
 
-interface rDtos {
+interface rdtos {
   total: number,
   dtoList: Array<rdto>
 }
 
-const rDtoList = ref<rDtos | null>(null)
-const nrDtoList = ref<rDtos[]>([{dtoList: [], total: 0}])
+const rdtoList = ref<rdtos>()
+const sortedReplies = ref<rdtos | null>(null)
+
+function sortReply(rdtoList: any): rdto[] {
+  const map = new Map<number, rdto>();
+  const roots: rdto[] = [];
+
+  rdtoList.forEach((reply: rdto) => {
+    map.set(reply.rno, {...reply, child: []});
+  });
+
+  map.forEach(reply => {
+    if (reply.parentRno === 0) {
+      roots.push(reply);
+    } else {
+      const parent = map.get(reply.parentRno);
+      if (parent) {
+        parent.child?.push(reply);
+      } else {
+        console.warn(`Parent not found for reply rno=${reply.rno}`);
+      }
+    }
+  });
+
+  return roots;
+}
+
+watch(rdtoList, (newVal) => {
+  if (newVal?.dtoList) {
+    sortedReplies.value = {
+      total: newVal.total,
+      dtoList: sortReply(newVal.dtoList)
+    };
+  }
+});
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
-const user = JSON.parse(getInfo)
+
+interface user {
+  id: string,
+  name: string,
+  uuid: string
+}
+
+let user: user;
+let inputPlaceholder = ''
+
+if (getInfo != "") user = JSON.parse(getInfo)
+
+else {
+  user = {id: "Anonymous", name: "Anonymous", uuid: "Anonymous"}
+  inputPlaceholder = "Please login to reply"
+}
+
 const getDto = ref<dto | null>(null)
 
 const tag = ref<string>('')
-const path = ref<string>('')
+const tagRno = ref<number>(0)
+const community = ref<CommunityInfo>()
 const bno: number = window.history.state.bno;
-const rno = ref<number[]>([])
-const tagName = ref<Array<string[]>>([])
-const tagUuid = ref<Array<string[]>>([])
 
 const replyContent = ref<string>()
-const reply = function () {
+const reply = function (parentRno: number) {
+  console.log(parentRno)
   axios.post(`/board/${bno}/reply`,
       {
         replyContent: replyContent.value,
-        path: bno + "/" + nestedReply.value,
-        tag: tag.value
+        parentRno: parentRno,
+        tag: tag.value,
+        tagRno: tagRno.value
       }, {withCredentials: true})
   .then(() => replyContent.value = "")
   .then(() => {
@@ -222,8 +251,6 @@ async function rLikeCount(rno: number, Dto: any) {
 }
 
 const writerCheck = ref(false)
-const rWriterCheck = ref<boolean[]>([])
-const nrWriterCheck = ref<boolean[][]>([])
 
 watch(getDto, (newValue) => {
   if (newValue) {
@@ -239,37 +266,6 @@ const formatDate = (dateString: string) => {
   });
 }
 
-const isVisible = ref<boolean[]>([]);
-const focused = ref<boolean>(true)
-const nestedReply = ref<number | string>('')
-const isNested = ref<boolean[]>([])
-const replyClose = ref<boolean>(true)
-
-const closeAllNestedReplies = () => {
-  isVisible.value = isVisible.value.map(() => false);
-  focused.value = true;
-  replyContent.value = '';
-  nestedReply.value = ''
-  tag.value = '';
-};
-
-const handleOutsideClick = (event: MouseEvent) => {
-  const clickedElement = event.target as HTMLElement;
-
-  if (clickedElement.closest("#replyList")) {
-    tag.value = '';
-    return;
-  }
-  if (clickedElement.closest("#nestedList")) {
-    return;
-  }
-  closeAllNestedReplies();
-}
-
-if (rDtoList.value != null) {
-  isVisible.value = new Array(rDtoList.value.dtoList.length).fill(false);
-  isNested.value = new Array(rDtoList.value.dtoList.length).fill(false);
-}
 const toggleNested = (index: number) => {
   isVisible.value[index] = !isVisible.value[index];
   isVisible.value = isVisible.value.map((_, i) => i === index);
@@ -277,24 +273,33 @@ const toggleNested = (index: number) => {
   focused.value = false;
 }
 
-const listEnd = ref<boolean[]>([])
+const isVisible = ref<boolean[]>([]);
+const focused = ref<boolean>(true)
+const nestedReply = ref<number>(0)
+const replyClose = ref<boolean>(true)
 
-watch(rDtoList, (newValue) => {
-  if (newValue != null) {
-    listEnd.value = new Array(newValue.dtoList?.length).fill(true);
-    rWriterCheck.value = new Array(newValue.dtoList?.length).fill(false);
+const closeAllNestedReplies = () => {
+  isVisible.value = isVisible.value.map(() => false);
+  focused.value = true;
+  replyContent.value = '';
+  nestedReply.value = 0;
+  tag.value = '';
+  tagRno.value = 0;
+};
 
+const handleOutsideClick = (event: MouseEvent) => {
+  const clickedElement = event.target as HTMLElement;
+
+  if (clickedElement.closest("#replyList")) {
+    tag.value = '';
+    tagRno.value = 0;
+    return;
   }
-  if (newValue?.dtoList != undefined) {
-    newValue?.dtoList.forEach((_, index) => {
-      rWriterCheck.value[index] = user.uuid == newValue?.dtoList[index].replyWriterUuid;
-      const listEndCheck = () => {
-        listEnd.value[index] = index != newValue?.dtoList?.length - 1;
-      }
-      listEndCheck();
-    })
+  if (clickedElement.closest("#nestedList")) {
+    return;
   }
-})
+  closeAllNestedReplies();
+}
 
 onMounted(() => {
   getRead()
@@ -314,20 +319,25 @@ function returnBack() {
   const historyURL = history.state.back
 
   if (historyURL == '/post' || historyURL == '/modify') {
-    router.push({path: '/community/home', state: {communityName: path.value}})
+    router.push({path: '/community/home', state: {community: JSON.stringify(community.value)}})
   } else {
-    history.replaceState({communityName: path.value, size: size.value, page: page.value}, '')
+    history.replaceState({community: JSON.stringify(community.value), size: size.value, page: page.value}, '')
     router.back()
   }
+}
+
+function routing() {
+  router.push({path: '/community/home', state: {community: JSON.stringify(community.value)}})
 }
 </script>
 
 <template>
   <html class="dark">
-  <main>
     <div class="board">
       <div>
-        <h2 class="communityName">{{ path }}</h2>
+        <div style="cursor: pointer; " @click="routing()">
+        <h2 v-if="community" style="color: rgba(0,189,126,0.69)">{{ community.name }}</h2>
+        </div>
       </div>
       <hr class="mb-2 mt-2" style="background: #25394a; height: 2px; border: 0">
       <el-row>
@@ -412,32 +422,25 @@ function returnBack() {
     </div>
 
     <hr style="background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
-
-    <div v-show="replyClose && rDtoList?.total" class="reply">
+    <div v-show="replyClose && sortedReplies?.total" class="reply">
       <div class="replyList">
         <div class="p-3 m-3 pt-4"
              style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
 
           <el-space :size="20" fill="fill" style="display: flex;">
-            <ul v-for="(rDto, index) in rDtoList?.dtoList" key="rDto.rno" class="list"
+            <ul v-for="(rDto, index) in sortedReplies?.dtoList" :key="rDto.rno" class="list"
                 style="padding-left: 0">
-              <li class="list" style="list-style-type: none;"
-                  @click="toggleNested(index); nestedReply = rDto.rno">
+              <li class="list" style="list-style-type: none;" @click="toggleNested(index); nestedReply = rDto.rno">
                 <div style="display: grid;">
                   <div id="replyList">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; ">
-                      <div
-                          style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
-                        <el-popover :width="10" effect="dark" placement="top"
-                                    popper-style="text-align: center" title="UUID" trigger="hover">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
+                        <el-popover :width="10" effect="dark" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                           <template #reference>
-                            <el-button class="name" link
-                                       style="display: inline-block; color: white; max-width: 10em;">
-                              <span
-                                  style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">{{
-                                  rDto.replyWriter
-                                }}</span>
+                            <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
+                          <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
+                            {{ rDto.replyWriter }}
+                          </span>
                             </el-button>
                           </template>
                           {{ rDto.replyWriterUuid }}
@@ -446,102 +449,78 @@ function returnBack() {
                       <div style="text-align: left; margin-left: auto; flex-grow: 20">
                         <el-text class="text">{{ rDto.replyContent }}</el-text>
                       </div>
-                      <div
-                          style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
+                      <div style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
                         <el-text class="text">{{ formatDate(rDto.replyDate) }}</el-text>
                       </div>
                     </div>
-                    <div class="pt-1"
-                         style="display: flex; justify-content: space-between; align-items: center; ">
+
+                    <div class="pt-1" style="display: flex; justify-content: space-between; align-items: center;">
                       <div style="margin-left: 10.5em; display: inline-block;">
                         <el-text>Like: {{ rDto.vote }}</el-text>
                       </div>
                       <div style="display: inline-block;">
-                        <el-button v-if="rWriterCheck[index]" round size="small"
-                                   style="margin-left: 0.5em" title="Delete" type="danger"
-                                   @click="deleteReplyAlert(rDto.rno, rDto.isNested)" @click.stop>
-                          <el-icon size="15">
-                            <Delete/>
-                          </el-icon>
+                        <el-button v-if="rDto.replyWriterUuid == user.uuid" round size="small" style="margin-left: 0.5em" title="Delete" type="danger"
+                                   @click="deleteReplyAlert(rDto.rno, rDto.childCount > 0 ? 1 : 0, false);" @click.stop>
+                          <el-icon size="15"><Delete /></el-icon>
                         </el-button>
-                        <el-button class="button" color="#ff25cf" round size="small"
-                                   style="margin-left: 0.5em;" title="Like!"
-                                   @click="rLikeCount(rDto.rno, rDto);" @click.stop>❤
-                        </el-button>
+                        <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
+                                   @click="rLikeCount(rDto.rno, rDto)" @click.stop>❤</el-button>
                       </div>
                     </div>
                   </div>
-                  <ul v-for="(nrDto, i) in nrDtoList[index].dtoList"
-                      v-if="nrDtoList[index]?.dtoList" key="nrDto.rno" class="p-2 m-3 mt-2 mb-0"
-                      style="border-radius: 0.5em; border: 0.1em solid #494949; padding-left: 0; background-color: rgb(46,46,46)">
-                    <li v-show="isNested[index]" id="nestedList" style="list-style-type: none;"
-                        @click="tag = nrDto.replyWriter + ' ' + nrDto.replyWriterUuid + ' ' + 'To'">
+
+                  <ul v-if="rDto.child?.length" class="p-2 m-3 mt-2 mb-0">
+                    <li v-for="(child) in rDto.child" id="nestedList" :key="child.rno" style="border-radius: 0.5em; border: 0.1em solid #494949; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(46,46,46); list-style-type: none;"
+                        @click="tag = child.replyWriter + ' ' + child.replyWriterUuid + ' To'; tagRno = child.rno">
                       <div style="display: grid;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; ">
-                          <div
-                              style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
-                            <el-popover :width="10" effect="dark" placement="top"
-                                        popper-style="text-align: center" title="UUID"
-                                        trigger="hover">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                          <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
+                            <el-popover :width="10" effect="dark" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                               <template #reference>
-                                <el-button class="name" link
-                                           style="display: inline-block; color: white; max-width: 10em;">
-                                  <span
-                                      style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">{{
-                                      nrDto.replyWriter
-                                    }}</span>
+                                <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
+                              <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
+                                {{ child.replyWriter }}
+                              </span>
                                 </el-button>
                               </template>
-                              {{ nrDto.replyWriterUuid }}
+                              {{ child.replyWriterUuid }}
                             </el-popover>
                           </div>
                           <div style="text-align: left; margin-left: auto; flex-grow: 20">
                             <span style="color: #919191">┗　</span>
-                            <el-text v-if="tagName[index] != undefined && tagName[index][i] != ''"
-                                     v-model="tagName">
-                              <el-popover v-if="tagUuid[index][i] != ''" v-model="tagUuid"
+                            <el-text v-if="child.tag != undefined"
+                                     v-model="child.tag">
+                              <el-popover
                                           :width="10" effect="dark" placement="top"
                                           popper-style="text-align: center" title="UUID"
                                           trigger="hover">
                                 <template #reference>
-                                  <el-button class="name" link
-                                             style="display: inline-block; color: rgba(41,198,255,0.75); max-width: 10em;">
-                                    <span
-                                        style="margin-right: 0.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">{{
-                                        tagName[index][i]
-                                      }}</span>
+                                  <el-button class="name" link style="display: inline-block; color: rgba(41,198,255,0.75); max-width: 10em;">
+                                    <span style="margin-right: 0.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
+                                      {{child.tag.split(' ')[2] }} {{child.tag.split(' ')[0] }}
+                                    </span>
                                   </el-button>
                                 </template>
-                                {{ tagUuid[index][i] }}
+                                {{child.tag.split(' ')[1] }}
                               </el-popover>
                             </el-text>
-                            <el-text class="text">{{ nrDto.replyContent }}</el-text>
+                            <el-text class="text">{{ child.replyContent }}</el-text>
                           </div>
-                          <div
-                              style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
-                            <el-text class="text">{{ formatDate(nrDto.replyDate) }}</el-text>
+                          <div style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
+                            <el-text class="text">{{ formatDate(child.replyDate) }}</el-text>
                           </div>
                         </div>
-                        <div class="pt-1"
-                             style="display: flex; justify-content: space-between; align-items: center; ">
+                        <div class="pt-1" style="display: flex; justify-content: space-between; align-items: center;">
                           <div style="margin-left: 12.5em; display: inline-block;">
-                            <el-text>Like: {{ nrDto.vote }}</el-text>
+                            <el-text>Like: {{ child.vote }}</el-text>
                           </div>
                           <div style="display: inline-block;">
-                            <el-button
-                                v-if="nrWriterCheck && nrWriterCheck[index] && nrWriterCheck[index][i]"
-                                round size="small" style="margin-left: 0.5em" title="Delete"
-                                type="danger" @click="deleteReplyAlert(nrDto.rno, nrDto.isNested)"
-                                @click.stop>
-                              <el-icon size="15">
-                                <Delete/>
-                              </el-icon>
+                            <el-button v-if="child.replyWriterUuid === user.uuid" round size="small" style="margin-left: 0.5em" title="Delete"
+                                       type="danger" @click="deleteReplyAlert(child.rno, child.taggedCount)" @click.stop>
+                              <el-icon size="15"><Delete /></el-icon>
                             </el-button>
-                            <el-button class="button" color="#ff25cf" round size="small"
-                                       style="margin-left: 0.5em;" title="Like!"
-                                       @click="rLikeCount(nrDto.rno, nrDto);" @click.stop>❤
-                            </el-button>
+                            <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
+                                       @click="rLikeCount(child.rno, child)" @click.stop>❤</el-button>
                           </div>
                         </div>
                       </div>
@@ -553,17 +532,14 @@ function returnBack() {
                        @click.stop>
                     <div class="mb-1" style="color:rgba(97,255,176,0.8)">{{ user.name }}</div>
                     <el-input v-model="replyContent" :autosize="{minRows: 3}" type="textarea"
-                              v-bind="{ placeholder: tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined }"/>
+                              :placeholder="tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined"/>
                     <div style="text-align: end">
-                      <el-button class="mt-2" round size="small" type="primary" @click="reply">
-                        Reply
-                      </el-button>
+                      <el-button class="mt-2" round size="small" type="primary" @click="reply(rDto.rno)">Reply</el-button>
                     </div>
                   </div>
-                </div>
 
-                <div v-if="listEnd && listEnd[index]" class="mt-2"
-                     style="border-bottom: 1px dashed rgba(70,130,180,0.17);"></div>
+                  <div v-if="sortedReplies && sortedReplies.dtoList.length - 1 != index" class="mt-2" style="border-bottom: 1px dashed rgba(70,130,180,0.17);"></div>
+                </div>
               </li>
             </ul>
           </el-space>
@@ -572,24 +548,25 @@ function returnBack() {
         <hr style="background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
       </div>
     </div>
+
     <div v-if="focused" class="replyPost p-3 m-3 pb-2 pt-2"
          style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
       <div class="mb-1" style="color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-      <el-input v-model="replyContent" :autosize="{minRows: 3}" type="textarea" @click.stop/>
+      <el-input v-model="replyContent" :autosize="{minRows: 3}" :disabled="inputPlaceholder != ''" :placeholder="inputPlaceholder" class="replyInput" type="textarea" @click.stop/>
       <div style="text-align: end">
-        <el-button class="mt-2" round size="small" type="primary" @click="reply">Reply</el-button>
+        <el-button class="mt-2" round size="small" type="primary" @click="reply(0);">Reply</el-button>
       </div>
     </div>
     <div>
-      <el-button color="#00bd7e" round style="position: fixed; top: 3vh; right: 2vw"
-                 @click="returnBack()">Return Back
-      </el-button>
+      <el-button color="#00bd7e" round style="position: fixed; top: 3vh; right: 2vw" @click="returnBack()">Return Back</el-button>
     </div>
-  </main>
   </html>
 </template>
 
 <style scoped>
+.replyInput {
+  --el-disabled-bg-color: #00000000;
+}
 .text {
   color: rgba(255, 255, 255, 0.82);
   font-size: 1em;
@@ -604,5 +581,4 @@ h3 {
   font-size: 1.5em;
   color: rgba(248, 248, 248, 0.89);
 }
-
 </style>

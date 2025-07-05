@@ -55,7 +55,7 @@ const title = ref("")
 const content = ref("")
 const categoryId = ref("")
 
-const path = history.state.path
+const community = JSON.parse(history.state.community)
 const categories = ref()
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
@@ -77,7 +77,7 @@ const deleteFile = function (fileid: string, filename: string, index: number)
   }
 }
 
-axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
+axios.get(`/category/list`, {params: {communityId: community.id}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
 
 const post = async () =>
@@ -223,7 +223,7 @@ let count = 0;
 	<html class = "dark">
 	<main>
 		<div>
-			<h2 class = "communityName">{{ path }}</h2>
+			<h2 class = "communityName">{{  }}</h2>
 		</div>
 		<hr class = "mb-2 mt-2" style = "background: #25394a; height: 2px; border: 0">
 		<div>

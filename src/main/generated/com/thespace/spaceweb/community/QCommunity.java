@@ -22,19 +22,21 @@ public class QCommunity extends EntityPathBase<Community> {
 
     public final com.thespace.common.QBaseEntity _super = new com.thespace.common.QBaseEntity(this);
 
+    public final ListPath<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard> board = this.<com.thespace.spaceweb.board.Board, com.thespace.spaceweb.board.QBoard>createList("board", com.thespace.spaceweb.board.Board.class, com.thespace.spaceweb.board.QBoard.class, PathInits.DIRECT2);
+
     public final ListPath<com.thespace.spaceweb.category.Category, com.thespace.spaceweb.category.QCategory> category = this.<com.thespace.spaceweb.category.Category, com.thespace.spaceweb.category.QCategory>createList("category", com.thespace.spaceweb.category.Category.class, com.thespace.spaceweb.category.QCategory.class, PathInits.DIRECT2);
-
-    public final NumberPath<Long> communityId = createNumber("communityId", Long.class);
-
-    public final StringPath communityName = createString("communityName");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
 
     public final StringPath description = createString("description");
 
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
+
+    public final StringPath name = createString("name");
 
     public QCommunity(String variable) {
         super(Community.class, forVariable(variable));

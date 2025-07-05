@@ -1,6 +1,7 @@
 package com.thespace.spaceweb.community;
 
 import com.thespace.common.BaseEntity;
+import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.category.Category;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,18 +21,13 @@ import lombok.Getter;
 @Entity
 public class Community extends BaseEntity {
 
-    // lombok을 jpa와 쓸 때 주의해야할 점
-    // 1. NoArgsConstructor를 왜 붙이는가? 그리고 어떻게 붙여야하는가?
-    // 1-1. JPA의 어떤 성질 때문일까?
-    // 2. ToString()을 어떻게 사용해야할까? 왜 조심해야할까?
-    // 3.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long communityId;
+    private Long id;
 
     @Column(unique = true)
     @NotNull
-    private String communityName;
+    private String name;
 
     @Column(columnDefinition = "longtext")
     private String description;
@@ -39,13 +35,16 @@ public class Community extends BaseEntity {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<Category> category = new ArrayList<>(); //Add limit?
 
+    @OneToMany(mappedBy = "community")
+    private List<Board> board = new ArrayList<>();
+
     public Community() {
 
     }
 
     @Builder
-    public Community(String communityName, String description) {
-        this.communityName = communityName;
+    public Community(String name, String description) {
+        this.name = name;
         this.description = description;
     }
 

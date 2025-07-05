@@ -3,13 +3,13 @@ package com.thespace.spaceweb.community;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CommunityRepository extends JpaRepository<Community, Long> {
 
-    Community findByCommunityName(String name);
+    boolean existsByName(String name);
 
-    boolean existsByCommunityName(String name);
-
-    @Query("SELECT c.communityId FROM Community c WHERE UPPER(c.communityName) = :communityName")
-    Long findCommunityIdByNameIgnoreCase(@Param("communityName") String communityName);
+    @Query("SELECT c.id FROM Community c WHERE UPPER(c.name) = :name")
+    Long findCommunityIdByNameIgnoreCase(@Param("name") String name);
 }

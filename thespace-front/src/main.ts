@@ -9,8 +9,8 @@ import 'bootstrap/dist/css/bootstrap-utilities.css'
 import axios from "axios";
 import VueDOMPurifyHTML from 'vue-dompurify-html';
 import 'element-plus/theme-chalk/dark/css-vars.css'
-import ListView from './views/ListView.vue'
-import ListViewAdmin from './views/ListViewAdmin.vue'
+import ListView from './views/web/ListView.vue'
+import ListViewAdmin from './views/web/ListViewAdmin.vue'
 
 //axios config
 axios.defaults.withCredentials = true;
@@ -36,7 +36,7 @@ if (sessionStorage.getItem('login') === 'true') {
 }
 
 (async () => {
-  await loadCsrfToken(); // 먼저 토큰을 받아오고
+  await loadCsrfToken();
 
   //login status
   if (document.cookie.includes('isRemember=true')) {

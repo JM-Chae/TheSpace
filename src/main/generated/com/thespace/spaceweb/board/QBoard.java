@@ -28,6 +28,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final com.thespace.spaceweb.category.QCategory category;
 
+    public final com.thespace.spaceweb.community.QCommunity community;
+
     public final StringPath content = createString("content");
 
     //inherited
@@ -37,8 +39,6 @@ public class QBoard extends EntityPathBase<Board> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
-
-    public final StringPath path = createString("path");
 
     public final NumberPath<Long> rCount = createNumber("rCount", Long.class);
 
@@ -71,6 +71,7 @@ public class QBoard extends EntityPathBase<Board> {
     public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.category = inits.isInitialized("category") ? new com.thespace.spaceweb.category.QCategory(forProperty("category"), inits.get("category")) : null;
+        this.community = inits.isInitialized("community") ? new com.thespace.spaceweb.community.QCommunity(forProperty("community")) : null;
         this.user = inits.isInitialized("user") ? new com.thespace.spaceweb.user.QUser(forProperty("user")) : null;
     }
 

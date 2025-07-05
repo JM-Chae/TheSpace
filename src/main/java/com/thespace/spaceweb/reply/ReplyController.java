@@ -35,11 +35,4 @@ public class ReplyController {
 
         return replyService.getListReply(bno);
     }
-
-    @GetMapping("/{rno}")
-    public PageResDTO<Info> nestedListGet(@PathVariable("rno") Long rno,
-        @PathVariable("bno") Long bno) {
-
-        return replyService.getListNestedReply(rno, bno);
-    }
 }

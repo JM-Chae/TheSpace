@@ -3,11 +3,41 @@ import axios from "axios";
 import {onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import router from "@/router";
-import {Link, Picture, Search} from '@element-plus/icons-vue'
+import {Delete, Link, Picture, Search} from '@element-plus/icons-vue'
+import {ElMessageBox} from "element-plus";
 
-const props = defineProps(['path', 'size', 'page', 'type', 'keyword', 'categoryName'])
+const userinfo = sessionStorage.getItem('userInfo') || ""
+const userId = JSON.parse(userinfo).id
+const props = defineProps(['community', 'page', 'size', 'categoryRe', 'type', 'keyword', 'categoryId'])
 const categories = ref()
-const communityName = props.path
+
+const deleteBoardAlert = (bno: number) =>
+  {
+    ElMessageBox.confirm('Are you sure you want to delete this Post?', 'Delete Confirmation',
+      {
+        cancelButtonText: 'NO',
+        confirmButtonText: 'OK',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        center: true,
+        customClass: '.el-message-box'
+      })
+      .then(() =>
+      {
+        deleteAdmin(bno)
+      }).catch(() =>
+    {
+      console.log('')
+    })
+  }
+
+function deleteAdmin(bno: number)
+  {
+    axios.delete(`board/${bno}/admin`, {params: {
+				communityId: props.community.id
+			}, withCredentials: true})
+			.then(() => getList())
+	}
 
 function getList()
   {
@@ -17,8 +47,8 @@ function getList()
         keyword: keyword.value,
         type: type.value,
 				size: size.value,
-        path: props.path,
-        category: categoryName.value
+        communityId: props.community.id,
+        categoryId: categoryId.value
       }
     })
       .then(res =>
@@ -31,17 +61,21 @@ function getList()
       })
   }
 
+function getCategory()
+  {
+    axios.get(`/category/list`, {params: { communityId: props.community.id }}).then(res => categories.value = res.data).catch(error => console.error(error))
+  }
+
 onMounted(() =>
 {
   getList()
-	
-  axios.get(`/category/list`, {params: {path: communityName}}).then(res => categories.value = res.data).catch(error => console.error(error))
-	
+  getCategory()
+
   watch(type, (newValue) =>
   {
     if (newValue)
       {
-        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({community: JSON.stringify(props.community), page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryId.value}, '')
         sendTypeToParent()
         getList()
       }
@@ -50,17 +84,17 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({community: JSON.stringify(props.community), page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryId.value}, '')
         sendKeywordToParent()
         getList()
       }
   })
-  watch(categoryName, (newValue) =>
+  watch(categoryId, (newValue) =>
   {
     if (newValue)
       {
-        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
-        sendCategoryNameToParent()
+        history.replaceState({community: JSON.stringify(props.community), page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryId.value}, '')
+        sendCategoryIdToParent()
         getList()
       }
   })
@@ -68,7 +102,7 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({community: JSON.stringify(props.community), page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryId.value}, '')
         sendPageToParent()
         getList()
       }
@@ -77,22 +111,31 @@ onMounted(() =>
   {
     if (newValue)
       {
-        history.replaceState({communityName: props.path, page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryName.value}, '')
+        history.replaceState({community: JSON.stringify(props.community), page: page.value, type: type.value, keyword: keyword.value, categoryName: categoryId.value}, '')
         sendSizeToParent()
         getList()
       }
   })
-	
-	watch(categoryName, () => {
-        getList()
-})
-})
 
+  watch(categoryId, () => {
+    getList()
+  })
+
+  watch(categoryRe, (newValue) =>
+  {
+    if(newValue === true)
+      {
+        categoryRe.value = false;
+        getCategory()
+        sendCategoryReToParent()
+      }
+  })
+})
 const dtoList = ref<dtoList>()
 
 const moveRead = (row: any) =>
   {
-    router.push({name: "read", state: {bno: row.bno, size: size.value, page: page.value}})
+    router.push({name: "read", state: {bno: row.bno}})
   }
 
 interface dto
@@ -100,7 +143,7 @@ interface dto
     bno: number,
     title: string,
     content: string,
-    path: string,
+    communityId: number,
     writer: string,
     writerUuid: string,
     createDate: string,
@@ -109,7 +152,7 @@ interface dto
     vote: number,
     fileNames: string[],
     thumbCheck: boolean,
-    categoryName: string,
+    categoryId: number,
     rCount: number
   }
 
@@ -136,20 +179,23 @@ const page = ref(props.page ? props.page : 1)
 const type = ref(props.type ? props. type : 't')
 const keyword = ref(props.keyword ? props.keyword : '')
 
-const categoryName = ref(props.categoryName ? props.categoryName : '')
+const categoryId = ref(props.categoryId ? props.categoryId : 0)
 const pageCount = ref<number>(0)
+
+const categoryRe = ref(props.categoryRe)
 
 const emit = defineEmits<{
   (event: 'sendPage', value: number): void;
   (event: 'sendSize', value: number): void;
+  (event: 'sendCategoryRe', value: boolean): void;
   (event: 'sendType', value: string): void;
   (event: 'sendKeyword', value: string): void;
-  (event: 'sendCategoryName', value: string): void;
+  (event: 'sendCategoryId', value: number): void;
 }>();
 
-const sendCategoryNameToParent = () =>
+const sendCategoryIdToParent = () =>
   {
-    emit('sendCategoryName', categoryName.value)
+    emit('sendCategoryId', categoryId.value)
   }
 const sendKeywordToParent = () =>
   {
@@ -167,8 +213,21 @@ const sendSizeToParent = () =>
   {
     emit('sendSize', size.value)
   }
+const sendCategoryReToParent = () =>
+  {
+    emit('sendCategoryRe', categoryRe.value)
+		console.log(categoryRe.value)
+  }
 
-  function formatDate(dateString: string)
+watch(() => props.categoryRe, (newValue) =>
+{
+		if(newValue === true)
+    {
+      categoryRe.value = true;
+    }
+})
+
+function formatDate(dateString: string)
   {
     const date = new Date(dateString);
     date.setHours(date.getHours() - 9);
@@ -247,7 +306,7 @@ const typeList: ListItem[] = [{name: 'title', value: 't'}, {name: 'content', val
 
 const post = () =>
   {
-    router.push({path: '/post', state: {path: props.path}})
+    router.push({path: '/post', state: {community: props.community}})
 	}
 </script>
 
@@ -262,7 +321,7 @@ const post = () =>
 				</el-option>
 			</el-select>
 		</div>
-		<div class = "d-inline-block" style = "width: 19.2%; height: 32px; margin-right: 4em">
+		<div class = "d-inline-block" style = "width: 19.2%; height: 32px; margin-right: 3.5em">
 			<el-input v-model = "keyword" class = "radius" placeholder = "Enter keyword" style = "position: relative; top:32px; border-radius: 0" @keydown.enter="getList()"/>
 			<el-button style = "position: relative; left: 177px; border-radius: 0 4px 4px 0;" @click = "getList()">
 				<el-icon size = "17">
@@ -271,15 +330,12 @@ const post = () =>
 			</el-button>
 		</div>
 		<div class = "d-inline-block" style="width: 20%">
-			<el-select v-model="categoryName" class = "form-control" placeholder = "Choose category">
-				<el-option label = "All" value = "">All</el-option>
-				<el-option v-for = "category in categories" :key = "category.categoryId" :label="category.categoryName" :value="category.categoryName">
+			<el-select v-model="categoryId" class = "form-control" placeholder = "Choose category">
+				<el-option :key="0" :value = "0" label = "All">All</el-option>
+				<el-option v-for = "category in categories" :key = "category.categoryId" :label="category.categoryName" :value="category.categoryId">
 					{{ category.categoryName }}
 				</el-option>
 			</el-select>
-		</div>
-		<div class="pe-3" style="display: inline-grid; margin-left: 30%;">
-			<el-button color="rgba(65, 255, 158, 0.71)" style="color: rgba(255,255,255,0.82); justify-self: end; width: 100%" type="success" @click="post">Post</el-button>
 		</div>
 		<el-table v-if = "dtoList?.total!=0" v-loading="!dtoList" :data = "dtoList?.dtoList" class = "p-3 table" empty-text="" style="width: 922px; min-height: 472px" @row-click = "moveRead">
 			<el-table-column width = "50">
@@ -290,14 +346,14 @@ const post = () =>
 					<div class = "td">{{ scope.row.bno }}</div>
 				</template>
 			</el-table-column>
-			<el-table-column width = "500">
+			<el-table-column width = "400">
 				<template #header>
 					<div class = "text-center th">Title</div>
 				</template>
 				<template #default = "scope">
 					<el-popover :hide-after = "10" :visible = "scope.row.thumbCheck" :width = "`fit-content`" effect = "dark" placement = "bottom" popper-style = "text-align: center" title = "" trigger = "hover">
 						<template #default>
-							<img :src = "thumbnails" alt = "thumbnail" style="width: 200px; height: fit-content;">
+							<img :src = "thumbnails" alt = "">
 						</template>
 						<template #reference>
 							<div style = "width: 100%" @mouseleave = "mouseLeave(scope.row)" @mouseover = "mouseOver(scope.row)">
@@ -359,6 +415,16 @@ const post = () =>
 					<div class = "text-center td">{{ scope.row.vote }}</div>
 				</template>
 			</el-table-column>
+			<el-table-column width = "100">
+				<template #header>
+					<div class = "text-center th">Delete</div>
+				</template>
+				<template #default = "scope">
+					<div style="display: grid">
+							<el-button round style="width: 50%; justify-self: center" type="danger" @click="deleteBoardAlert(scope.row.bno)" @click.stop><el-icon><Delete /></el-icon></el-button>
+					</div>
+				</template>
+			</el-table-column>
 		</el-table>
 		<div v-if = "dtoList" class = "p-3 paging" style = "justify-self: end">
 			<el-pagination v-model:current-page = "page" v-model:page-size = "size" :change = "setPage" :page-count = "pageCount" :page-sizes = "[10, 15, 20, 30, 50, 100]" :pager-count = "7" :size = "'large'" :total = "dtoList?.total" background class = "paging" layout = "sizes, jumper, prev, pager, next"/>
@@ -366,7 +432,9 @@ const post = () =>
 	</div>
 	</html>
 </template>
+<script lang = "ts">
 
+</script>
 <style scoped>
 .table {
     --el-bg-color: rgba(255, 255, 255, 0);

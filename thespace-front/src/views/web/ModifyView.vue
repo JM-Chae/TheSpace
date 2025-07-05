@@ -4,6 +4,7 @@ import axios from "axios";
 import {Delete} from "@element-plus/icons-vue";
 import Editor from '@tinymce/tinymce-vue'
 import {ElMessageBox} from "element-plus";
+import router from "@/router";
 
 const loading = ref(true);
 
@@ -38,15 +39,16 @@ const deleteFile = function (fileid: string, filename: string, index: number)
       }
   }
 
-const path = window.history.state.path;
-axios.get(`/category/list`, {params: {path: path}}).then(res => categories.value = res.data).catch(error => console.error(error))
+const community = JSON.parse(window.history.state.community);
+const communityId = community.id;
+
+axios.get(`/category/list`, {params: {communityId: communityId}}).then(res => categories.value = res.data).catch(error => console.error(error))
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const user = JSON.parse(getInfo)
 
 const post = async function ()
   {
-    
     await upload();
     selectedFiles.value = [];
     await axios.patch("/board",
@@ -57,8 +59,7 @@ const post = async function ()
         writer: user.name,
         categoryId: categoryId.value,
         fileNames: newFileNames.value
-      })
-    .then(res => fileNames.value.push(...res.data.map((list: any) => list.fileId + '_' + list.fileName)))
+      }).then(() => router.push({name: "read", state: {bno: bno.value}}))
   }
 
 const selectedFiles = ref<File[]>([]);
@@ -140,7 +141,7 @@ let count = 0;
 	<html class="dark">
 	<main>
 		<div>
-			<h2 class = "communityName">{{ path }}</h2>
+			<h2 class = "communityName">{{ community.name }}</h2>
 		</div>
 		<hr class = "mb-2 mt-2" style = "background: #25394a; height: 2px; border: 0">
 		<div>

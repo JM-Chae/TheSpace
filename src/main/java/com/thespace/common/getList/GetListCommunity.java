@@ -30,11 +30,11 @@ public class GetListCommunity extends QuerydslRepositorySupport {
 //            for (String type : types) Currently, only one type is allowed.
 //              {
             if (types[0].equals("n")) {
-                booleanBuilder.or(community.communityName.contains(keyword));
+                booleanBuilder.or(community.name.contains(keyword));
             }
             if (types[0].equals("i")) {
                 Arrays.stream(keyword.split(",")).toList()
-                    .forEach(id -> booleanBuilder.or(community.communityId.eq(Long.parseLong(id))));
+                    .forEach(id -> booleanBuilder.or(community.id.eq(Long.parseLong(id))));
             }
 //              }
         }
@@ -49,8 +49,8 @@ public class GetListCommunity extends QuerydslRepositorySupport {
 
         List<Info> dtoList = communityList.stream().map(community1 ->
         Info.builder()
-                .communityId(community1.getCommunityId())
-                .communityName(community1.getCommunityName())
+                .id(community1.getId())
+                .name(community1.getName())
                 .build())
             .toList();
 

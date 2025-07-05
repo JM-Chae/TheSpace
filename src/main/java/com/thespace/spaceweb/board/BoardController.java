@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -51,9 +50,8 @@ public class BoardController {
     }
 
     @DeleteMapping("/{bno}/admin")
-    public void delete(@PathVariable("bno") Long bno, Authentication authentication,
-        @RequestParam("communityName") String communityName) {
+    public void deleteByAdmin(@PathVariable("bno") Long bno, Authentication authentication) {
 
-        boardService.delete(bno, authentication, communityName);
+        boardService.deleteByAdmin(bno, authentication);
     }
 }
