@@ -48,9 +48,8 @@ public class CommunityController {
 
     @DeleteMapping("/{communityId}")
     public void delete(@PathVariable("communityId") Long communityId,
-        @RequestParam("communityName") String communityName,
         Authentication authentication) {
-        communityService.delete(communityId, authentication, communityName);
+        communityService.delete(communityId, authentication);
     }
 
     @GetMapping("/list/admin")

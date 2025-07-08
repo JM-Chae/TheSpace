@@ -6,6 +6,9 @@ import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBui
 import static com.thespace.config.RestDocsConfig.write;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
 import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
@@ -37,7 +40,8 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
+import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +75,7 @@ class BoardControllerTest {
     private DataBaseCleaner dataBaseCleaner;
 
     @Autowired
-    private UserService userService;
+    private UserRoleService userRoleService;
 
     @Autowired
     private UserRepository userRepository;
@@ -91,180 +95,172 @@ class BoardControllerTest {
     @BeforeEach
     void setup() {
         dataBaseCleaner.clear();
-        User user = userRepository.save(new User(
-            "testerUser",
+        User user = userRepository.save(new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        Long rid = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), rid);
     }
 
     @Test
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardPost() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        Post postDTO = new Post(
-            "test1",
-            "content1",
-            new ArrayList<>(),
-            category.getCategoryId()
-        );
+        Post postDTO = new Post("test1", "content1", new ArrayList<>(), category.getId());
 
         //when
         ResultActions result = mockMvc.perform(post("/board").content(objectMapper.writeValueAsString(
-            postDTO)).contentType(MediaType.APPLICATION_JSON));
+                postDTO))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         Board board = boardRepository.findById(1L).orElseThrow();
-        if (!(board.getTitle().equals(postDTO.title()) &&
-            board.getContent().equals(postDTO.content()))) {
+        if (!(board.getTitle().equals(postDTO.title()) && board.getContent()
+            .equals(postDTO.content()))) {
             throw new Exception();
         }
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            requestFields(
-            fieldWithPath("title").description("Title."),
-            fieldWithPath("content").description("Content."),
-            fieldWithPath("fileNames").description("Name of attached files."),
-            fieldWithPath("categoryId").description("Category Id.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            requestFields(fieldWithPath("title").description("Title."),
+                fieldWithPath("content").description("Content."),
+                fieldWithPath("fileNames").description("Name of attached files."),
+                fieldWithPath("categoryId").description("Category Id.")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     void boardRead() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User(
-            "testerUser",
+        User user = new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
 
-        Board board = boardRepository.save(new Board(
-            "test",
-            community.getCommunityName(),
-            "content",
-            category,
-            user
-        ));
+        Board board = boardRepository.save(new Board("test", "content", community, category, user));
 
         //when
-        ResultActions result = mockMvc.perform(get("/board/{bno}", board.getBno()));
+        ResultActions result = mockMvc.perform(get("/board/{bno}", board.getBno()).header(
+            "_csrf",
+            "dummyCsrfToken"
+        ).cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
-        result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.title").value(board.getTitle()),
-            jsonPath("$.path").value(board.getPath()),
+        result.andExpect(status().isOk()).andExpectAll(jsonPath("$.title").value(board.getTitle()),
             jsonPath("$.content").value(board.getContent()),
             jsonPath("$.writer").value("tester"),
-            jsonPath("$.writerUuid").value("testerUUID"),
-            jsonPath("$.categoryId").value(category.getCategoryId())
+            jsonPath("$.writerUuid").value("testerUUID")
         ).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            relaxedResponseFields(
-            fieldWithPath("bno").description(
-                "Number of Board."),
-            fieldWithPath("title").description("Title."),
-            fieldWithPath("path").description("Name of community."),
-            fieldWithPath("content").description("Content."),
-            fieldWithPath("writer").description("Writer ID"),
-            fieldWithPath("writerUuid").description("Writer UUID"),
-            fieldWithPath("createDate").description("Create date."),
-            fieldWithPath("modDate").description("Modified date."),
-            fieldWithPath("viewCount").description("View count / def = 0."),
-            fieldWithPath("vote").description("Vote count / def = 0."),
-            fieldWithPath("rCount").description("Reply count / def = 0."),
-            fieldWithPath("fileNames").description("Name of attached files."),
-            fieldWithPath("categoryId").description("Category Id.")
-        ), pathParameters(
-            parameterWithName("bno").description(
-                "Number of Board.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            relaxedResponseFields(fieldWithPath("bno").description("Number of Board."),
+                fieldWithPath("title").description("Title."),
+                fieldWithPath("communityInfo").description(
+                    "The community information to which the post belongs."),
+                fieldWithPath("categoryInfo").description(
+                    "The category information to which the post belongs."),
+                fieldWithPath("content").description("Content."),
+                fieldWithPath("writer").description("Writer ID"),
+                fieldWithPath("writerUuid").description("Writer UUID"),
+                fieldWithPath("createDate").description("Create date."),
+                fieldWithPath("modDate").description("Modified date."),
+                fieldWithPath("viewCount").description("View count / def = 0."),
+                fieldWithPath("vote").description("Vote count / def = 0."),
+                fieldWithPath("rCount").description("Reply count / def = 0."),
+                fieldWithPath("fileNames").description("Name of attached files.")
+            ),
+            pathParameters(parameterWithName("bno").description("Number of Board.")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     void boardList() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
+        Category category = categoryRepository.save(new Category(community.getName(),
             "test123",
-            "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User(
-            "testerUser",
+        User user = new User("testerUser",
             "testerUUID",
             "test",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
 
         for (int i = 1; i <= 100; i++) {
-            boardRepository.save(new Board(
-                "test" + i,
-                community.getCommunityName(),
-                "content" + i,
-                category,
-                user
-            ));
+            boardRepository.save(new Board("test" + i, "content" + i, community, category, user));
         }
 
         //when
-        ResultActions result = mockMvc.perform(get("/board/list")
-            .queryParam("page", "1")
+        ResultActions result = mockMvc.perform(get("/board/list").queryParam("page", "1")
             .queryParam("size", "10")
             .queryParam("type", "t")
             .queryParam("keyword", "1")
-            .queryParam("path", community.getCommunityName())
-            .queryParam("category", "")).andDo(print());
+            .queryParam("path", community.getName())
+            .queryParam("categoryId", category.getId().toString())
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))).andDo(print());
 
         //then
-        result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.dtoList[0].bno").value(100),
+        result.andExpect(status().isOk()).andExpectAll(jsonPath("$.dtoList[0].bno").value(100),
             jsonPath("$.page").value(1),
             jsonPath("$.size").value(10),
             jsonPath("$.total").value(20),
@@ -273,159 +269,164 @@ class BoardControllerTest {
         );
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            queryParameters(
-            parameterWithName("page").description(
-                "Page number to display in the full query results."),
-            parameterWithName("size").description("Number of rows to display search results."),
-            parameterWithName("type").description(
-                "Search condition identifier. +" + "\n" + "Operation 'or' for search criteria. +"
-                    + "\n" + "t: title +" + "\n" + "c: content +" + "\n" + "w: writer +" + "\n"
-                    + "u: uuid +" + "\n" + "r: reply content"),
-            parameterWithName("keyword").description("Search Keyword"),
-            parameterWithName("path").description("The community to be searched for. +" + "\n"
-                + "Operation 'and' for search criteria."),
-            parameterWithName("category").description("Category of Search Destinations. +" + "\n"
-                + "Operation 'and' for search criteria.")
-        ), relaxedResponseFields(
-            fieldWithPath("page").description("Page number to display in the full query results."),
-            fieldWithPath("size").description("Number of rows to display search results."),
-            fieldWithPath("total").description("The total number of rows of search results."),
-            fieldWithPath("start").description("1 if search results exist, 0 otherwise."),
-            fieldWithPath("end").description("Last page of total search results, total / size"),
-            fieldWithPath("prev").description(
-                "True if there are more than 2 pages currently being viewed."),
-            fieldWithPath("next").description("True if page is less than end."),
-            fieldWithPath("dtoList").description("Search results row data.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            queryParameters(parameterWithName("page").description(
+                    "Page number to display in the full query results."),
+                parameterWithName("size").description("Number of rows to display search results."),
+                parameterWithName("type").description("Search condition identifier. +" + "\n"
+                    + "Operation 'or' for search criteria. +" + "\n" + "t: title +" + "\n"
+                    + "c: content +" + "\n" + "w: writer +" + "\n" + "u: uuid +" + "\n"
+                    + "r: reply content"),
+                parameterWithName("keyword").description("Search Keyword"),
+                parameterWithName("path").description("The community to be searched for. +" + "\n"
+                    + "Operation 'and' for search criteria."),
+                parameterWithName("categoryId").description(
+                    "CategoryId of Search Destinations. +" + "\n"
+                        + "Operation 'and' for search criteria.")
+            ),
+            relaxedResponseFields(fieldWithPath("page").description(
+                    "Page number to display in the full query results."),
+                fieldWithPath("size").description("Number of rows to display search results."),
+                fieldWithPath("total").description("The total number of rows of search results."),
+                fieldWithPath("start").description("1 if search results exist, 0 otherwise."),
+                fieldWithPath("end").description("Last page of total search results, total / size"),
+                fieldWithPath("prev").description(
+                    "True if there are more than 2 pages currently being viewed."),
+                fieldWithPath("next").description("True if page is less than end."),
+                fieldWithPath("dtoList").description("Search results row data.")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     void boardModify() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        Category category2 = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "modify",
+        Category category2 = categoryRepository.save(new Category("modify",
             "modify",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User(
-            "testerUser",
+        User user = new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
 
-        Board board = boardRepository.save(new Board(
-            "test",
-            community.getCommunityName(),
-            "content",
-            category,
-            user
-        ));
+        Board board = boardRepository.save(new Board("test", "content", community, category, user));
 
-        Modify modifyDTO = new Modify(
-            board.getBno(),
+        Modify modifyDTO = new Modify(board.getBno(),
             "modify",
             "modify",
             board.getUser().getId(),
-            category2.getCategoryId(),
+            category2.getId(),
             new ArrayList<>()
         );
 
         //when
         ResultActions result = mockMvc.perform(patch("/board").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(modifyDTO))).andDo(print());
+            .content(objectMapper.writeValueAsString(modifyDTO))
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))).andDo(print());
 
         //then
         result.andExpect(status().isOk());
         Board resultBoard = boardRepository.findById(board.getBno()).orElseThrow(PostNotFound::new);
         if (!(resultBoard.getBno().equals(board.getBno()) && resultBoard.getTitle().equals("modify")
             && resultBoard.getContent().equals("modify") && resultBoard.getCategory()
-            .getCategoryId()
-            .equals(category2.getCategoryId()))) {
+            .getId()
+            .equals(category2.getId()))) {
             throw new Exception();
         }
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            requestFields(
-            fieldWithPath("bno").description(
-                "Number of Board."),
-            fieldWithPath("title").description("Title."),
-            fieldWithPath("content").description("Content."),
-            fieldWithPath("writer").description("Writer."),
-            fieldWithPath("categoryId").description("Category Id."),
-            fieldWithPath("fileNames").description("Name of attached files.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            requestFields(fieldWithPath("bno").description("Number of Board."),
+                fieldWithPath("title").description("Title."),
+                fieldWithPath("content").description("Content."),
+                fieldWithPath("writer").description("Writer."),
+                fieldWithPath("categoryId").description("Category Id."),
+                fieldWithPath("fileNames").description("Name of attached files.")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardDelete() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User(
-            "testerUser",
+        User user = new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
 
-        Board board = boardRepository.save(new Board(
-            "test",
-            community.getCommunityName(),
-            "content",
-            category,
-            user
-        ));
+        Board board = boardRepository.save(new Board("test", "content", community, category, user));
 
         //when
-        ResultActions result = mockMvc.perform(delete("/board/{bno}", board.getBno()))
+        ResultActions result = mockMvc.perform(delete(
+                "/board/{bno}",
+                board.getBno()
+            ).header("_csrf", "dummyCsrfToken").cookie(new Cookie("JSESSIONID", "example-session-id")))
             .andDo(print());
 
         //then
         result.andExpect(status().isOk());
-        assertThrows(
-            PostNotFound.class,
+        assertThrows(PostNotFound.class,
             () -> boardRepository.findById(board.getBno()).orElseThrow(PostNotFound::new)
         );
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            pathParameters(parameterWithName("bno").description(
-                "Number of Board."))
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            pathParameters(parameterWithName("bno").description("Number of Board.")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 
@@ -433,72 +434,67 @@ class BoardControllerTest {
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void boardAdminDelete() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User(
-            "tester",
+        User user = new User("tester",
             "tester",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
         userRepository.save(user);
 
-        Board board = boardRepository.save(new Board(
-            "test",
-            community.getCommunityName(),
-            "content",
-            category,
-            user
-        ));
+        Board board = boardRepository.save(new Board("test", "content", community, category, user));
 
-        User userAdmin = new User(
-            "testerUser",
+        User userAdmin = new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         );
 
-        UserRole userRole = userRoleRepository.save(new UserRole(
-            "ADMIN_" + community.getCommunityName(),
+        UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
             new ArrayList<>()
         ));
-        userService.setRole(userAdmin.getId(), userRole.getRole());
+        userRoleService.setRole(userAdmin.getId(), userRole.getId());
 
         //when
-        ResultActions result = mockMvc.perform(delete(
-            "/board/{bno}/admin",
-            board.getBno()
-        ).queryParam("communityName", community.getCommunityName())).andDo(print());
+        ResultActions result = mockMvc.perform(delete("/board/{bno}/admin", board.getBno()).header("_csrf",
+                "dummyCsrfToken"
+            )
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
+            .queryParam("name", community.getName())).andDo(print());
 
         //then
         result.andExpect(status().isOk());
-        assertThrows(
-            PostNotFound.class,
+        assertThrows(PostNotFound.class,
             () -> boardRepository.findById(board.getBno()).orElseThrow(PostNotFound::new)
         );
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            pathParameters(parameterWithName("bno").description(
-                "Number of Board.")),
-            queryParameters(
-                parameterWithName("communityName").description("The community name of the post.")
-            )
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            pathParameters(parameterWithName("bno").description("Number of Board.")),
+            queryParameters(parameterWithName("name").description("The community name of the post.")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 }

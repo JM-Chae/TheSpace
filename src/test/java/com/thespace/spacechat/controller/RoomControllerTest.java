@@ -36,7 +36,7 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,22 +67,31 @@ import org.springframework.test.web.servlet.ResultActions;
 class RoomControllerTest {
 
     private static RoomDTOs.Create createDTO;
+
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private RoomService roomService;
+
     @Autowired
     private RoomRepository roomRepository;
+
     @Autowired
     private DataBaseCleaner dataBaseCleaner;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private UserRoleRepository userRoleRepository;
+
+    static Long roleId = 0L;
     @Autowired
-    private UserService userService;
+    private UserRoleService userRoleService;
 
     @BeforeEach
     void setUp() {
@@ -93,10 +102,12 @@ class RoomControllerTest {
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        roleId = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), roleId);
 
         List<String> members = new ArrayList<>();
 
@@ -128,7 +139,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             responseBody(),
             requestBody(),
             curlRequest(),
@@ -137,7 +149,8 @@ class RoomControllerTest {
             requestFields(
                 fieldWithPath("name").description("ChatRoomName"),
                 fieldWithPath("description").description("ChatRoomDescription"),
-                fieldWithPath("members").description("Join members")),
+                fieldWithPath("members").description("Join members")
+            ),
             requestCookies(
                 cookieWithName("JSESSIONID").description("Authenticated user session ID cookie"))
         ));
@@ -148,11 +161,12 @@ class RoomControllerTest {
     void getRoom() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = roomService.create(user ,createDTO).roomId();
+        Long rid = roomService.create(user, createDTO).roomId();
 
         //when
         ResultActions result = mockMvc.perform(get("/chat/room/{rid}", rid)
-            .contentType(MediaType.APPLICATION_JSON));
+            .contentType(MediaType.APPLICATION_JSON).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
@@ -167,13 +181,16 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
-            requestHeaders(),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token")),
             responseBody(),
             requestBody(),
             curlRequest(),
             httpRequest(),
-            httpResponse()
+            httpResponse(),
+            requestCookies(
+                cookieWithName("JSESSIONID").description("Authenticated user session ID cookie"))
         ));
     }
 
@@ -182,7 +199,7 @@ class RoomControllerTest {
     void update() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = roomService.create(user ,createDTO).roomId();
+        Long rid = roomService.create(user, createDTO).roomId();
         RoomDTOs.Update dto = new RoomDTOs.Update("Update Change", "Update test");
 
         //when
@@ -206,7 +223,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             responseBody(),
             requestBody(),
             curlRequest(),
@@ -214,10 +232,11 @@ class RoomControllerTest {
             httpResponse(),
             requestFields(
                 fieldWithPath("name").description("ChatRoomName"),
-                fieldWithPath("description").description("ChatRoomDescription")),
+                fieldWithPath("description").description("ChatRoomDescription")
+            ),
             requestCookies(
                 cookieWithName("JSESSIONID").description("Authenticated user session ID cookie"))
-            ));
+        ));
     }
 
     @Test
@@ -225,19 +244,21 @@ class RoomControllerTest {
     void invite() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Long rid = roomService.create(user ,createDTO).roomId();
+        Long rid = roomService.create(user, createDTO).roomId();
         List<String> members = new ArrayList<>();
 
-        for(int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             User member = userRepository.save(new User(
                 "testerUser" + i,
                 "testerUUID" + i,
                 "tester",
                 "test@test.test" + i,
                 "password",
-                new ArrayList<>()
+                new ArrayList<>(),
+                "nice to meet you",
+                "😊"
             ));
-            userService.setRole(member.getId(), "ROLE_USER");
+            userRoleService.setRole(member.getId(), roleId);
 
             members.add("testerUUID" + i);
         }
@@ -265,7 +286,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             responseBody(),
             requestBody(),
             curlRequest(),
@@ -285,21 +307,23 @@ class RoomControllerTest {
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         List<String> members = new ArrayList<>();
 
-        for(int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             User member = userRepository.save(new User(
                 "testerUser" + i,
                 "testerUUID" + i,
                 "tester",
                 "test@test.test" + i,
                 "password",
-                new ArrayList<>()
+                new ArrayList<>(),
+                "nice to meet you",
+                "😊"
             ));
-            userService.setRole(member.getId(), "ROLE_USER");
+            userRoleService.setRole(member.getId(), roleId);
             members.add("testerUUID" + i);
         }
 
         createDTO.members().addAll(members);
-        Info room = roomService.create(user ,createDTO);
+        Info room = roomService.create(user, createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}/members", room.roomId())
@@ -322,7 +346,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             responseBody(),
             requestBody(),
             curlRequest(),
@@ -340,7 +365,7 @@ class RoomControllerTest {
     void quit() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Info room = roomService.create(user ,createDTO);
+        Info room = roomService.create(user, createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}/members/me", room.roomId())
@@ -370,7 +395,7 @@ class RoomControllerTest {
     void getMyRooms() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        roomService.create(user ,createDTO);
+        roomService.create(user, createDTO);
 
         //when
         ResultActions result = mockMvc.perform(get("/chat/room/my")
@@ -388,7 +413,8 @@ class RoomControllerTest {
                 fieldWithPath("[].rid").description("Room ID"),
                 fieldWithPath("[].name").description("Room name"),
                 fieldWithPath("[].lastSentMessage").description("Last sent message"),
-                fieldWithPath("[].lastSentAt").description("Time of last sent message")),
+                fieldWithPath("[].lastSentAt").description("Time of last sent message")
+            ),
             responseBody(),
             requestBody(),
             curlRequest(),
@@ -404,7 +430,7 @@ class RoomControllerTest {
     void deleteRoom() throws Exception {
         //given
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        Info room = roomService.create(user ,createDTO);
+        Info room = roomService.create(user, createDTO);
 
         //when
         ResultActions result = mockMvc.perform(delete("/chat/room/{rid}", room.roomId())
@@ -436,21 +462,23 @@ class RoomControllerTest {
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         List<String> members = new ArrayList<>();
 
-        for(int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             User member = userRepository.save(new User(
                 "testerUser" + i,
                 "testerUUID" + i,
                 "tester",
                 "test@test.test" + i,
                 "password",
-                new ArrayList<>()
+                new ArrayList<>(),
+                "nice to meet you",
+                "😊"
             ));
-            userService.setRole(member.getId(), "ROLE_USER");
+            userRoleService.setRole(member.getId(), roleId);
             members.add("testerUUID" + i);
         }
 
         createDTO.members().addAll(members);
-        Info room = roomService.create(user ,createDTO);
+        Info room = roomService.create(user, createDTO);
 
         //when
         ResultActions result = mockMvc.perform(put("/chat/room/{rid}/manager", room.roomId())
@@ -474,7 +502,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             requestBody(),
             curlRequest(),
             httpRequest(),
@@ -496,11 +525,20 @@ class RoomControllerTest {
             "tester2",
             "test@test.test2",
             "password2",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userService.setRole(user.getId(), "ROLE_USER");
+        userRoleService.setRole(user.getId(), roleId);
 
-        Room room = roomRepository.save(new Room("testRoom", user, "test", Set.of(user), LocalDateTime.now(), LocalDateTime.now()));
+        Room room = roomRepository.save(new Room(
+            "testRoom",
+            user,
+            "test",
+            Set.of(user),
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        ));
 
         //when
         ResultActions result = mockMvc.perform(post("/chat/room/{rid}/members/me", room.getRoomId())
@@ -523,7 +561,8 @@ class RoomControllerTest {
                 fieldWithPath("description").description("Room description"),
                 fieldWithPath("members").description("Joined members"),
                 fieldWithPath("createdAt").description("Created time"),
-                fieldWithPath("modifiedAt").description("Last modified time")),
+                fieldWithPath("modifiedAt").description("Last modified time")
+            ),
             requestBody(),
             curlRequest(),
             httpRequest(),

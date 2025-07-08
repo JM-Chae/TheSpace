@@ -7,7 +7,7 @@ import EmojiPicker from 'vue3-emoji-picker';
 import 'vue3-emoji-picker/css';
 
 function getMyPageInfo() {
-  axios.get('/user/mypage', {params: {uuid : uuid}}).then((res) => {
+  axios.get(`/user/${uuid}/mypage`).then((res) => {
     pageUserInfo.value = res.data})
 }
 
@@ -64,7 +64,7 @@ const introduceModal = ref(false)
 const introduce = ref('')
 
 function updateInfo() {
-  axios.patch("/user/myinfo", {
+  axios.patch("/user/myinfo",  {
     signature: signature.value,
     name: nickname.value,
     introduce: introduce.value

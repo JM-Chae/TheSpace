@@ -3,6 +3,10 @@ package com.thespace.spaceweb.controller;
 import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBuilders.delete;
 import static com.thespace.config.RestDocsConfig.restDocsConfig;
 import static com.thespace.config.RestDocsConfig.write;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -23,6 +27,7 @@ import com.thespace.spaceweb.category.Category;
 import com.thespace.spaceweb.category.CategoryRepository;
 import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityRepository;
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +102,6 @@ class FileControllerTest {
         Community community = communityRepository.save(new Community("test", "test"));
 
         Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
             "test",
             "test",
             community,
@@ -105,7 +109,11 @@ class FileControllerTest {
         ));
 
         //when
-        ResultActions result = mockMvc.perform(multipart("/file").file(file1).file(file2).with(csrf().asHeader()));
+        ResultActions result = mockMvc.perform(multipart("/file").file(file1)
+            .file(file2)
+            .with(csrf().asHeader())
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk())
@@ -125,7 +133,10 @@ class FileControllerTest {
                 fieldWithPath("[].imageChk").description("Whether the file is an image."),
                 fieldWithPath("[].ord").description(
                     "The number of files in that post when it is posted to a board.")
-            )
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 
@@ -150,16 +161,22 @@ class FileControllerTest {
             "/file/{fileid}/{filename}",
             boardFileDTOList.getFirst().fileId(),
             boardFileDTOList.getFirst().fileName()
-        ));
+        ).header("_csrf", "dummyCsrfToken").cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andExpect(jsonPath("$").value("test!"));
 
         //docs
-        result.andDo(write().document(pathParameters(
-            parameterWithName("fileid").description("File ID to get"),
-            parameterWithName("filename").description("File name to get")
-        )));
+        result.andDo(write().document(
+            pathParameters(
+                parameterWithName("fileid").description(
+                    "File ID to get"),
+                parameterWithName("filename").description("File name to get")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -183,15 +200,21 @@ class FileControllerTest {
             "/file/{fileid}/{filename}",
             boardFileDTOList.getFirst().fileId(),
             boardFileDTOList.getFirst().fileName()
-        ));
+        ).header("_csrf", "dummyCsrfToken").cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk());
 
         //docs
-        result.andDo(write().document(pathParameters(
-            parameterWithName("fileid").description("File ID to get"),
-            parameterWithName("filename").description("File name to get")
-        )));
+        result.andDo(write().document(
+            pathParameters(
+                parameterWithName("fileid").description(
+                    "File ID to get"),
+                parameterWithName("filename").description("File name to get")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 }

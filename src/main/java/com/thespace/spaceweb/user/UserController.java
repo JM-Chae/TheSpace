@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,8 +78,8 @@ public class UserController {
         userService.register(userRegisterDTO, check);
     }
 
-    @GetMapping("/mypage")
-    public ResponseEntity<MyPage> myPage(@RequestParam("uuid") String uuid) {
+    @GetMapping("/{uuid}/mypage")
+    public ResponseEntity<MyPage> myPage(@PathVariable("uuid") String uuid) {
 
         return ResponseEntity.ok(userService.getMyPage(uuid));
     }

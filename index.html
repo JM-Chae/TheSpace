@@ -2,12 +2,12 @@
 <html lang="">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="The Space API 문서">
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="Asciidoctor 2.0.18" name="generator">
+<meta content="The Space API 문서" name="author">
 <title>The Space API Docs</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700" rel="stylesheet">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
 /* Uncomment the following line when using as a custom stylesheet */
@@ -436,8 +436,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css" rel="stylesheet">
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
@@ -448,6 +448,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
+<ul class="sectlevel0">
+<li><a href="#The-Space-Web">The Space Web</a>
 <ul class="sectlevel1">
 <li><a href="#Borad-API">Board API</a>
 <ul class="sectlevel2">
@@ -488,7 +490,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_register_api">Register-APi</a></li>
 <li><a href="#_list_api_4">List-API</a></li>
-<li><a href="#_nestedlist_api">NestedList-API</a></li>
 <li><a href="#_delete_api_4">Delete-API</a></li>
 </ul>
 </li>
@@ -502,28 +503,62 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_register_api_2">Register-API</a></li>
 <li><a href="#_check_api_2">Check-API</a></li>
 <li><a href="#_getuserinfo_api">GetUserInfo-API</a></li>
+<li><a href="#_getmypage_api">GetMyPage-API</a></li>
+<li><a href="#_modifymypage_api">ModifyMyPage-API</a></li>
+</ul>
+</li>
+<li><a href="#Friendship-API">Friendship API</a>
+<ul class="sectlevel2">
+<li><a href="#_accept_api">Accept-API</a></li>
+<li><a href="#_block_api">Block-API</a></li>
+<li><a href="#_memo_api">Memo-API</a></li>
+<li><a href="#_request_api">Request-API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#The-Space-Chat">The Space Chat</a>
+<ul class="sectlevel1">
+<li><a href="#Room-API">Room API</a>
+<ul class="sectlevel2">
+<li><a href="#_create_api_2">Create-API</a></li>
+<li><a href="#_delegate_api">Delegate-API</a></li>
+<li><a href="#_get_my_rooms_api">Get My Rooms-API</a></li>
+<li><a href="#_get_room_api">Get Room-API</a></li>
+<li><a href="#_invite_api">Invite-API</a></li>
+<li><a href="#_join_api">Join-API</a></li>
+<li><a href="#_kick_api">Kick-API</a></li>
+<li><a href="#_quit_api">Quit-API</a></li>
+<li><a href="#_update_api">Update-API</a></li>
+</ul>
+</li>
+<li><a href="#Message-API">Message API</a>
+<ul class="sectlevel2">
+<li><a href="#Message-API_Message_API">Message api</a></li>
+<li><a href="#_1_send_message">1. Send Message</a></li>
+<li><a href="#_2_get_recent_messages">2. Get Recent Messages</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <div id="content">
+<h1 id="The-Space-Web" class="sect0"><a class="link" href="#The-Space-Web">The Space Web</a></h1>
 <div class="sect1">
 <h2 id="Borad-API"><a class="link" href="#Borad-API">Board API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_post_api"><a class="link" href="#_post_api">Post-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_post_api_curl_request"><a class="link" href="#_post_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board?_csrf=tPiP4VynV1uIU5ilfNCs4yUmZKHZoNpPoZ2_V-eo77AHkt_9hs67gz2fMTqlZ6zBSf2Y0RFCSZnow-pimKuNMtLO3Ydl9rub' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
   "title" : "test1",
   "content" : "content1",
@@ -532,6 +567,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_post_api_request_cookies"><a class="link" href="#_post_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_post_api_http_response"><a class="link" href="#_post_api_http_response">HTTP response</a></h4>
@@ -614,9 +670,32 @@ Content-Length: 1
 <h4 id="_read_api_curl_request"><a class="link" href="#_read_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_read_api_request_cookies"><a class="link" href="#_read_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_read_api_path_parameters"><a class="link" href="#_read_api_path_parameters">Path parameters</a></h4>
@@ -655,22 +734,35 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 328
+Content-Length: 685
 
 {
   "bno" : 1,
   "title" : "test",
   "content" : "content",
-  "path" : "test",
   "writer" : "tester",
   "writerUuid" : "testerUUID",
-  "createDate" : "2025-02-15T20:44:27.528768",
-  "modDate" : "2025-02-15T20:44:27.528768",
+  "createDate" : "2025-07-08T20:09:06.190421",
+  "modDate" : "2025-07-08T20:09:06.190421",
   "viewCount" : 1,
   "vote" : 0,
   "rCount" : 0,
   "fileNames" : [ ],
-  "categoryId" : 1
+  "communityInfo" : {
+    "id" : 1,
+    "name" : "test",
+    "createDate" : "2025-07-08T20:09:06.186415",
+    "modDate" : "2025-07-08T20:09:06.186415",
+    "description" : "test"
+  },
+  "categoryInfo" : {
+    "id" : 1,
+    "name" : "test",
+    "type" : "test",
+    "createDate" : "2025-07-08T20:09:06.189422",
+    "modDate" : "2025-07-08T20:09:06.189422",
+    "communityId" : 1
+  }
 }</code></pre>
 </div>
 </div>
@@ -700,9 +792,14 @@ Content-Length: 328
 <td class="tableblock halign-left valign-top"><p class="tableblock">Title.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of community.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityInfo</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The community information to which the post belongs.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categoryInfo</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The category information to which the post belongs.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
@@ -749,11 +846,6 @@ Content-Length: 328
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name of attached files.</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categoryId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Category Id.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -764,9 +856,32 @@ Content-Length: 328
 <h4 id="_list_api_curl_request"><a class="link" href="#_list_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/list?page=1&amp;size=10&amp;type=t&amp;keyword=1&amp;path=test&amp;category=' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/list?page=1&amp;size=10&amp;type=t&amp;keyword=1&amp;path=test&amp;categoryId=1' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_list_api_request_cookies"><a class="link" href="#_list_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_list_api_query_parameters"><a class="link" href="#_list_api_query_parameters">Query parameters</a></h4>
@@ -810,8 +925,8 @@ r: reply content</p></td>
 Operation 'and' for search criteria.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>category</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Category of Search Destinations.<br>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categoryId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CategoryId of Search Destinations.<br>
 Operation 'and' for search criteria.</p></td>
 </tr>
 </tbody>
@@ -877,17 +992,14 @@ Operation 'and' for search criteria.</p></td>
 </div>
 <div class="sect2">
 <h3 id="_modify_api"><a class="link" href="#_modify_api">Modify-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_modify_api_curl_request"><a class="link" href="#_modify_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board' -i -X PATCH \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board?_csrf=An4MZjjlSfgS3knn_Z-vVsVRu2CA1ChFyIm_n-bIreV7wpqtZkk1Vg-BLcs_6H6Bm7KbM6Y1lli44x9o_LqKr9X6zt0ao67M' -i -X PATCH \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
   "bno" : 1,
   "title" : "modify",
@@ -898,6 +1010,27 @@ Operation 'and' for search criteria.</p></td>
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_modify_api_request_cookies"><a class="link" href="#_modify_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_modify_api_request_fields"><a class="link" href="#_modify_api_request_fields">Request fields</a></h4>
@@ -966,18 +1099,37 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_delete_api"><a class="link" href="#_delete_api">Delete-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_delete_api_curl_request"><a class="link" href="#_delete_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1' -i -X DELETE</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1' -i -X DELETE \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=qCViMaOhqMBeFahC6rlJJgAd7Qk4nfVXfIHJK9z-qX3y52SCnRZQU5rEmflzcMoj2JR9FWIqwGha-cJ6SuWtT7jKmhiU3lG1'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_api_request_cookies"><a class="link" href="#_delete_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_api_path_parameters"><a class="link" href="#_delete_api_path_parameters">Path parameters</a></h4>
@@ -1021,19 +1173,37 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_delete_with_admin_api"><a class="link" href="#_delete_with_admin_api">Delete with Admin-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_curl_request"><a class="link" href="#_delete_with_admin_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/admin?communityName=test' -i -X DELETE \
-    -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/admin?name=test' -i -X DELETE \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=dpienK6YeFSoBqcmwNpKw2_hL0CRTtADcn1Dvhy_hDjr75x5QqCqqpv-HGGFNMQeofd-9w2FAiLyLbMuSk9xjivZ4VzZ3Kwd'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_with_admin_api_request_cookies"><a class="link" href="#_delete_with_admin_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_path_parameters"><a class="link" href="#_delete_with_admin_api_path_parameters">Path parameters</a></h4>
@@ -1072,7 +1242,7 @@ X-Frame-Options: DENY</code></pre>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The community name of the post.</p></td>
 </tr>
 </tbody>
@@ -1107,12 +1277,14 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_list_api_2_curl_request"><a class="link" href="#_list_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/list?path=test' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/list?communityId=1' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_list_api_2_query_parameters"><a class="link" href="#_list_api_2_query_parameters">Query parameters</a></h4>
+<h4 id="_list_api_2_request_cookies"><a class="link" href="#_list_api_2_request_cookies">Request cookies</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -1120,14 +1292,14 @@ X-Frame-Options: DENY</code></pre>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Name</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The community name to which that category belongs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
 </tr>
 </tbody>
 </table>
@@ -1172,25 +1344,42 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_create_with_admin_api"><a class="link" href="#_create_with_admin_api">Create with Admin-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_create_with_admin_api_curl_request"><a class="link" href="#_create_with_admin_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/admin' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/admin?_csrf=8qA6oE52Wz16v5NxUWH1d1lERolPbfXscDwXkrpfUNV9SxJ0l8MCkntEawlXjfVJY0zBTm9xa-t2D8HBFAl28ItsaeZFeiVE' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
-  "categoryName" : "test",
-  "categoryType" : "test",
-  "path" : "test",
+  "name" : "test",
+  "type" : "test",
   "communityId" : 1
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_create_with_admin_api_request_cookies"><a class="link" href="#_create_with_admin_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_create_with_admin_api_request_fields"><a class="link" href="#_create_with_admin_api_request_fields">Request fields</a></h4>
@@ -1207,19 +1396,14 @@ X-Frame-Options: DENY</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categoryName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Category name</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categoryType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Category Type</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The community name to which that category will belongs.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityId</code></p></td>
@@ -1249,19 +1433,37 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_delete_with_admin_api_2"><a class="link" href="#_delete_with_admin_api_2">Delete with Admin-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_2_curl_request"><a class="link" href="#_delete_with_admin_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/category/1/admin?communityName=test' -i -X DELETE \
-    -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=lByuUNh0U4AdrfoMpiwvR0qkO_GlV96btjMXi9ppQ007ElVCrX6XMegVYuMwncI_kwEbJC6cFsjEM-u2jlYlub9ZJixdIzAk'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_with_admin_api_2_request_cookies"><a class="link" href="#_delete_with_admin_api_2_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_with_admin_api_2_path_parameters"><a class="link" href="#_delete_with_admin_api_2_path_parameters">Path parameters</a></h4>
@@ -1335,14 +1537,37 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_get_api_curl_request"><a class="link" href="#_get_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/test' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_get_api_request_cookies"><a class="link" href="#_get_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
 <h4 id="_get_api_path_parameters"><a class="link" href="#_get_api_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /community/{communityName}</caption>
+<caption class="title">Table 1. /community/{communityId}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1355,8 +1580,8 @@ X-Frame-Options: DENY</code></pre>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Community name to search</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Community Id to search</p></td>
 </tr>
 </tbody>
 </table>
@@ -1376,15 +1601,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 195
+Content-Length: 156
 
 {
-  "communityId" : 1,
-  "communityName" : "test",
-  "createDate" : "2025-02-15T20:44:28.617248",
-  "modDate" : "2025-02-15T20:44:28.617248",
-  "description" : "test",
-  "category" : [ ]
+  "id" : 1,
+  "name" : "test",
+  "createDate" : "2025-07-08T20:09:07.722494",
+  "modDate" : "2025-07-08T20:09:07.722494",
+  "description" : "test"
 }</code></pre>
 </div>
 </div>
@@ -1404,12 +1628,12 @@ Content-Length: 195
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Community ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Community name</p></td>
 </tr>
@@ -1428,11 +1652,6 @@ Content-Length: 195
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Community description</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>category</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List of categories that are open in that community.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1443,9 +1662,32 @@ Content-Length: 195
 <h4 id="_list_api_3_curl_request"><a class="link" href="#_list_api_3_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list?page=0&amp;size=0&amp;type=n&amp;keyword=3' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list?page=0&amp;size=0&amp;type=n&amp;keyword=3' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_list_api_3_request_cookies"><a class="link" href="#_list_api_3_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_list_api_3_query_parameters"><a class="link" href="#_list_api_3_query_parameters">Query parameters</a></h4>
@@ -1540,23 +1782,41 @@ Content-Length: 195
 </div>
 <div class="sect2">
 <h3 id="_create_api"><a class="link" href="#_create_api">Create-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_create_api_curl_request"><a class="link" href="#_create_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community?nameCheck=true' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
   "communityName" : "test",
   "description" : "test"
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_create_api_request_cookies"><a class="link" href="#_create_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_create_api_request_fields"><a class="link" href="#_create_api_request_fields">Request fields</a></h4>
@@ -1621,9 +1881,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1
+Content-Length: 156
 
-1</code></pre>
+{
+  "id" : 1,
+  "name" : "test",
+  "createDate" : "2025-07-08T20:09:08.299535",
+  "modDate" : "2025-07-08T20:09:08.299535",
+  "description" : "test"
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1634,9 +1900,32 @@ Content-Length: 1
 <h4 id="_check_api_curl_request"><a class="link" href="#_check_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/nameCheck?communityName=Test%20Community%201' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/nameCheck?communityName=Test%20Community%201' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_check_api_request_cookies"><a class="link" href="#_check_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_check_api_query_parameters"><a class="link" href="#_check_api_query_parameters">Query parameters</a></h4>
@@ -1683,19 +1972,37 @@ true</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_delete_api_2"><a class="link" href="#_delete_api_2">Delete-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_delete_api_2_curl_request"><a class="link" href="#_delete_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1?communityName=test' -i -X DELETE \
-    -H 'Content-Type: application/x-www-form-urlencoded'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1' -i -X DELETE \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=sZMiWzNHnKJM9__fqDPueycWyhrsh3YbDRel63zsNjU0xj4Y1aZBaVZ3_5dhwc3mmx7aSxcl53uJ5UA2P3WQ3kreDlQF8w4g'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_api_2_request_cookies"><a class="link" href="#_delete_api_2_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_api_2_path_parameters"><a class="link" href="#_delete_api_2_path_parameters">Path parameters</a></h4>
@@ -1720,27 +2027,6 @@ true</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_delete_api_2_query_parameters"><a class="link" href="#_delete_api_2_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of community to delete</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
 <h4 id="_delete_api_2_http_response"><a class="link" href="#_delete_api_2_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
@@ -1760,18 +2046,36 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_admingetlist_api"><a class="link" href="#_admingetlist_api">AdminGetList-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_admingetlist_api_curl_request"><a class="link" href="#_admingetlist_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list/admin' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/list/admin' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_admingetlist_api_request_cookies"><a class="link" href="#_admingetlist_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_admingetlist_api_http_response"><a class="link" href="#_admingetlist_api_http_response">HTTP response</a></h4>
@@ -1819,24 +2123,40 @@ Content-Length: 14
 </div>
 <div class="sect2">
 <h3 id="_modify_api_2"><a class="link" href="#_modify_api_2">Modify-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_modify_api_2_curl_request"><a class="link" href="#_modify_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/modify' -i -X PATCH \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/community/1/modify?_csrf=2t3Pah57eISOJOx6_nE944iQsYhpAiydAQULtgfvGLseKoGFub_6XScaTLGjFd5OyVwJgeqlnLFROkmwMGFq0zeOIYkmTOS3' -i -X PATCH \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
-  "communityId" : 1,
-  "communityName" : "test",
   "description" : "modify"
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_modify_api_2_request_cookies"><a class="link" href="#_modify_api_2_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_modify_api_2_request_fields"><a class="link" href="#_modify_api_2_request_fields">Request fields</a></h4>
@@ -1851,16 +2171,6 @@ Content-Length: 14
 <td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CommunityID to update</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>communityName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Community name to update</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
@@ -1901,10 +2211,34 @@ X-Frame-Options: DENY</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file' -i -X POST \
     -H 'Content-Type: multipart/form-data;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    -H 'X-CSRF-TOKEN: 2pQuKPlvmwPqMZ6nhdJPCjBMMXiKxv3_OZ2GX-kcpwjp8EuYu6YZEcpdrmXHBa_G4_97bwN1HBm598XSDf7gaN0rwj2Nwi3-' \
+    --cookie 'JSESSIONID=example-session-id' \
     -F 'fileList=@test.png;type=image/png' \
     -F 'fileList=@test.txt;type=text/txt'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_upload_api_request_cookies"><a class="link" href="#_upload_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_upload_api_request_parts"><a class="link" href="#_upload_api_request_parts">Request parts</a></h4>
@@ -1932,16 +2266,25 @@ X-Frame-Options: DENY</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 193
 
 [ {
-  "fileId" : "fc7039a8",
+  "fileId" : "1d9b713e",
   "fileName" : "test.png",
   "imageChk" : true,
   "ord" : 0
 }, {
-  "fileId" : "e7d82d3a",
+  "fileId" : "1cd30751",
   "fileName" : "test.txt",
   "imageChk" : false,
   "ord" : 0
@@ -1993,9 +2336,32 @@ Content-Length: 193
 <h4 id="_get_api_2_curl_request"><a class="link" href="#_get_api_2_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/ff926d6f/test.png' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/fd148be9/test.png' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_get_api_2_request_cookies"><a class="link" href="#_get_api_2_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_get_api_2_path_parameters"><a class="link" href="#_get_api_2_path_parameters">Path parameters</a></h4>
@@ -2028,10 +2394,19 @@ Content-Length: 193
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: image/png;charset=UTF-8
 Content-Disposition: attachment; filename="test.png"
 Accept-Ranges: bytes
 Content-Length: 5
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 
 test!</code></pre>
 </div>
@@ -2044,9 +2419,33 @@ test!</code></pre>
 <h4 id="_delete_api_3_curl_request"><a class="link" href="#_delete_api_3_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/c6cb15e8/test.png' -i -X DELETE</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/file/10a870d4/test.png' -i -X DELETE \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=FoljkYFFkHrgOtu9AXKJVsb2Uzh7Urkli4YJyt5p6tdTBvwvIbxT8LQh8h_NAu6JZV-9Yv6UfgFDa9sIvr9q8u5R3LU3NM4e'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_api_3_request_cookies"><a class="link" href="#_delete_api_3_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_api_3_path_parameters"><a class="link" href="#_delete_api_3_path_parameters">Path parameters</a></h4>
@@ -2078,7 +2477,16 @@ test!</code></pre>
 <h4 id="_delete_api_3_http_response"><a class="link" href="#_delete_api_3_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2090,24 +2498,43 @@ test!</code></pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_register_api"><a class="link" href="#_register_api">Register-APi</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_register_api_curl_request"><a class="link" href="#_register_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply?_csrf=ysN5vfEZHh3O7qFDnzhAGVlbFfHRwOc29kJmjwRgQxhd051Z8vZBhMZ_Kyzj3JAh-hV0KD1sOJO09tAbxnBe62JZJSBosK9p' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
   "replyContent" : "test",
   "tag" : "",
-  "path" : "1/"
+  "parentRno" : 0,
+  "tagRno" : 0
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_register_api_request_cookies"><a class="link" href="#_register_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_register_api_path_parameters"><a class="link" href="#_register_api_path_parameters">Path parameters</a></h4>
@@ -2156,10 +2583,14 @@ test!</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The writer name of the tagged reply.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">{BNO}/{RNO}(optional)/<br>
-Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parentRno</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parent comment number for this comment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagRno</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of comments that this comment is tagging.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2188,9 +2619,32 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_list_api_4_curl_request"><a class="link" href="#_list_api_4_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply' -i -X GET \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_list_api_4_request_cookies"><a class="link" href="#_list_api_4_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_list_api_4_path_parameters"><a class="link" href="#_list_api_4_path_parameters">Path parameters</a></h4>
@@ -2229,12 +2683,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 638
+Content-Length: 1342
 
 {
   "page" : 1,
   "size" : 1000000,
-  "total" : 2,
+  "total" : 4,
   "start" : 1,
   "end" : 1,
   "prev" : false,
@@ -2245,9 +2699,23 @@ Content-Length: 638
     "replyWriter" : "tester",
     "replyWriterUuid" : "testerUUID",
     "tag" : "",
-    "replyDate" : "2025-02-15T20:44:33.030486",
-    "isNested" : 0,
-    "path" : "1/",
+    "replyDate" : "2025-07-08T20:09:13.958402",
+    "childCount" : 0,
+    "taggedCount" : 0,
+    "parentRno" : 0,
+    "tagRno" : 0,
+    "vote" : 0
+  }, {
+    "rno" : 2,
+    "replyContent" : "test2",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
+    "tag" : "testerUser",
+    "replyDate" : "2025-07-08T20:09:13.963387",
+    "childCount" : 0,
+    "taggedCount" : 0,
+    "parentRno" : 0,
+    "tagRno" : 1,
     "vote" : 0
   }, {
     "rno" : 3,
@@ -2255,9 +2723,23 @@ Content-Length: 638
     "replyWriter" : "tester",
     "replyWriterUuid" : "testerUUID",
     "tag" : "",
-    "replyDate" : "2025-02-15T20:44:33.039472",
-    "isNested" : 0,
-    "path" : "1/",
+    "replyDate" : "2025-07-08T20:09:13.966382",
+    "childCount" : 0,
+    "taggedCount" : 0,
+    "parentRno" : 0,
+    "tagRno" : 0,
+    "vote" : 0
+  }, {
+    "rno" : 4,
+    "replyContent" : "test3",
+    "replyWriter" : "tester",
+    "replyWriterUuid" : "testerUUID",
+    "tag" : "testerUser",
+    "replyDate" : "2025-07-08T20:09:13.968596",
+    "childCount" : 0,
+    "taggedCount" : 0,
+    "parentRno" : 0,
+    "tagRno" : 3,
     "vote" : 0
   } ]
 }</code></pre>
@@ -2314,170 +2796,19 @@ Content-Length: 638
 <td class="tableblock halign-left valign-top"><p class="tableblock">Date of reply registered</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].isNested</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].childCount</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Count of nested reply</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">{BNO}/{RNO}(optional)/<br>
-Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].vote</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].parentRno</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Count of like</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_nestedlist_api"><a class="link" href="#_nestedlist_api">NestedList-API</a></h3>
-<div class="sect3">
-<h4 id="_nestedlist_api_curl_request"><a class="link" href="#_nestedlist_api_curl_request">Curl request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply/2' -i -X GET</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_nestedlist_api_path_parameters"><a class="link" href="#_nestedlist_api_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /board/{bno}/reply/{rno}</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bno</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Board Number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parent comment number for this comment.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rno</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reply Number</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_nestedlist_api_http_response"><a class="link" href="#_nestedlist_api_http_response">HTTP response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-X-Content-Type-Options: nosniff
-X-XSS-Protection: 0
-Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Pragma: no-cache
-Expires: 0
-X-Frame-Options: DENY
-Content-Length: 660
-
-{
-  "page" : 1,
-  "size" : 1000000,
-  "total" : 2,
-  "start" : 1,
-  "end" : 1,
-  "prev" : false,
-  "next" : false,
-  "dtoList" : [ {
-    "rno" : 3,
-    "replyContent" : "test5",
-    "replyWriter" : "tester",
-    "replyWriterUuid" : "testerUUID",
-    "tag" : "testerUser",
-    "replyDate" : "2025-02-15T20:44:32.620449",
-    "isNested" : 0,
-    "path" : "1/2",
-    "vote" : 0
-  }, {
-    "rno" : 4,
-    "replyContent" : "test6",
-    "replyWriter" : "tester",
-    "replyWriterUuid" : "testerUUID",
-    "tag" : "testerUser",
-    "replyDate" : "2025-02-15T20:44:32.624451",
-    "isNested" : 0,
-    "path" : "1/2",
-    "vote" : 0
-  } ]
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_nestedlist_api_response_fields"><a class="link" href="#_nestedlist_api_response_fields">Response fields</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>total</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].taggedCount</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Total number of reply on this board</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].rno</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reply Number</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].replyContent</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Content of reply</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].replyWriter</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer name of reply</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].replyWriterUuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writer UUID of reply</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].tag</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The writer name of the tagged reply.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].replyDate</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Date of reply registered</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].isNested</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Count of nested reply</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].path</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">{BNO}/{RNO}(optional)/<br>
-Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Count of tagged.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>dtoList[].vote</code></p></td>
@@ -2490,18 +2821,37 @@ Board Number is placed as the top path, and if it is nested reply, Reply Number 
 </div>
 <div class="sect2">
 <h3 id="_delete_api_4"><a class="link" href="#_delete_api_4">Delete-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_delete_api_4_curl_request"><a class="link" href="#_delete_api_4_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply/1' -i -X DELETE</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/board/1/reply/1' -i -X DELETE \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '_csrf=3WnzbMJwRbumn7LS_iB4js38o44d-pdpte1CcvSmD6uKaluX6g-WWqNJdY6Lp4Lqmg1Mv__PjuwozqVEgI4hRpGfPZ_pD2qi'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_delete_api_4_request_cookies"><a class="link" href="#_delete_api_4_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_delete_api_4_path_parameters"><a class="link" href="#_delete_api_4_path_parameters">Path parameters</a></h4>
@@ -2554,23 +2904,41 @@ X-Frame-Options: DENY</code></pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_like_api"><a class="link" href="#_like_api">Like-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_like_api_curl_request"><a class="link" href="#_like_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/like' -i -X PUT \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/like?_csrf=tkVOxM5VQmhCR0kuJm6CU-t2Ccm-lRAw-LQFYrRLLKsxumio13Z28Ppld1hvIS0ZRUO2NthFJPCGoyIdmYwzW4IqFMpQiwud' -i -X PUT \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
     -d '{
   "bno" : 1,
   "rno" : 0
 }'</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_like_api_request_cookies"><a class="link" href="#_like_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_like_api_request_fields"><a class="link" href="#_like_api_request_fields">Request fields</a></h4>
@@ -2658,7 +3026,9 @@ But, if performer has a history, -1.</p></td>
   "id" : "AAAAAA",
   "name" : "AAAAAA",
   "email" : "AAAA@AAAA.AAA",
-  "password" : "password"
+  "password" : "password",
+  "introduce" : "Nice to meet you",
+  "signature" : "\uD83D\uDE0A"
 }'</code></pre>
 </div>
 </div>
@@ -2696,6 +3066,16 @@ But, if performer has a history, -1.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>password</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">password to register</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>introduce</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">introduce</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>signature</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An emoji to express oneself</p></td>
 </tr>
 </tbody>
 </table>
@@ -2792,11 +3172,6 @@ true</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_getuserinfo_api"><a class="link" href="#_getuserinfo_api">GetUserInfo-API</a></h3>
-<div class="literalblock">
-<div class="content">
-<pre>Required Authentication</pre>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_getuserinfo_api_curl_request"><a class="link" href="#_getuserinfo_api_curl_request">Curl request</a></h4>
 <div class="listingblock">
@@ -2820,13 +3195,11 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 136
+Content-Length: 81
 
 {
   "uuid" : "testerUUID",
-  "id" : "testerUser",
   "name" : "tester",
-  "email" : "test@test.test",
   "roles" : [ "ROLE_USER" ]
 }</code></pre>
 </div>
@@ -2852,19 +3225,9 @@ Content-Length: 136
 <td class="tableblock halign-left valign-top"><p class="tableblock">UUID of login user</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of login user</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Nickname of login user</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Email of login user</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>roles</code></p></td>
@@ -2875,13 +3238,2424 @@ Content-Length: 136
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_getmypage_api"><a class="link" href="#_getmypage_api">GetMyPage-API</a></h3>
+<div class="sect3">
+<h4 id="_getmypage_api_curl_request"><a class="link" href="#_getmypage_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/user/testerUUID/mypage' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_getmypage_api_request_cookies"><a class="link" href="#_getmypage_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_getmypage_api_path_parameters"><a class="link" href="#_getmypage_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /user/{uuid}/mypage</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID of the target to search.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_getmypage_api_request_headers"><a class="link" href="#_getmypage_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_getmypage_api_http_response"><a class="link" href="#_getmypage_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 167
+
+{
+  "signature" : "\uD83D\uDE0A",
+  "name" : "tester",
+  "uuid" : "testerUUID",
+  "introduce" : "Nice to meet you",
+  "joinedOn" : "2025-07-08T20:09:15.321986"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_getmypage_api_response_fields"><a class="link" href="#_getmypage_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>signature</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The signature emoji of the target user.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The nickname of the target user.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID of the target user.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>introduce</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target user&#8217;s self-introduction.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>joinedOn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The date the user joined.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modifymypage_api"><a class="link" href="#_modifymypage_api">ModifyMyPage-API</a></h3>
+<div class="sect3">
+<h4 id="_modifymypage_api_curl_request"><a class="link" href="#_modifymypage_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/user/myinfo?_csrf=oq_CuxBlcFFzsiSafGk2ANytZ6qWtEzqmE1Q_prhV223gbJukpbyiHJRSTJegEaiGkQCY-nOSpOn1XnHoXU0zqzXZFqO5YIM' -i -X PATCH \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '{
+  "signature" : "",
+  "name" : "modified",
+  "introduce" : ""
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_modifymypage_api_request_cookies"><a class="link" href="#_modifymypage_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_modifymypage_api_request_headers"><a class="link" href="#_modifymypage_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_modifymypage_api_request_body"><a class="link" href="#_modifymypage_api_request_body">Request body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "signature" : "",
+  "name" : "modified",
+  "introduce" : ""
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_modifymypage_api_request_fields"><a class="link" href="#_modifymypage_api_request_fields">Request fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nickname to update</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>introduce</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self-introduce to modify</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>signature</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An emoji to modify.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_modifymypage_api_http_response"><a class="link" href="#_modifymypage_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Friendship-API"><a class="link" href="#Friendship-API">Friendship API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_accept_api"><a class="link" href="#_accept_api">Accept-API</a></h3>
+<div class="sect3">
+<h4 id="_accept_api_curl_request"><a class="link" href="#_accept_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/friend/1' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_accept_api_request_cookies"><a class="link" href="#_accept_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie(Requesting user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_accept_api_path_parameters"><a class="link" href="#_accept_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /friend/{fid}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of the requested friendship.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_accept_api_request_headers"><a class="link" href="#_accept_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_accept_api_http_response"><a class="link" href="#_accept_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_block_api"><a class="link" href="#_block_api">Block-API</a></h3>
+<div class="sect3">
+<h4 id="_block_api_curl_request"><a class="link" href="#_block_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/friend/block?toUserUuid=friendUUID' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_block_api_request_cookies"><a class="link" href="#_block_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie(Requesting user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_block_api_request_headers"><a class="link" href="#_block_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_block_api_query_parameters"><a class="link" href="#_block_api_query_parameters">Query parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>toUserUuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UUID of the target user.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_block_api_http_response"><a class="link" href="#_block_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_memo_api"><a class="link" href="#_memo_api">Memo-API</a></h3>
+<div class="sect3">
+<h4 id="_memo_api_curl_request"><a class="link" href="#_memo_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/friend/1/memo?memo=memo' -i -X PUT \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_memo_api_request_cookies"><a class="link" href="#_memo_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie(Requesting user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_memo_api_path_parameters"><a class="link" href="#_memo_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /friend/{fid}/memo</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of the target friendship.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_memo_api_request_headers"><a class="link" href="#_memo_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_memo_api_query_parameters"><a class="link" href="#_memo_api_query_parameters">Query parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>memo</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">content of memo.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_memo_api_http_response"><a class="link" href="#_memo_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_request_api"><a class="link" href="#_request_api">Request-API</a></h3>
+<div class="sect3">
+<h4 id="_request_api_curl_request"><a class="link" href="#_request_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/friend?toUserUuid=friendUUID' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_request_api_request_cookies"><a class="link" href="#_request_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie(Requesting user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_request_api_request_headers"><a class="link" href="#_request_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_request_api_query_parameters"><a class="link" href="#_request_api_query_parameters">Query parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>toUserUuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UUID of the target user.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_request_api_http_response"><a class="link" href="#_request_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h1 id="The-Space-Chat" class="sect0"><a class="link" href="#The-Space-Chat">The Space Chat</a></h1>
+<div class="sect1">
+<h2 id="Room-API"><a class="link" href="#Room-API">Room API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_create_api_2"><a class="link" href="#_create_api_2">Create-API</a></h3>
+<div class="sect3">
+<h4 id="_create_api_2_curl_request"><a class="link" href="#_create_api_2_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room?_csrf=-zCkpr-n6BAs8SY1Led63RdRi1rzWaFErHo-LapajlxSFVeByFSSk9vFiSUBk0MFTspO5C43pjiVOJRpnB9YSMlovm1gcW62' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '{
+  "name" : "Test Room",
+  "description" : "Test",
+  "members" : [ ]
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_api_2_request_cookies"><a class="link" href="#_create_api_2_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_create_api_2_request_headers"><a class="link" href="#_create_api_2_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_create_api_2_request_body"><a class="link" href="#_create_api_2_request_body">Request body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "name" : "Test Room",
+  "description" : "Test",
+  "members" : [ ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_api_2_http_response"><a class="link" href="#_create_api_2_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 385
+
+{
+  "roomId" : 1,
+  "name" : "Test Room",
+  "manager" : {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:02.4476555",
+  "modifiedAt" : "2025-07-08T20:09:02.4476555"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_api_2_response_fields"><a class="link" href="#_create_api_2_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_delegate_api"><a class="link" href="#_delegate_api">Delegate-API</a></h3>
+<div class="sect3">
+<h4 id="_delegate_api_curl_request"><a class="link" href="#_delegate_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1/manager?targetUuid=testerUUID3' -i -X PUT \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_request_cookies"><a class="link" href="#_delegate_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_path_parameters"><a class="link" href="#_delegate_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}/manager</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_request_headers"><a class="link" href="#_delegate_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_query_parameters"><a class="link" href="#_delegate_api_query_parameters">Query parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>targetUuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Target to delegate manager.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_http_response"><a class="link" href="#_delegate_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 844
+
+{
+  "roomId" : 1,
+  "name" : "Test Room",
+  "manager" : {
+    "uuid" : "testerUUID3",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID1",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID2",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID5",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID3",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID4",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:04.435389",
+  "modifiedAt" : "2025-07-08T20:09:04.435389"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_delegate_api_response_fields"><a class="link" href="#_delegate_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_get_my_rooms_api"><a class="link" href="#_get_my_rooms_api">Get My Rooms-API</a></h3>
+<div class="sect3">
+<h4 id="_get_my_rooms_api_curl_request"><a class="link" href="#_get_my_rooms_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/my' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_my_rooms_api_request_cookies"><a class="link" href="#_get_my_rooms_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_get_my_rooms_api_request_headers"><a class="link" href="#_get_my_rooms_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_get_my_rooms_api_http_response"><a class="link" href="#_get_my_rooms_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 131
+
+[ {
+  "rid" : 1,
+  "name" : "Test Room",
+  "lastSentMessage" : "Add later",
+  "lastSentAt" : "2025-07-08T20:09:02.0218928"
+} ]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_my_rooms_api_response_fields"><a class="link" href="#_get_my_rooms_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].lastSentMessage</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last sent message</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].lastSentAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time of last sent message</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_get_room_api"><a class="link" href="#_get_room_api">Get Room-API</a></h3>
+<div class="sect3">
+<h4 id="_get_room_api_curl_request"><a class="link" href="#_get_room_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_room_api_request_cookies"><a class="link" href="#_get_room_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_get_room_api_path_parameters"><a class="link" href="#_get_room_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_get_room_api_request_headers"><a class="link" href="#_get_room_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_get_room_api_http_response"><a class="link" href="#_get_room_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 383
+
+{
+  "roomId" : 1,
+  "name" : "Test Room",
+  "manager" : {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:03.355078",
+  "modifiedAt" : "2025-07-08T20:09:03.355078"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_room_api_response_fields"><a class="link" href="#_get_room_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_invite_api"><a class="link" href="#_invite_api">Invite-API</a></h3>
+<div class="sect3">
+<h4 id="_invite_api_curl_request"><a class="link" href="#_invite_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1/members?_csrf=RE7U0We7y_Qon8sygSRXEkkJe_qtd4fqV_5AGsG6QLgIvuzidXy1t1La88IFqfsD4wljKig7VsOfTrHHMp9wI_iCI947i4-A' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '{
+  "members" : [ "testerUUID1", "testerUUID2", "testerUUID3", "testerUUID4", "testerUUID5" ]
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_request_cookies"><a class="link" href="#_invite_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_path_parameters"><a class="link" href="#_invite_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}/members</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_request_headers"><a class="link" href="#_invite_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_request_body"><a class="link" href="#_invite_api_request_body">Request body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "members" : [ "testerUUID1", "testerUUID2", "testerUUID3", "testerUUID4", "testerUUID5" ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_http_response"><a class="link" href="#_invite_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 843
+
+{
+  "roomId" : 1,
+  "name" : "Test Room",
+  "manager" : {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID1",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID2",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID5",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID3",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID4",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:02.724394",
+  "modifiedAt" : "2025-07-08T20:09:02.724394"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_invite_api_response_fields"><a class="link" href="#_invite_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_join_api"><a class="link" href="#_join_api">Join-API</a></h3>
+<div class="sect3">
+<h4 id="_join_api_curl_request"><a class="link" href="#_join_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1/members/me' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_join_api_request_cookies"><a class="link" href="#_join_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_join_api_path_parameters"><a class="link" href="#_join_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}/members/me</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_join_api_request_headers"><a class="link" href="#_join_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_join_api_http_response"><a class="link" href="#_join_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 477
+
+{
+  "roomId" : 1,
+  "name" : "testRoom",
+  "manager" : {
+    "uuid" : "testerUUID2",
+    "name" : "tester2",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID2",
+    "name" : "tester2",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:03.607461",
+  "modifiedAt" : "2025-07-08T20:09:03.607461"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_join_api_response_fields"><a class="link" href="#_join_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kick_api"><a class="link" href="#_kick_api">Kick-API</a></h3>
+<div class="sect3">
+<h4 id="_kick_api_curl_request"><a class="link" href="#_kick_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1/members?targetUuid=testerUUID3' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_request_cookies"><a class="link" href="#_kick_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_path_parameters"><a class="link" href="#_kick_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}/members</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_request_headers"><a class="link" href="#_kick_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_query_parameters"><a class="link" href="#_kick_api_query_parameters">Query parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>targetUuid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Target to kick.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_http_response"><a class="link" href="#_kick_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 751
+
+{
+  "roomId" : 1,
+  "name" : "Test Room",
+  "manager" : {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID1",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID2",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID5",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  }, {
+    "uuid" : "testerUUID4",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:03.913096",
+  "modifiedAt" : "2025-07-08T20:09:03.913096"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_kick_api_response_fields"><a class="link" href="#_kick_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_quit_api"><a class="link" href="#_quit_api">Quit-API</a></h3>
+<div class="sect3">
+<h4 id="_quit_api_curl_request"><a class="link" href="#_quit_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/1/members/me' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_quit_api_request_cookies"><a class="link" href="#_quit_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_quit_api_path_parameters"><a class="link" href="#_quit_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/{rid}/members/me</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_quit_api_request_headers"><a class="link" href="#_quit_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_quit_api_http_response"><a class="link" href="#_quit_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_update_api"><a class="link" href="#_update_api">Update-API</a></h3>
+<div class="sect3">
+<h4 id="_update_api_curl_request"><a class="link" href="#_update_api_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/chat/room/update/1?_csrf=_DXaUdQN6AYkr9FBtIu511RctG5Gon5o1kEuqy7Uv-VAEPg3zgbuMLA12GQJneh51qaN5zFkmVdylkpFt3VPzha3htEkIsEO' -i -X PUT \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H '_csrf: dummyCsrfToken' \
+    --cookie 'JSESSIONID=example-session-id' \
+    -d '{
+  "name" : "Update Change",
+  "description" : "Update test"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_update_api_request_cookies"><a class="link" href="#_update_api_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authenticated user session ID cookie</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_update_api_path_parameters"><a class="link" href="#_update_api_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /chat/room/update/{rid}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_update_api_request_headers"><a class="link" href="#_update_api_request_headers">Request headers</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>_csrf</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSRF Token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_update_api_request_body"><a class="link" href="#_update_api_request_body">Request body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "name" : "Update Change",
+  "description" : "Update test"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_update_api_http_response"><a class="link" href="#_update_api_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 395
+
+{
+  "roomId" : 1,
+  "name" : "Update Change",
+  "manager" : {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  },
+  "description" : "Update test",
+  "members" : [ {
+    "uuid" : "testerUUID",
+    "name" : "tester",
+    "roles" : [ "ROLE_USER" ]
+  } ],
+  "createdAt" : "2025-07-08T20:09:03.081583",
+  "modifiedAt" : "2025-07-08T20:09:03.1000841"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_update_api_response_fields"><a class="link" href="#_update_api_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Room description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>members</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joined members</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Created time</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modified time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Message-API"><a class="link" href="#Message-API">Message API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="Message-API_Message_API"><a class="link" href="#Message-API_Message_API">Message api</a></h3>
+<div class="paragraph">
+<p>This document outlines the WebSocket API for chat messaging.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_send_message"><a class="link" href="#_1_send_message">1. Send Message</a></h3>
+<div class="paragraph">
+<p>Sends a message to a specific chat room.</p>
+</div>
+<div class="sect2">
+<h3 id="_1_1_websocket_endpoint"><a class="link" href="#_1_1_websocket_endpoint">1.1. WebSocket Endpoint</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Destination:</strong> <code>/app/chat/send</code></p>
+</li>
+<li>
+<p><strong>Subscription:</strong> <code>/topic/chat/room/{roomId}</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_2_request_body"><a class="link" href="#_1_2_request_body">1.2. Request Body</a></h3>
+<div class="paragraph">
+<p>The client sends a message object to the <code>/app/chat/send</code> destination.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Request Payload (<code>MessageDTOs.Text</code>)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ID of the room to send the message to.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The text content of the message.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "roomId": 1,
+  "content": "Hello!"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_3_response_body"><a class="link" href="#_1_3_response_body">1.3. Response Body</a></h3>
+<div class="paragraph">
+<p>Subscribers to <code>/topic/chat/room/{roomId}</code> will receive a <code>ChatMessage</code> object.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Response Payload (<code>ChatMessage</code>)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messageId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique identifier for the message within the room.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ID of the room where the message was sent.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sender</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID of the user who sent the message.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The content of the message.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MessageType</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of the message (e.g., TEXT, IMAGE).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sentAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LocalDateTime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The timestamp when the message was sent.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Response</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "messageId": 123,
+  "roomId": 1,
+  "sender": "testerUUID",
+  "content": "Hello!",
+  "type": "TEXT",
+  "sentAt": "2025-07-08T10:30:00"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_get_recent_messages"><a class="link" href="#_2_get_recent_messages">2. Get Recent Messages</a></h3>
+<div class="paragraph">
+<p>Retrieves the most recent messages from a chat room. This is a user-specific request.</p>
+</div>
+<div class="sect2">
+<h3 id="_2_1_websocket_endpoint"><a class="link" href="#_2_1_websocket_endpoint">2.1. WebSocket Endpoint</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Destination:</strong> <code>/app/chat/recent</code></p>
+</li>
+<li>
+<p><strong>Subscription:</strong> <code>/user/queue/chat/room/{roomId}</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_2_request_body"><a class="link" href="#_2_2_request_body">2.2. Request Body</a></h3>
+<div class="paragraph">
+<p>The client sends the <code>roomId</code> as the payload to the <code>/app/chat/recent</code> destination.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Request Payload</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ID of the room from which to fetch recent messages.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_3_response_body"><a class="link" href="#_2_3_response_body">2.3. Response Body</a></h3>
+<div class="paragraph">
+<p>The server sends a list of <code>ChatMessage</code> objects to the user&#8217;s private queue at <code>/user/queue/chat/room/{roomId}</code>.</p>
+</div>
+<div class="paragraph">
+<div class="title">Response Payload (<code>List&lt;ChatMessage&gt;</code>)</div>
+<p>A list containing <code>ChatMessage</code> objects. See the <code>ChatMessage</code> structure in section 1.3.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Response</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "messageId": 30,
+    "roomId": 1,
+    "sender": "testerUUID",
+    "content": "test: 30",
+    "type": "TEXT",
+    "sentAt": "2025-07-08T11:00:00"
+  },
+  {
+    "messageId": 31,
+    "roomId": 1,
+    "sender": "testerUUID",
+    "content": "test: 31",
+    "type": "TEXT",
+    "sentAt": "2025-07-08T11:00:05"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-02-15 20:44:13 +0900
+Last updated 2025-07-08 20:08:24 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

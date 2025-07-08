@@ -77,7 +77,8 @@ public class SecurityConfig implements UserDetailsService {
                 new AntPathRequestMatcher("/user"),
                 new AntPathRequestMatcher("/user/login"),
                 new AntPathRequestMatcher("/user/logout"),
-                new AntPathRequestMatcher("/user/login/me")
+                new AntPathRequestMatcher("/user/login/me"),
+                new AntPathRequestMatcher("/user//checkid")
             ).csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
             .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
                 "/**").permitAll())

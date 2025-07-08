@@ -7,13 +7,15 @@ The Space API 문서
 :toclevels: 2
 :sectlinks:
 
+[[The-Space-Web]]
+= The Space Web
+
 [[Borad-API]]
 == Board API
 
 === Post-API
-    Required Authentication 
 
-operation::board-controller-test/board-post[snippets='curl-request,http-response']
+operation::board-controller-test/board-post[snippets='curl-request,request-cookies,http-response']
 |===
  |field|Description
  |return value|Board Number (bno)
@@ -22,112 +24,107 @@ operation::board-controller-test/board-post[snippets='curl-request,http-response
 operation::board-controller-test/board-post[snippets='request-fields']
 
 === Read-API
-operation::board-controller-test/board-read[snippets='curl-request,path-parameters,http-response,response-fields']
+operation::board-controller-test/board-read[snippets='curl-request,request-cookies,path-parameters,http-response,response-fields']
 
 === List-API
-operation::board-controller-test/board-list[snippets='curl-request,query-parameters,response-fields']
+operation::board-controller-test/board-list[snippets='curl-request,request-cookies,query-parameters,response-fields']
 
 === Modify-API
-    Required Authentication 
 
-operation::board-controller-test/board-modify[snippets='curl-request,request-fields,http-response']
+
+operation::board-controller-test/board-modify[snippets='curl-request,request-cookies,request-fields,http-response']
 
 === Delete-API
-    Required Authentication 
 
-operation::board-controller-test/board-delete[snippets='curl-request,path-parameters,http-response']
+
+operation::board-controller-test/board-delete[snippets='curl-request,request-cookies,path-parameters,http-response']
 
 === Delete with Admin-API
-    Required Authentication 
 
-operation::board-controller-test/board-admin-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+
+operation::board-controller-test/board-admin-delete[snippets='curl-request,request-cookies,path-parameters,query-parameters,http-response']
 
 [[Category-API]]
 == Category API
 
 === List-API
-operation::category-controller-test/category-list[snippets='curl-request,query-parameters,response-fields']
+operation::category-controller-test/category-list[snippets='curl-request,request-cookies,response-fields']
 
 === Create with Admin-API
-    Required Authentication 
 
-operation::category-controller-test/category-create[snippets='curl-request,request-fields,http-response']
+
+operation::category-controller-test/category-create[snippets='curl-request,request-cookies,request-fields,http-response']
 
 === Delete with Admin-API
-    Required Authentication 
 
-operation::category-controller-test/category-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+
+operation::category-controller-test/category-delete[snippets='curl-request,request-cookies,path-parameters,query-parameters,http-response']
 
 [[Community-API]]
 == Community API
 
 === Get-API
-operation::community-controller-test/community-get[snippets='curl-request,path-parameters,http-response,response-fields']
+operation::community-controller-test/community-get[snippets='curl-request,request-cookies,path-parameters,http-response,response-fields']
 
 === List-API
-operation::community-controller-test/community-list[snippets='curl-request,query-parameters,response-fields']
+operation::community-controller-test/community-list[snippets='curl-request,request-cookies,query-parameters,response-fields']
 
 === Create-API
-    Required Authentication 
 
-operation::community-controller-test/community-create[snippets='curl-request,request-fields,query-parameters,http-response']
+
+operation::community-controller-test/community-create[snippets='curl-request,request-cookies,request-fields,query-parameters,http-response']
 
 === Check-API
-operation::community-controller-test/community-check[snippets='curl-request,query-parameters,http-response']
+operation::community-controller-test/community-check[snippets='curl-request,request-cookies,query-parameters,http-response']
 
 === Delete-API
-    Required Authentication 
 
-operation::community-controller-test/community-delete[snippets='curl-request,path-parameters,query-parameters,http-response']
+
+operation::community-controller-test/community-delete[snippets='curl-request,request-cookies,path-parameters,http-response']
 
 === AdminGetList-API
-    Required Authentication 
 
-operation::community-controller-test/community-has-admin-list[snippets='curl-request,http-response,response-fields']
+
+operation::community-controller-test/community-has-admin-list[snippets='curl-request,request-cookies,http-response,response-fields']
 
 === Modify-API
-    Required Authentication 
 
-operation::community-controller-test/community-modify[snippets='curl-request,request-fields,http-response']
+
+operation::community-controller-test/community-modify[snippets='curl-request,request-cookies,request-fields,http-response']
 
 [[File-API]]
 == File API
 
 === Upload-API
-operation::file-controller-test/file-upload[snippets='curl-request,request-parts,http-response,response-fields']
+operation::file-controller-test/file-upload[snippets='curl-request,request-cookies,request-parts,http-response,response-fields']
 
 === Get-API
-operation::file-controller-test/file-get[snippets='curl-request,path-parameters,http-response']
+operation::file-controller-test/file-get[snippets='curl-request,request-cookies,path-parameters,http-response']
 
 === Delete-API
-operation::file-controller-test/file-delete[snippets='curl-request,path-parameters,http-response']
+operation::file-controller-test/file-delete[snippets='curl-request,request-cookies,path-parameters,http-response']
 
 [[Reply-API]]
 == Reply API
 
 === Register-APi
-    Required Authentication 
 
-operation::reply-controller-test/reply-register[snippets='curl-request,path-parameters,request-fields,http-response']
+
+operation::reply-controller-test/reply-register[snippets='curl-request,request-cookies,path-parameters,request-fields,http-response']
 
 === List-API
-operation::reply-controller-test/reply-list[snippets='curl-request,path-parameters,http-response,response-fields']
-
-=== NestedList-API
-operation::reply-controller-test/reply-nested-list-get[snippets='curl-request,path-parameters,http-response,response-fields']
+operation::reply-controller-test/reply-list[snippets='curl-request,request-cookies,path-parameters,http-response,response-fields']
 
 === Delete-API
-    Required Authentication 
-
-operation::reply-controller-test/reply-delete[snippets='curl-request,path-parameters,http-response']
+operation::reply-controller-test/reply-delete[snippets='curl-request,request-cookies,path-parameters,http-response']
 
 [[Like-API]]
 == Like API
 
 === Like-API
-    Required Authentication 
 
-operation::like-controller-test/like-like[snippets='curl-request,request-fields,http-response']
+
+operation::like-controller-test/like-like[snippets='curl-request,request-cookies,request-fields,http-response']
 |===
     |Field|Type|Description
     |Body|int| If performer has no history of like to target post or reply, 1. +
@@ -148,8 +145,66 @@ operation::user-controller-test/user-check[snippets='curl-request,query-paramete
 |===
 
 === GetUserInfo-API
-    Required Authentication 
-
 operation::user-controller-test/user-get-user-info[snippets='curl-request']
 
 operation::user-controller-test/user-get-user-info[snippets='http-response,response-fields']
+
+=== GetMyPage-API
+operation::user-controller-test/get-my-page[snippets='curl-request,request-cookies,path-parameters,request-headers,http-response,response-fields']
+
+=== ModifyMyPage-API
+operation::user-controller-test/modify-my-page[snippets='curl-request,request-cookies,request-headers,request-body,request-fields,http-response']
+
+[[Friendship-API]]
+== Friendship API
+
+=== Accept-API
+operation::friendship-controller-test/accept[snippets='curl-request,request-cookies,path-parameters,request-headers,http-response']
+
+=== Block-API
+operation::friendship-controller-test/block[snippets='curl-request,request-cookies,request-headers,query-parameters,http-response']
+
+=== Memo-API
+operation::friendship-controller-test/memo[snippets='curl-request,request-cookies,path-parameters,request-headers,query-parameters,http-response']
+
+=== Request-API
+operation::friendship-controller-test/request[snippets='curl-request,request-cookies,request-headers,query-parameters,http-response']
+
+[[The-Space-Chat]]
+= The Space Chat
+
+[[Room-API]]
+== Room API
+
+=== Create-API
+operation::room-controller-test/create[snippets='curl-request,request-cookies,request-headers,request-body,http-response,response-fields']
+
+=== Delegate-API
+operation::room-controller-test/delegate[snippets='curl-request,request-cookies,path-parameters,request-headers,query-parameters,http-response,response-fields']
+
+=== Get My Rooms-API
+operation::room-controller-test/get-my-rooms[snippets='curl-request,request-cookies,request-headers,http-response,response-fields']
+
+=== Get Room-API
+operation::room-controller-test/get-room[snippets='curl-request,request-cookies,path-parameters,request-headers,http-response,response-fields']
+
+=== Invite-API
+operation::room-controller-test/invite[snippets='curl-request,request-cookies,path-parameters,request-headers,request-body,http-response,response-fields']
+
+=== Join-API
+operation::room-controller-test/join[snippets='curl-request,request-cookies,path-parameters,request-headers,http-response,response-fields']
+
+=== Kick-API
+operation::room-controller-test/kick[snippets='curl-request,request-cookies,path-parameters,request-headers,query-parameters,http-response,response-fields']
+
+=== Quit-API
+operation::room-controller-test/quit[snippets='curl-request,request-cookies,path-parameters,request-headers,http-response']
+
+=== Update-API
+operation::room-controller-test/update[snippets='curl-request,request-cookies,path-parameters,request-headers,request-body,http-response,response-fields']
+
+[[Message-API]]
+== Message API
+operation::[snippets='Message-API']
+
+

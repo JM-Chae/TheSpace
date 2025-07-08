@@ -5,6 +5,9 @@ import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBui
 import static com.thespace.config.RestDocsConfig.write;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
 import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
@@ -32,7 +35,8 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
+import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,8 +69,7 @@ class CategoryControllerTest {
     @Autowired
     private DataBaseCleaner dataBaseCleaner;
 
-    @Autowired
-    private UserService userService;
+    static Long rid = 0L;
 
     @Autowired
     private UserRepository userRepository;
@@ -79,34 +82,32 @@ class CategoryControllerTest {
 
     @Autowired
     private CommunityRepository communityRepository;
+    @Autowired
+    private UserRoleService userRoleService;
 
     @BeforeEach
     void setup() {
         dataBaseCleaner.clear();
-        User user = userRepository.save(new User(
-            "testerUser",
+        User user = userRepository.save(new User("testerUser",
             "testerUUID",
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        rid = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), rid);
     }
 
     @Test
     void categoryList() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
         for (int i = 1; i <= 10; i++) {
-            categoryRepository.save(new Category(
-                community.getCommunityName(),
-                "test " + (i),
+            categoryRepository.save(new Category("test " + (i),
                 "test",
                 community,
                 new ArrayList<>()
@@ -114,122 +115,129 @@ class CategoryControllerTest {
         }
 
         //when
-        ResultActions result = mockMvc.perform(get("/category/list").queryParam(
-            "path",
-            community.getCommunityName()
-        ));
+        ResultActions result = mockMvc.perform(get("/category/list").queryParam("communityId",
+                community.getId().toString()
+            )
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
-        result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.[0].categoryId").value("1"),
+        result.andExpect(status().isOk()).andExpectAll(jsonPath("$.[0].categoryId").value("1"),
             jsonPath("$.[0].categoryName").value("test 1"),
             jsonPath("$.[9].categoryId").value("10"),
             jsonPath("$.[9].categoryName").value("test 10")
         ).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            queryParameters(parameterWithName("path").description(
-            "The community name to which that category belongs.")), relaxedResponseFields(
-            fieldWithPath("[].categoryId").description("Category ID"),
-            fieldWithPath("[].categoryName").description("Category Name"),
-            fieldWithPath("[].categoryType").description("Category Type"),
-            //Will implement several types later.
-            fieldWithPath("[].communityId").description(
-                "The community ID to which that category belongs.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            relaxedResponseFields(fieldWithPath("[].categoryId").description("Category ID"),
+                fieldWithPath("[].categoryName").description("Category Name"),
+                fieldWithPath("[].categoryType").description("Category Type"),
+                //Will implement several types later.
+                fieldWithPath("[].communityId").description(
+                    "The community ID to which that category belongs.")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void categoryCreate() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Create categoryCreateDTO = new Create(
-            "test",
-            "test",
-            community.getCommunityName(),
-            community.getCommunityId()
-        );
+        Create categoryCreateDTO = new Create("test", "test", community.getId());
 
-        UserRole userRole = userRoleRepository.save(new UserRole(
-            "ADMIN_" + community.getCommunityName(),
+        UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
             new ArrayList<>()
         ));
-        userService.setRole("testerUser", userRole.getRole());
+        userRoleService.setRole("testerUser", userRole.getId());
 
         //when
         ResultActions result = mockMvc.perform(post("/category/admin").contentType(MediaType.APPLICATION_JSON)
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
             .content(objectMapper.writeValueAsString(categoryCreateDTO)));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         Category category = categoryRepository.findById(1L).orElseThrow();
-        if (!(category.getCategoryName().equals(categoryCreateDTO.categoryName())
-            && category.getCategoryType().equals(categoryCreateDTO.categoryType())
-            && category.getCommunity().getCommunityId().equals(categoryCreateDTO.communityId()))) {
+        if (!(category.getName().equals(categoryCreateDTO.name()) && category.getType()
+            .equals(categoryCreateDTO.type()) && category.getCommunity()
+            .getId()
+            .equals(categoryCreateDTO.communityId()))) {
             throw new Exception();
         }
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            requestFields(
-                fieldWithPath("categoryName").description(
-                    "Category name"),
-                fieldWithPath("categoryType").description("Category Type"),
-                fieldWithPath("path").description(
-                    "The community name to which that category will belongs."),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            requestFields(fieldWithPath("name").description("Category name"),
+                fieldWithPath("type").description("Category Type"),
                 fieldWithPath("communityId").description(
                     "The community ID to which that category will belongs.")
-            )));
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void categoryDelete() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
+        Category category = categoryRepository.save(new Category("test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        UserRole userRole = userRoleRepository.save(new UserRole(
-            "ADMIN_" + community.getCommunityName(),
+        UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
             new ArrayList<>()
         ));
-        userService.setRole("testerUser", userRole.getRole());
+        userRoleService.setRole("testerUser", userRole.getId());
 
         //when
-        ResultActions result = mockMvc.perform(delete(
-            "/category/{categoryId}/admin", category.getCategoryId())
-            .queryParam("communityName", community.getCommunityName())).andDo(print());
+        ResultActions result = mockMvc.perform(delete("/category/{categoryId}/admin",
+            category.getId()
+        ).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
+            .queryParam("communityName", community.getName())).andDo(print());
 
         //then
         result.andExpect(status().isOk());
-        assertThrows(
-            Exception.class,
-            () -> categoryRepository.findById(category.getCategoryId()).orElseThrow(Exception::new)
+        assertThrows(Exception.class,
+            () -> categoryRepository.findById(category.getId()).orElseThrow(Exception::new)
         );
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             pathParameters(parameterWithName("categoryId").description("Category ID what to delete")),
-            queryParameters(
-                parameterWithName("communityName").description(
-                    "The community name to which that category belongs.")
-            )
+            queryParameters(parameterWithName("communityName").description(
+                "The community name to which that category belongs.")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 }

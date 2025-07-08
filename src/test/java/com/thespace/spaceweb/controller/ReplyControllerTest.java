@@ -4,6 +4,9 @@ import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBui
 import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBuilders.post;
 import static com.thespace.config.RestDocsConfig.write;
 import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
 import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
@@ -34,7 +37,8 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
+import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +78,7 @@ class ReplyControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
+    private UserRoleService userRoleService;
 
     @Autowired
     private UserRoleRepository userRoleRepository;
@@ -97,10 +101,12 @@ class ReplyControllerTest {
             "tester",
             "test@test.test",
             "password",
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        Long rid = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), rid);
     }
 
     @Test
@@ -110,19 +116,26 @@ class ReplyControllerTest {
         Community community = communityRepository.save(new Community("test", "test"));
 
         Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
             "test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
+        User user = new User("testerUser",
+            "testerUUID",
+            "test",
+            "test@test.test",
+            "password",
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
+        );
 
         Board board = boardRepository.save(new Board(
             "test",
-            community.getCommunityName(),
             "content",
+            community,
             category,
             user
         ));
@@ -130,28 +143,41 @@ class ReplyControllerTest {
         Register rDto = new Register(
             "test",
             "",
-            board.getBno() + "/"
+            0L,
+            0L
         );
 
         //when
         ResultActions result = mockMvc.perform(post(
             "/board/{bno}/reply",
             board.getBno()
-        ).contentType(MediaType.APPLICATION_JSON)
+        ).contentType(MediaType.APPLICATION_JSON).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
             .content(objectMapper.writeValueAsString(rDto)));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             requestFields(
-            fieldWithPath("replyContent").description(
-                "Content of reply"),
-            fieldWithPath("tag").description("The writer name of the tagged reply."),
-            fieldWithPath("path").description("{BNO}/{RNO}(optional)/ +" + "\n"
-                + "Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it.")
-        ), pathParameters(parameterWithName("bno").description("Board Number"))));
+                fieldWithPath("replyContent").description(
+                    "Content of reply"),
+                fieldWithPath("tag").description("The writer name of the tagged reply."),
+                fieldWithPath("parentRno").description("Parent comment number for this comment."),
+                fieldWithPath("tagRno").description(
+                    "The number of comments that this comment is tagging.")
+            ),
+            pathParameters(parameterWithName("bno").description("Board Number")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -161,25 +187,33 @@ class ReplyControllerTest {
         Community community = communityRepository.save(new Community("test", "test"));
 
         Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
             "test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User("testerUser", "testerUUID", "tester", "test@test.test", "password", new ArrayList<>());
+        User user = new User("testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
+        );
 
         Board board = boardRepository.save(new Board(
             "test",
-            community.getCommunityName(),
             "content",
+            community,
             category,
             user
         ));
 
         Reply reply = replyRepository.save(new Reply(
-            board.getPath() + "/",
+            0L,
+            0L,
             "test",
             user,
             "",
@@ -191,17 +225,27 @@ class ReplyControllerTest {
             "/board/{bno}/reply/{rno}",
             board.getBno(),
             reply.getRno()
-        ));
+        ).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             pathParameters(
-            parameterWithName("bno").description("Board Number"),
-            parameterWithName("rno").description("Reply Number to delete")
-        )));
+                parameterWithName("bno").description("Board Number"),
+                parameterWithName("rno").description("Reply Number to delete")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -210,26 +254,34 @@ class ReplyControllerTest {
         Community community = communityRepository.save(new Community("test", "test"));
 
         Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
             "test",
             "test",
             community,
             new ArrayList<>()
         ));
 
-        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
+        User user = new User("testerUser",
+            "testerUUID",
+            "test",
+            "test@test.test",
+            "password",
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
+        );
 
         Board board = boardRepository.save(new Board(
             "test",
-            community.getCommunityName(),
             "content",
+            community,
             category,
             user
         ));
 
         for (int i = 1; i <= 2; i++) {
             Reply reply = replyRepository.save(new Reply(
-                board.getBno() + "/",
+                0L,
+                0L,
                 "test" + i,
                 user,
                 "",
@@ -237,8 +289,9 @@ class ReplyControllerTest {
             ));
 
             replyRepository.save(new Reply(
-                board.getBno() + "/" + reply.getRno(),
-                "test" + i,
+                reply.getRno(),
+                0L,
+                "test" + (i + 1),
                 user,
                 reply.getUser().getId(),
                 board
@@ -246,105 +299,46 @@ class ReplyControllerTest {
         }
 
         //when
-        ResultActions result = mockMvc.perform(get("/board/{bno}/reply", board.getBno()));
+        ResultActions result = mockMvc.perform(get("/board/{bno}/reply", board.getBno()).header(
+                "_csrf",
+                "dummyCsrfToken"
+            )
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.total").value("2"),
+            jsonPath("$.total").value("4"),
             jsonPath("$.dtoList[0].replyContent").value("test1"),
             jsonPath("$.dtoList[1].replyContent").value("test2")
         ).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             pathParameters(
-            parameterWithName("bno").description("Board Number")
-        ), relaxedResponseFields(
-            fieldWithPath("total").description("Total number of reply on this board"),
-            fieldWithPath("dtoList[].rno").description("Reply Number"),
-            fieldWithPath("dtoList[].replyContent").description("Content of reply"),
-            fieldWithPath("dtoList[].replyWriter").description("Writer name of reply"),
-            fieldWithPath("dtoList[].replyWriterUuid").description("Writer UUID of reply"),
-            fieldWithPath("dtoList[].tag").description("The writer name of the tagged reply."),
-            fieldWithPath("dtoList[].replyDate").description("Date of reply registered"),
-            fieldWithPath("dtoList[].isNested").description("Count of nested reply"),
-            fieldWithPath("dtoList[].path").description("{BNO}/{RNO}(optional)/ +" + "\n"
-                + "Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it."),
-            fieldWithPath("dtoList[].vote").description("Count of like")
-        )));
-    }
-
-    @Test
-    void replyNestedListGet() throws Exception {
-        //given
-        Community community = communityRepository.save(new Community("test", "test"));
-
-        Category category = categoryRepository.save(new Category(
-            community.getCommunityName(),
-            "test",
-            "test",
-            community,
-            new ArrayList<>()
+                parameterWithName("bno").description("Board Number")
+            ),
+            relaxedResponseFields(
+                fieldWithPath("total").description("Total number of reply on this board"),
+                fieldWithPath("dtoList[].rno").description("Reply Number"),
+                fieldWithPath("dtoList[].replyContent").description("Content of reply"),
+                fieldWithPath("dtoList[].replyWriter").description("Writer name of reply"),
+                fieldWithPath("dtoList[].replyWriterUuid").description("Writer UUID of reply"),
+                fieldWithPath("dtoList[].tag").description("The writer name of the tagged reply."),
+                fieldWithPath("dtoList[].replyDate").description("Date of reply registered"),
+                fieldWithPath("dtoList[].childCount").description("Count of nested reply"),
+                fieldWithPath("dtoList[].parentRno").description(
+                    "Parent comment number for this comment."),
+                fieldWithPath("dtoList[].taggedCount").description("Count of tagged."),
+                fieldWithPath("dtoList[].vote").description("Count of like")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
-
-        User user = new User("testerUser", "testerUUID", "test", "test@test.test", "password", new ArrayList<>());
-
-        Board board = boardRepository.save(new Board(
-            "test",
-            community.getCommunityName(),
-            "content",
-            category,
-            user
-        ));
-
-        for (int i = 1; i <= 2; i++) {
-            Reply reply = replyRepository.save(new Reply(
-                board.getBno() + "/",
-                "test" + i,
-                user,
-                "",
-                board
-            ));
-
-            if (i > 1) {
-                for (int j = 3; j <= 4; j++) {
-                    replyRepository.save(new Reply(
-                        board.getBno() + "/" + reply.getRno(),
-                        "test" + (i + j),
-                        user,
-                        reply.getUser().getId(),
-                        board
-                    ));
-                }
-            }
-        }
-
-        //when
-        ResultActions result = mockMvc.perform(get("/board/{bno}/reply/{rno}", board.getBno(), 2));
-
-        //then
-        result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.total").value("2"),
-            jsonPath("$.dtoList[0].replyContent").value("test5")
-        ).andDo(print());
-
-        //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            pathParameters(
-            parameterWithName("bno").description("Board Number"),
-            parameterWithName("rno").description("Reply Number")
-        ), relaxedResponseFields(
-            fieldWithPath("total").description("Total number of reply on this board"),
-            fieldWithPath("dtoList[].rno").description("Reply Number"),
-            fieldWithPath("dtoList[].replyContent").description("Content of reply"),
-            fieldWithPath("dtoList[].replyWriter").description("Writer name of reply"),
-            fieldWithPath("dtoList[].replyWriterUuid").description("Writer UUID of reply"),
-            fieldWithPath("dtoList[].tag").description("The writer name of the tagged reply."),
-            fieldWithPath("dtoList[].replyDate").description("Date of reply registered"),
-            fieldWithPath("dtoList[].isNested").description("Count of nested reply"),
-            fieldWithPath("dtoList[].path").description("{BNO}/{RNO}(optional)/ +" + "\n"
-                + "Board Number is placed as the top path, and if it is nested reply, Reply Number is inserted as the subsequent path for it."),
-            fieldWithPath("dtoList[].vote").description("Count of like")
-        )));
     }
 }

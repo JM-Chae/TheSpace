@@ -6,6 +6,9 @@ import static com.thespace.config.RestDocsConfig.CsrfRestDocumentationRequestBui
 import static com.thespace.config.RestDocsConfig.write;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
 import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
@@ -33,7 +36,8 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
+import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,21 +73,30 @@ class CommunityControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserService userService;
+    static Long rid;
 
     @Autowired
     private UserRoleRepository userRoleRepository;
 
     @Autowired
     private CommunityRepository communityRepository;
+    @Autowired
+    private UserRoleService userRoleService;
 
     @BeforeEach
     void setup() {
         dataBaseCleaner.clear();
-        User user = userRepository.save(new User("testerUser", "testerUUID", "tester", "test@test.test", "password", new ArrayList<>()));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        User user = userRepository.save(new User("testerUser",
+            "testerUUID",
+            "tester",
+            "test@test.test",
+            "password",
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
+        ));
+        rid = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), rid);
     }
 
     @Test
@@ -92,30 +105,35 @@ class CommunityControllerTest {
         Community community = communityRepository.save(new Community("test", "test"));
 
         //when
-        ResultActions result = mockMvc.perform(get(
-            "/community/{communityName}",
-            community.getCommunityName()
-        ));
+        ResultActions result = mockMvc.perform(get("/community/{communityId}",
+            community.getId()
+        ).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk())
-            .andExpectAll(
-                jsonPath("$.communityName").value(community.getCommunityName()),
+            .andExpectAll(jsonPath("$.name").value(community.getName()),
                 jsonPath("$.description").value(community.getDescription())
-            ).andDo(print());
+            )
+            .andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            pathParameters(parameterWithName("communityName").description("Community name to search")),
-            relaxedResponseFields(
-                fieldWithPath("communityId").description("Community ID"),
-                fieldWithPath("communityName").description("Community name"),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            pathParameters(parameterWithName("communityId").description("Community Id to search")),
+            relaxedResponseFields(fieldWithPath("id").description("Community ID"),
+                fieldWithPath("name").description("Community name"),
                 fieldWithPath("createDate").description("Created date"),
                 fieldWithPath("modDate").description("Modified date"),
-                fieldWithPath("description").description("Community description"),
-                fieldWithPath("category").description(
-                    "List of categories that are open in that community.")
-            )
+                fieldWithPath("description").description("Community description")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 
@@ -127,44 +145,53 @@ class CommunityControllerTest {
         }
 
         //when
-        ResultActions result = mockMvc.perform(get("/community/list")
-                .queryParam("page", "0")
-                .queryParam("size", "0")
+        ResultActions result = mockMvc.perform(get("/community/list").queryParam("page", "0")
+            .queryParam("size", "0")
             .queryParam("type", "n")
-            .queryParam("keyword", "3"));
+            .queryParam("keyword", "3")
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
-        result.andExpect(status().isOk()).andExpectAll(
-            jsonPath("$.total").value("3"),
+        result.andExpect(status().isOk()).andExpectAll(jsonPath("$.total").value("3"),
             jsonPath("$.page").value("1"),
             jsonPath("$.size").value("1000000"),
-            jsonPath("$.dtoList[0].communityId").value("3")
+            jsonPath("$.dtoList[0].id").value("3")
         ).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            queryParameters(
-            parameterWithName("page").description("0"),
-            parameterWithName("size").description("0"),
-            parameterWithName("type").description(
-                "n / Use n to distinguish it from other list lookup APIs."),
-            parameterWithName("keyword").description("Keywords to search for")
-        ), relaxedResponseFields(
-            fieldWithPath("page").description(
-                "1 / This is fixed value because it will show the list all on one page."),
-            fieldWithPath("size").description(
-                "1000000 / This is fixed value because it will show the list all on one page. It may be different if we introduce a community cap or group-specific categorising in the future."),
-            fieldWithPath("total").description("Total number of search hits."),
-            fieldWithPath("start").description(
-                "1 / This is fixed value because it will show the list all on one page."),
-            fieldWithPath("end").description(
-                "1 / This is fixed value because it will show the list all on one page."),
-            fieldWithPath("prev").description(
-                "false / This is fixed value because it will show the list all on one page."),
-            fieldWithPath("next").description(
-                "false / This is fixed value because it will show the list all on one page."),
-            fieldWithPath("dtoList").description("List of rows of search results.")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            queryParameters(parameterWithName("page").description("0"),
+                parameterWithName("size").description("0"),
+                parameterWithName("type").description(
+                    "n / Use n to distinguish it from other list lookup APIs."),
+                parameterWithName("keyword").description("Keywords to search for")
+            ),
+            relaxedResponseFields(
+                fieldWithPath("page").description(
+                    "1 / This is fixed value because it will show the list all on one page."),
+                fieldWithPath("size").description(
+                    "1000000 / This is fixed value because it will show the list all on one page. It may be different if we introduce a community cap or group-specific categorising in the future."),
+                fieldWithPath("total").description("Total number of search hits."),
+                fieldWithPath("start").description(
+                    "1 / This is fixed value because it will show the list all on one page."),
+                fieldWithPath("end").description(
+                    "1 / This is fixed value because it will show the list all on one page."),
+                fieldWithPath("prev").description(
+                    "false / This is fixed value because it will show the list all on one page."),
+                fieldWithPath("next").description(
+                    "false / This is fixed value because it will show the list all on one page."),
+                fieldWithPath("dtoList").description("List of rows of search results.")
+            ),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -176,25 +203,33 @@ class CommunityControllerTest {
         //when
         ResultActions result = mockMvc.perform(post("/community").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(createDTO))
-            .queryParam("nameCheck", "true"));
+            .queryParam("nameCheck", "true")
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
         Community community = communityRepository.findById(1L).orElseThrow();
-        if (!(community.getCommunityName().equals(createDTO.communityName())
-            && community.getDescription().equals(createDTO.description()))) {
+        if (!(community.getName().equals(createDTO.communityName()) && community.getDescription()
+            .equals(createDTO.description()))) {
             throw new Exception();
         }
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            requestFields(
-            fieldWithPath("communityName").description(
-                "Name of community"),
-            fieldWithPath("description").description("Description of community")
-        ), queryParameters(
-            parameterWithName("nameCheck").description("result of name check")
-        )));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            requestFields(fieldWithPath("communityName").description("Name of community"),
+                fieldWithPath("description").description("Description of community")
+            ),
+            queryParameters(parameterWithName("nameCheck").description("result of name check")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -203,18 +238,28 @@ class CommunityControllerTest {
         String test = "Test Community 1";
 
         //when
-        ResultActions result = mockMvc.perform(get("/community/nameCheck").queryParam(
-            "communityName",
-            test
-        ));
+        ResultActions result = mockMvc.perform(get("/community/nameCheck").queryParam("communityName",
+                test
+            )
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andExpect(jsonPath("$").value(true)).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             queryParameters(parameterWithName("communityName").description(
-            "Name of community to check"))));
+                "Name of community to check")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 
     @Test
@@ -223,32 +268,34 @@ class CommunityControllerTest {
         //given
         Community community = communityRepository.save(new Community("test", "test"));
 
-        UserRole userRole = userRoleRepository.save(new UserRole(
-            "ADMIN_" + community.getCommunityName(),
+        UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
             new ArrayList<>()
         ));
-        userService.setRole("testerUser", userRole.getRole());
+        userRoleService.setRole("testerUser", userRole.getId());
 
         //when
-        ResultActions result = mockMvc.perform(delete(
-            "/community/{communityId}",
-            community.getCommunityId()
-        ).queryParam("communityName", community.getCommunityName()));
+        ResultActions result = mockMvc.perform(delete("/community/{communityId}",
+            community.getId()
+        ).header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
-        assertThrows(
-            Exception.class,
-            () -> communityRepository.findById(community.getCommunityId())
-                .orElseThrow(Exception::new)
+        assertThrows(Exception.class,
+            () -> communityRepository.findById(community.getId()).orElseThrow(Exception::new)
         );
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             pathParameters(parameterWithName("communityId").description("CommunityID to delete")),
-            queryParameters(
-                parameterWithName("communityName").description("Name of community to delete")
-            )
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 
@@ -259,23 +306,32 @@ class CommunityControllerTest {
         for (int i = 1; i <= 4; i++) {
             Community community = communityRepository.save(new Community("test" + i, "test" + i));
 
-            UserRole userRole = userRoleRepository.save(new UserRole(
-                "ADMIN_" + community.getCommunityName(),
+            UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
                 new ArrayList<>()
             ));
-            userService.setRole("testerUser", userRole.getRole());
+            userRoleService.setRole("testerUser", userRole.getId());
         }
 
         //when
-        ResultActions result = mockMvc.perform(get("/community/list/admin"));
+        ResultActions result = mockMvc.perform(get("/community/list/admin").header("_csrf",
+            "dummyCsrfToken"
+        ).cookie(new Cookie("JSESSIONID", "example-session-id")));
 
         //then
         result.andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(4)).andDo(print());
 
         //docs
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
             responseFields(fieldWithPath("[]").description(
-                "List of CommunityID what performer has admin role."))
+                "List of CommunityID what performer has admin role.")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }
 
@@ -283,39 +339,41 @@ class CommunityControllerTest {
     @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void communityModify() throws Exception {
         //given
-        Community community = communityRepository.save(new Community(
-            "test",
-            "test"
-        ));
+        Community community = communityRepository.save(new Community("test", "test"));
 
-        Modify modifyDTO = new Modify(
-            community.getCommunityId(),
-            community.getCommunityName(),
-            "modify"
-        );
+        Modify modifyDTO = new Modify("modify");
 
-        UserRole userRole = userRoleRepository.save(new UserRole(
-            "ADMIN_" + community.getCommunityName(),
+        UserRole userRole = userRoleRepository.save(new UserRole("ADMIN_" + community.getName(),
             new ArrayList<>()
         ));
-        userService.setRole("testerUser", userRole.getRole());
+        userRoleService.setRole("testerUser", userRole.getId());
 
         //when
-        ResultActions result = mockMvc.perform(patch("/community/modify")
-            .contentType(MediaType.APPLICATION_JSON)
+        ResultActions result = mockMvc.perform(patch("/community/{communityId}/modify",
+            community.getId()
+        ).contentType(MediaType.APPLICATION_JSON)
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id"))
             .content(objectMapper.writeValueAsString(modifyDTO)));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
-        community = communityRepository.findById(community.getCommunityId()).orElseThrow();
+        community = communityRepository.findById(community.getId()).orElseThrow();
         if (!community.getDescription().equals(modifyDTO.description())) {
             throw new Exception();
         }
 
-        result.andDo(write().document(requestHeaders(), responseBody(), requestBody(), curlRequest(), httpRequest(), httpResponse(),
-            requestFields(
-            fieldWithPath("communityId").description("CommunityID to update"),
-            fieldWithPath("communityName").description("Community name to update"),
-            fieldWithPath("description").description("Description what will change"))));
+        result.andDo(write().document(requestHeaders(),
+            responseBody(),
+            requestBody(),
+            curlRequest(),
+            httpRequest(),
+            httpResponse(),
+            pathParameters(parameterWithName("communityId").description("Community ID to update")),
+            requestFields(fieldWithPath("description").description("Description what will change")),
+            requestCookies(cookieWithName("JSESSIONID").description(
+                "Authenticated user session ID cookie")),
+            requestHeaders(headerWithName("_csrf").description("CSRF Token"))
+        ));
     }
 }

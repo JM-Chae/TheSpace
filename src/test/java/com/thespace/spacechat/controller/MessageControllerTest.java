@@ -14,7 +14,7 @@ import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRepository;
 import com.thespace.spaceweb.user.UserRole;
 import com.thespace.spaceweb.user.UserRoleRepository;
-import com.thespace.spaceweb.user.UserService;
+import com.thespace.spaceweb.user.UserRoleService;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class MessageControllerTest {
     private DataBaseCleaner dataBaseCleaner;
 
     @Autowired
-    private UserService userService;
+    private UserRoleService userRoleService;
 
     @Autowired
     private UserRepository userRepository;
@@ -102,10 +102,12 @@ public class MessageControllerTest {
             "tester",
             "test@test.test",
             passwordEncoder.encode("password"),
-            new ArrayList<>()
+            new ArrayList<>(),
+            "nice to meet you",
+            "😊"
         ));
-        userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>()));
-        userService.setRole(user.getId(), "ROLE_USER");
+        rid = userRoleRepository.save(new UserRole("ROLE_USER", new ArrayList<>())).getId();
+        userRoleService.setRole(user.getId(), rid);
 
         //Create ChatRoom And join testUser
         Room entity = new Room(

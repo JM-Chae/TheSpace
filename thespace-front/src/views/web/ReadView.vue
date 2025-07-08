@@ -460,7 +460,7 @@ function routing() {
                       </div>
                       <div style="display: inline-block;">
                         <el-button v-if="rDto.replyWriterUuid == user.uuid" round size="small" style="margin-left: 0.5em" title="Delete" type="danger"
-                                   @click="deleteReplyAlert(rDto.rno, rDto.childCount > 0 ? 1 : 0, false);" @click.stop>
+                                   @click="deleteReplyAlert(rDto.rno, rDto.childCount > 0 ? 1 : 0);" @click.stop>
                           <el-icon size="15"><Delete /></el-icon>
                         </el-button>
                         <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"

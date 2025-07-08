@@ -82,10 +82,13 @@ public class CommunityService {
             .build();
     }
 
-    public void delete(Long communityId, Authentication authentication, String communityName) {
+    public void delete(Long communityId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+
+        Community community = communityRepository.findById(communityId).orElseThrow(CommunityNotFound::new);
+
         if (!userService.findUserRoles(user.getId())
-            .contains(userRoleService.findRoleIdByName("ADMIN_" + communityName))) {
+            .contains(userRoleService.findRoleIdByName("ADMIN_" + community.getName()))) {
             return;
         }
 
