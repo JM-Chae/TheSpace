@@ -1,10 +1,18 @@
 <script lang="ts" setup>
 import {Edit} from '@element-plus/icons-vue'
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {useRoute} from "vue-router";
 import EmojiPicker from 'vue3-emoji-picker';
 import 'vue3-emoji-picker/css';
+import {
+  friendshipBlock,
+  friendshipRequest,
+  friendshipRequestDelete,
+  friendshipUnblock,
+  getFriendshipInfo
+} from '../../stores/Friendship';
+import type {friendshipInfo} from '@/types/domain'
 
 function getMyPageInfo() {
   axios.get(`/user/${uuid}/mypage`).then((res) => {
@@ -19,17 +27,51 @@ interface user {
   joinedOn: string
 }
 
-const route = useRoute()
-const uuid = route.query.uuid
+const route = useRoute();
+const uuid = route.query.uuid;
 const pageUserInfo = ref<user>();
+const friendshipInfo = ref<friendshipInfo>();
+const fid = ref();
+const fStatus = ref();
+const fMemo = ref();
+
+async function friendshipRequestHandler() {
+  friendshipInfo.value = await friendshipRequest(pageUserInfo.value?.uuid);
+}
+
+async function friendshipBlockHandler() {
+  friendshipInfo.value = await friendshipBlock(pageUserInfo.value?.uuid);
+}
+
+async function friendshipRequestDeleteHandler() {
+  friendshipInfo.value = await friendshipRequestDelete(pageUserInfo.value?.uuid, friendshipInfo.value?.fid);
+}
+
+async function friendshipUnblockHandler() {
+  friendshipInfo.value = await friendshipUnblock(pageUserInfo.value?.uuid, friendshipInfo.value?.fid);
+}
+
+watch(friendshipInfo, (newVal) => {
+  if(newVal) {
+    fid.value = newVal.fid;
+    fMemo.value = newVal.memo;
+
+    if (newVal.status == "NONE") fStatus.value =  "Oh, Do you wanna be 'Friends' with them?"
+    else if (newVal.status == "REQUEST") fStatus.value = "Hmm... maybe they haven't seen your request yet.\nOr, you know, they might be thinking it over."
+    else if (newVal.status == "BLOCKED") fStatus.value = "I thought you weren't a fan of them. No?"
+    else if (newVal.status == "ACCEPTED") fStatus.value = "What's up bro?"
+  }
+})
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 const currentUser = JSON.parse(getInfo)
 
 let editIcon = false;
+let friendRequestButton = true;
 
 if (currentUser.uuid == uuid) {
   editIcon = true;
+  friendRequestButton = false;
 }
 
 const tempPage = history.state.page
@@ -47,9 +89,10 @@ function formatDate(dateString: any)
     return date.getFullYear() + '. ' + (date.getMonth() + 1) + '. ' + date.getDate();
 }
 
-onMounted(() => {
+onMounted(async () => {
 
-  getMyPageInfo()
+  getMyPageInfo();
+  friendshipInfo.value = await getFriendshipInfo(uuid)
 })
 
 const signature = ref('');
@@ -81,9 +124,45 @@ function updateInfo() {
 
 <template>
   <html class="dark">
-    <div class="main">
+  <div class="main">
       <div class="profile">
         <div class="container content-gab" v-bind="pageUserInfo">
+          <el-popover placement="left-start" title="Friendship Menu" trigger="click" width="fit-content">
+            <template #reference>
+              <el-button v-if="friendRequestButton" class="friendRequestBtn" color="rgba(0, 189, 126, 0.54)" round>
+                <svg height="18px" viewBox="-2 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/><path d="M15 13.5 A 2 2 0 1 1 17 15.5 L 17 17.5 M 17 20.5 V 20.01"/></g></svg>
+              </el-button>
+            </template>
+            <div class="container content-gab" style="padding: 1em; gap: 1em;">
+              <div v-if="pageUserInfo">
+                <el-text class="popoverName">{{pageUserInfo.name}}</el-text><el-text class="popoverName">#{{pageUserInfo.uuid}}</el-text>
+              </div>
+              <el-text v-if="fMemo">{{fMemo}}</el-text>
+              <el-text v-if="fStatus" class="fStatus">{{fStatus}}</el-text>
+              <div>
+                <el-button v-if="fid == 0" round style="padding: 0 7px" type="primary" @click="friendshipRequestHandler()">
+                  <!-- Friendship request -->
+                  <svg height="18px" viewBox="-2 -1 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/><path d="M 15 17 H 19 M 17 15 V 19"/></g></svg>
+                </el-button>
+                <el-button v-if="friendshipInfo && friendshipInfo.status == 'REQUEST'" round style="padding: 0 7px" type="warning" @click="friendshipRequestDeleteHandler()">
+                    <!-- Delete to Friendship request -->
+                    <svg height="18px" viewBox="-2 -1 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill= "none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" ><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/><path d="M 15 17 H 19"/></g></svg>
+                </el-button>
+                <el-button v-if="friendshipInfo?.status != 'BLOCKED'" round style="padding: 0 7px" type="danger" @click="friendshipBlockHandler()">
+                  <!-- Friendship block -->
+                  <svg height="18px" viewBox="-1 -1 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill= "none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" ><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/><circle cx="17" cy="17" r="3.5" /><path d="M 14.5 14.5 L 19.5 19.5"/></g></svg>
+                </el-button>
+                <el-button v-if="friendshipInfo && friendshipInfo.status == 'BLOCKED'" round style="padding: 0 7px" type="success" @click="friendshipUnblockHandler()">
+                  <!-- Friendship unblock -->
+                  <svg height="18px" viewBox="-1 -1 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill= "none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/></g><g fill= "none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"><path d="M 18 20.5 A 3.5 3.5 0 1 0 14 18 L 17 16 M 13.5 18 L 12.5 13.5"/></g></svg>
+                </el-button>
+                <el-button round style="padding: 0 7px" type="info">
+                  <!-- Friendship memo -->
+                  <svg height="18px" viewBox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill= "none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ><path d="M 5 3 H 19 V 21 H 5 Z M 8 8 H 16 M 8 12 H 16 M 8 16 H 12"/><path d="M 13 9 L 15 7 L 20 12 L 21 11 L 16 6 L 13 9 Z"/></g></svg>
+                </el-button>
+              </div>
+            </div>
+          </el-popover>
           <div class="title">Who's There?</div>
           <hr>
           <div class="signature">
@@ -93,7 +172,7 @@ function updateInfo() {
                 {{ pageUserInfo?.signature }}
               </div>
               <el-button v-if="editIcon" class="editButton" link round size="small" @click="signatureModal=true">
-                <el-icon size="15" style="color: #8f8f8f; top: -0.6em; right: -2.7em;">
+                <el-icon size="15" style="color: #8f8f8f;">
                   <Edit/>
                 </el-icon>
               </el-button>
@@ -106,7 +185,7 @@ function updateInfo() {
             <div class="signature-name content-gab">
               <div class="info-container">
                 <el-button v-if="editIcon" class="editButton" link round size="small" @click="nameModal=true">
-                  <el-icon size="15" style="color: #8f8f8f; top: 0.3em; right: -2.6em;">
+                  <el-icon size="15" style="color: #8f8f8f;">
                     <Edit/>
                   </el-icon>
                 </el-button>
@@ -119,13 +198,13 @@ function updateInfo() {
               </div>
               <div class="info-container">
                 <p class="info-title">UUID</p>
-                <p class="info-content">{{ pageUserInfo?.uuid }}</p>
+                <p class="info-content" style="padding: 0 0.4em">{{ pageUserInfo?.uuid }}</p>
               </div>
             </div>
           </div>
           <div class="info-container">
             <el-button v-if="editIcon" class="editButton" link round size="small" @click="introduceModal=true">
-              <el-icon size="15" style="color: #8f8f8f; top: 0.5em; right: -7.7em;">
+              <el-icon size="15" style="color: #8f8f8f;">
                 <Edit/>
               </el-icon>
             </el-button>
@@ -146,7 +225,7 @@ function updateInfo() {
         <div class="container content-gab">
           <div class="title">Their activities</div>
           <hr>
-          <ListView :keyword="pageUserInfo?.uuid" :page="page" :show="false" :size="5" tableMin="272px" type="u" @sendPage="getPageValue"/>
+          <ListView v-if="pageUserInfo" :keyword="uuid" :page="page" :show="false" :size="5" tableMin="272px" type="u" @sendPage="getPageValue"/>
         </div>
       </div>
     </div>
@@ -155,10 +234,19 @@ function updateInfo() {
 
 <style scoped>
 
+  .friendRequestBtn {
+    position: absolute;
+    height: 30px;
+    width: 0;
+    top: 22px;
+  }
+
   .editButton {
     position: absolute;
     height: 0;
     width: 0;
+    top: 0.5em;
+    right: 0.1em;
   }
 
   hr {
@@ -180,11 +268,11 @@ function updateInfo() {
 
     .profile {
       min-width: fit-content;
-      width: 30vw;
+      width: 35vw;
     }
 
     .activity {
-      width: 60vw;
+      width: 65vw;
     }
   }
 
@@ -214,6 +302,7 @@ function updateInfo() {
     border-radius: 0.3em;
     margin: 0 0 0 0;
     text-align: center;
+    position: relative;
   }
 
   .info-title {
@@ -251,11 +340,28 @@ function updateInfo() {
     background-color: #FFFFFF0F;
     padding: 1em 2em 2em 2em;
     margin: 0.5em;
+    position: relative;
   }
 
   .content-gab {
     display: flex;
     flex-direction: column;
     gap: 2em;
+  }
+
+  .fStatus {
+    border: 1px solid #BABABA3D;
+    border-radius: 0.5em;
+    background-color: rgba(255, 255, 255, 0.11);
+    font-size: 1.1em;
+    color: #41FF9EB5;
+    padding: 0.5em
+  }
+
+  .popoverName {
+    font-size: 1.2em;
+    color: rgba(255, 255, 255, 0.84);
+    padding: 0.5em 0.2em 0.5em 0.2em;
+    font-weight: bold;
   }
 </style>

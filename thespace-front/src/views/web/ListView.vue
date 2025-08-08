@@ -351,7 +351,7 @@ const post = () =>
 					<div class = "text-center th">Writer</div>
 				</template>
 				<template #default = "scope">
-					<el-popover :hide-after = "10" effect = "dark" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+					<el-popover :hide-after = "10" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
 						<template #default>
 							<el-button class = "td" link style = "display: inline-block; color: white;">
 								{{ scope.row.writerUuid }}
@@ -363,7 +363,7 @@ const post = () =>
 					</el-popover>
 				</template>
 			</el-table-column>
-			<el-table-column width = "80">
+			<el-table-column width = "100%">
 				<template #header>
 					<div class = "text-center th">Date</div>
 				</template>
@@ -371,7 +371,7 @@ const post = () =>
 					<div class = "text-center td">{{ formatDate(scope.row.createDate) }}</div>
 				</template>
 			</el-table-column>
-			<el-table-column width = "85">
+			<el-table-column width = "100%">
 				<template #header>
 					<div class = "text-center th">Views</div>
 				</template>
@@ -379,7 +379,7 @@ const post = () =>
 					<div class = "text-center td">{{ scope.row.viewCount }}</div>
 				</template>
 			</el-table-column>
-			<el-table-column width = "80">
+			<el-table-column width = "100%">
 				<template #header>
 					<div class = "text-center th">Likes</div>
 				</template>

@@ -22,6 +22,8 @@ public class QFriendship extends EntityPathBase<Friendship> {
 
     public static final QFriendship friendship = new QFriendship("friendship");
 
+    public final DateTimePath<java.time.LocalDateTime> acceptedAt = createDateTime("acceptedAt", java.time.LocalDateTime.class);
+
     public final NumberPath<Long> fid = createNumber("fid", Long.class);
 
     public final com.thespace.spaceweb.user.QUser from;

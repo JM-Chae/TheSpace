@@ -84,7 +84,7 @@ const login = function () {
           </svg>
         </div>
         <div class="ms-2" style="display: flex; flex-direction: column;">
-          <text style="color: #00DE64; font-size: 3em">The Space</text>
+          <text style="color: #00DE64; width: max-content; font-size: 3em">The Space</text>
           <text class="ms-1" style="font-size: 0.7em">Hope to find your own space in The Space.</text>
         </div>
       </div>

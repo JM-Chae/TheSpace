@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Entity
@@ -23,14 +24,16 @@ public class Friendship {
     @JoinColumn(name = "from_user_id")
     private User from;
 
-    @JoinColumn(name = "to_user_id")
     @ManyToOne
+    @JoinColumn(name = "to_user_id")
     private User to;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
     private String memo;
+
+    private LocalDateTime acceptedAt;
 
     public Friendship() {
     }
@@ -39,6 +42,10 @@ public class Friendship {
         this.from = from;
         this.to = to;
         this.status = status;
+    }
+
+    public void acceptedAtWriter() {
+        this.acceptedAt = LocalDateTime.now();
     }
 
     public void changeMemo(String memo) {

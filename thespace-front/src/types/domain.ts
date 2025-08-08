@@ -14,3 +14,10 @@ export interface CategoryInfo {
   modifiedAt: string;
   communityId: number;
 }
+
+export interface friendshipInfo {
+  fid: number,
+  status: string,
+  memo: string
+  acceptedAt: string
+}

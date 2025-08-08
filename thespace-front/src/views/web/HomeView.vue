@@ -46,7 +46,7 @@ import {RouterView} from 'vue-router'
       </div>
       <div class="ms-5" style="display: flex; flex-direction: column;">
         <text style="color: #00DE64; font-size: 7em">The Space</text>
-        <text class="ms-2">Hope to find your own space in The Space.</text>
+        <text class="ms-2" style="text-align: end">Hope to find your own space in The Space.</text>
       </div>
     </div>
   </main>

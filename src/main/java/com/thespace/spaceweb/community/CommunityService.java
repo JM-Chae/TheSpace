@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -37,6 +38,7 @@ public class CommunityService {
             community.getDescription());
     }
 
+    @Transactional
     public Info create(CommunityDTOs.Create createDTO, Authentication authentication, boolean nameCheck) {
         if (!nameCheck) {
             return null;

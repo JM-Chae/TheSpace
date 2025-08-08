@@ -5,6 +5,7 @@ import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
 import type {CategoryInfo, CommunityInfo} from "@/types/domain";
+import {goMyPage} from "@/router/GoMyPage"
 
 function getRead() {
   axios.get(`/board/${bno}`)
@@ -353,9 +354,11 @@ function routing() {
         </el-col>
         <el-col :span="16">
           <div>
-            <el-text class="name">{{ getDto?.writerUuid }}</el-text>
-            <el-text>&nbsp/&nbsp</el-text>
-            <el-text class="name">{{ getDto?.writer }}</el-text>
+            <el-button link @click="goMyPage(getDto?.writerUuid)">
+              <el-text class="name">{{ getDto?.writerUuid }}</el-text>
+              <el-text>&nbsp/&nbsp</el-text>
+              <el-text class="name">{{ getDto?.writer }}</el-text>
+            </el-button>
           </div>
         </el-col>
         <el-col :span="8">
@@ -396,7 +399,7 @@ function routing() {
           </el-popover>
         </div>
         <el-button class="button" color="#ff25cf" round size="small" style="margin-left: auto;"
-                   title="Like!" @click="like(0)">❤
+                   title="Like!" @click="like(0)"><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg>
         </el-button>
         <el-button placeholder="Close Reply" round size="small" style="margin-left: 0.5em"
                    type="primary" v-bind:title="replyClose ? 'ReplyHide' : 'ReplyView'"
@@ -435,15 +438,18 @@ function routing() {
                   <div id="replyList">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
-                        <el-popover :width="10" effect="dark" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
+                        <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                           <template #reference>
                             <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
-                          <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
-                            {{ rDto.replyWriter }}
-                          </span>
+                              <el-button link @click="goMyPage(getDto?.writerUuid)">
+                                <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">{{ rDto.replyWriter }}
+                                </span>
+                              </el-button>
                             </el-button>
                           </template>
+                          <el-button link @click="goMyPage(getDto?.writerUuid)">
                           {{ rDto.replyWriterUuid }}
+                          </el-button>
                         </el-popover>
                       </div>
                       <div style="text-align: left; margin-left: auto; flex-grow: 20">
@@ -464,7 +470,7 @@ function routing() {
                           <el-icon size="15"><Delete /></el-icon>
                         </el-button>
                         <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
-                                   @click="rLikeCount(rDto.rno, rDto)" @click.stop>❤</el-button>
+                                   @click="rLikeCount(rDto.rno, rDto)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
                       </div>
                     </div>
                   </div>
@@ -475,33 +481,41 @@ function routing() {
                       <div style="display: grid;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                           <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
-                            <el-popover :width="10" effect="dark" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
+                            <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                               <template #reference>
                                 <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
-                              <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
-                                {{ child.replyWriter }}
-                              </span>
+                                  <el-button link @click="goMyPage(getDto?.writerUuid)">
+                                    <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
+                                    {{ child.replyWriter }}
+                                    </span>
+                                  </el-button>
                                 </el-button>
                               </template>
+                              <el-button link @click="goMyPage(getDto?.writerUuid)">
                               {{ child.replyWriterUuid }}
+                              </el-button>
                             </el-popover>
                           </div>
-                          <div style="text-align: left; margin-left: auto; flex-grow: 20">
+                          <div style="text-align: left; flex-grow: 20">
                             <span style="color: #919191">┗　</span>
-                            <el-text v-if="child.tag != undefined"
+                            <el-text v-if="child.tag != ''"
                                      v-model="child.tag">
                               <el-popover
-                                          :width="10" effect="dark" placement="top"
+                                          :width="10" placement="top"
                                           popper-style="text-align: center" title="UUID"
                                           trigger="hover">
                                 <template #reference>
-                                  <el-button class="name" link style="display: inline-block; color: rgba(41,198,255,0.75); max-width: 10em;">
-                                    <span style="margin-right: 0.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
-                                      {{child.tag.split(' ')[2] }} {{child.tag.split(' ')[0] }}
+                                  <el-button class="name" link style="margin-left: 0; padding-left: 0; display: inline-block; max-width: 10em;">
+                                    <span style="margin-right: 0.3em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 10em">
+                                      <el-button link style="margin-left: 0; padding-left: 0; color: rgba(41,198,255,0.75);" @click="goMyPage(getDto?.writerUuid)">
+                                        {{child.tag.split(' ')[2] }} {{child.tag.split(' ')[0] }}
+                                      </el-button>
                                     </span>
                                   </el-button>
                                 </template>
+                                <el-button link @click="goMyPage(getDto?.writerUuid)">
                                 {{child.tag.split(' ')[1] }}
+                                </el-button>
                               </el-popover>
                             </el-text>
                             <el-text class="text">{{ child.replyContent }}</el-text>
@@ -511,7 +525,7 @@ function routing() {
                           </div>
                         </div>
                         <div class="pt-1" style="display: flex; justify-content: space-between; align-items: center;">
-                          <div style="margin-left: 12.5em; display: inline-block;">
+                          <div style="margin-left: 12.6em; display: inline-block;">
                             <el-text>Like: {{ child.vote }}</el-text>
                           </div>
                           <div style="display: inline-block;">
@@ -520,7 +534,7 @@ function routing() {
                               <el-icon size="15"><Delete /></el-icon>
                             </el-button>
                             <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
-                                       @click="rLikeCount(child.rno, child)" @click.stop>❤</el-button>
+                                       @click="rLikeCount(child.rno, child)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
                           </div>
                         </div>
                       </div>

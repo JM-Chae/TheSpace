@@ -379,7 +379,7 @@ const post = () =>
 					<div class = "text-center th">Writer</div>
 				</template>
 				<template #default = "scope">
-					<el-popover :hide-after = "10" effect = "dark" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
+					<el-popover :hide-after = "10" placement = "left" popper-style = "text-align: center" title = "UUID" trigger = "hover">
 						<template #default>
 							<el-button class = "td" link style = "display: inline-block; color: white;">
 								{{ scope.row.writerUuid }}

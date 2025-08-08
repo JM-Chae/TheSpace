@@ -4,5 +4,6 @@ public enum Status {
 
     REQUEST,
     BLOCKED,
-    ACCEPTED
+    ACCEPTED,
+    NONE
 }
