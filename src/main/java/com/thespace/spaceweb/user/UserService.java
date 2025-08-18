@@ -1,6 +1,6 @@
 package com.thespace.spaceweb.user;
 
-import com.thespace.common.exception.UserNotFound;
+import com.thespace.common.exception.Exceptions.UserNotFound;
 import com.thespace.spaceweb.user.UserDTOs.MyPage;
 import com.thespace.spaceweb.user.UserDTOs.UpdateInfo;
 import java.util.List;

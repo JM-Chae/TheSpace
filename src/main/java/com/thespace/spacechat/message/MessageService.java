@@ -5,6 +5,8 @@ import com.thespace.common.DomainNames;
 import com.thespace.common.IdGenerator;
 import com.thespace.common.exception.NotMember;
 import com.thespace.common.exception.RoomNotFound;
+import com.thespace.common.exception.Exceptions.NotMember;
+import com.thespace.common.exception.Exceptions.RoomNotFound;
 import com.thespace.spacechat.message.MessageDTOs.Text;
 import com.thespace.spacechat.room.RoomService;
 import com.thespace.spaceweb.user.User;

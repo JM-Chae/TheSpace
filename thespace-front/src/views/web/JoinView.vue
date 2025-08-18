@@ -182,7 +182,7 @@ const check = () =>
     <div style="display: flex; justify-content: center;">
       <div class="pt-5" style = "max-width: 300px; justify-self: center;">
         <div class = "pb-3 pt-3" style="text-align: center">
-          <h2 style="font-size: 1.8em">Welcome to Your Space!</h2>
+          <h2 style="font-size: 1.6em">Welcome to Your Space!</h2>
         </div>
         <div class = "mt-2">
           <el-input v-model = "id" placeholder = "Enter ID" type = "text"></el-input>

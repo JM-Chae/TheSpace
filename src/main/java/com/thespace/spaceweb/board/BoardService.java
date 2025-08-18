@@ -1,6 +1,6 @@
 package com.thespace.spaceweb.board;
 
-import com.thespace.common.exception.PostNotFound;
+import com.thespace.common.exception.Exceptions.PostNotFound;
 import com.thespace.common.getList.GetListBoard;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;

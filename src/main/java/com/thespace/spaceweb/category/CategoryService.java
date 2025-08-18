@@ -1,6 +1,6 @@
 package com.thespace.spaceweb.category;
 
-import com.thespace.common.exception.CommunityNotFound;
+import com.thespace.common.exception.Exceptions.CommunityNotFound;
 import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityRepository;
 import com.thespace.spaceweb.user.User;

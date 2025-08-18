@@ -2,7 +2,7 @@ package com.thespace.common.getList;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
-import com.thespace.common.exception.CommunityNotFound;
+import com.thespace.common.exception.Exceptions.CommunityNotFound;
 import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.board.BoardDTOs;
 import com.thespace.spaceweb.board.BoardDTOs.Info;

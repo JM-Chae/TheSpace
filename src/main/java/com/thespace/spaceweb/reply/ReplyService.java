@@ -1,9 +1,9 @@
 package com.thespace.spaceweb.reply;
 
-import com.thespace.common.exception.HasChild;
-import com.thespace.common.exception.NotRegisterUser;
-import com.thespace.common.exception.PostNotFound;
-import com.thespace.common.exception.ReplyNotFound;
+import com.thespace.common.exception.Exceptions.HasChild;
+import com.thespace.common.exception.Exceptions.NotRegisterUser;
+import com.thespace.common.exception.Exceptions.PostNotFound;
+import com.thespace.common.exception.Exceptions.ReplyNotFound;
 import com.thespace.common.getList.GetListReply;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;

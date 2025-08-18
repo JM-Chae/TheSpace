@@ -1,7 +1,7 @@
 package com.thespace.spaceweb.user;
 
 
-import com.thespace.common.exception.RoleNotFound;
+import com.thespace.common.exception.Exceptions.RoleNotFound;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

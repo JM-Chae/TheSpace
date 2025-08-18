@@ -1,7 +1,7 @@
 package com.thespace.spaceweb.community;
 
-import com.thespace.common.exception.AlreadyExists;
-import com.thespace.common.exception.CommunityNotFound;
+import com.thespace.common.exception.Exceptions.AlreadyExists;
+import com.thespace.common.exception.Exceptions.CommunityNotFound;
 import com.thespace.common.getList.GetListCommunity;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;

@@ -1,8 +1,8 @@
 package com.thespace.spacechat.room;
 
-import com.thespace.common.exception.NotMember;
-import com.thespace.common.exception.NotRoomManager;
-import com.thespace.common.exception.RoomNotFound;
+import com.thespace.common.exception.Exceptions.NotMember;
+import com.thespace.common.exception.Exceptions.NotRoomManager;
+import com.thespace.common.exception.Exceptions.RoomNotFound;
 import com.thespace.spacechat.room.RoomDTOs.Info;
 import com.thespace.spacechat.room.RoomDTOs.Summary;
 import com.thespace.spaceweb.user.User;
@@ -65,11 +65,11 @@ public class RoomService {
     }
 
     public boolean existsRoom(Long rid) {
-        return roomRepository.existsById(rid);
+        return !roomRepository.existsById(rid);
     }
 
     public boolean existsUserByRoomIdAndUuid(Long rid, String uuid) {
-        return roomRepository.existsUserByRoomIdAndUuid(rid, uuid);
+        return !roomRepository.existsUserByRoomIdAndUuid(rid, uuid);
     }
 
     public Info create(Authentication creator, RoomDTOs.Create dto) {

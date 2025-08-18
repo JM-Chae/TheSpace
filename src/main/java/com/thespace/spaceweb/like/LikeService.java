@@ -1,7 +1,7 @@
 package com.thespace.spaceweb.like;
 
-import com.thespace.common.exception.PostNotFound;
-import com.thespace.common.exception.ReplyNotFound;
+import com.thespace.common.exception.Exceptions.PostNotFound;
+import com.thespace.common.exception.Exceptions.ReplyNotFound;
 import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.board.BoardRepository;
 import com.thespace.spaceweb.reply.Reply;

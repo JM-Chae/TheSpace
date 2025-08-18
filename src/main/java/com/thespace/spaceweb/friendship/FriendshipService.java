@@ -1,7 +1,7 @@
 package com.thespace.spaceweb.friendship;
 
-import com.thespace.common.exception.NotFoundFriendship;
-import com.thespace.common.exception.NotOwnerFriendship;
+import com.thespace.common.exception.Exceptions.NotFoundFriendship;
+import com.thespace.common.exception.Exceptions.NotOwnerFriendship;
 import com.thespace.spaceweb.friendship.FriendshipDTOs.Info;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserService;

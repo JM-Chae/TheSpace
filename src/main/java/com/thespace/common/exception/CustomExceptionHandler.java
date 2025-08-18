@@ -1,5 +1,6 @@
 package com.thespace.common.exception;
 
+import com.thespace.common.exception.Exceptions.MainException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;

@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thespace.common.exception.PostNotFound;
+import com.thespace.common.exception.Exceptions.PostNotFound;
 import com.thespace.config.DataBaseCleaner;
 import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.board.BoardDTOs.Modify;
