@@ -1,29 +1,29 @@
 package com.thespace.common.getList;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityDTOs.Info;
 import com.thespace.spaceweb.community.QCommunity;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetListCommunity extends QuerydslRepositorySupport {
+@RequiredArgsConstructor
+public class GetListCommunity {
 
-    public GetListCommunity() {
-        super(Community.class);
-    }
+    private final JPAQueryFactory queryFactory;
 
     public Page<Info> getList(String[] types, String keyword, Pageable pageable) {
         QCommunity community = QCommunity.community;
 
-        JPQLQuery<Community> communityJPQLQuery = from(community);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
         if ((types != null && types.length > 0) && keyword != null) {
@@ -39,13 +39,13 @@ public class GetListCommunity extends QuerydslRepositorySupport {
 //              }
         }
 
-        communityJPQLQuery.where(booleanBuilder);
+        JPAQuery<Community> query = queryFactory
+            .selectFrom(community)
+            .where(booleanBuilder)
+            .distinct();
 
-        communityJPQLQuery.distinct();
-        communityJPQLQuery.groupBy(community);
-        getQuerydsl().applyPagination(pageable, communityJPQLQuery);
-        JPQLQuery<Community> selectQuery = communityJPQLQuery.select(community);
-        List<Community> communityList = selectQuery.fetch();
+        List<Community> communityList = QuerydslUtils.applyPagination(query, pageable, community)
+            .fetch();
 
         List<Info> dtoList = communityList.stream().map(community1 ->
         Info.builder()
@@ -54,7 +54,12 @@ public class GetListCommunity extends QuerydslRepositorySupport {
                 .build())
             .toList();
 
-        long totalCount = selectQuery.fetchCount();
+        long totalCount = Optional.ofNullable(queryFactory
+            .select(community.countDistinct())
+            .from(community)
+            .where(booleanBuilder)
+            .fetchOne())
+            .orElse(0L);
 
         return new PageImpl<>(dtoList, pageable, totalCount);
     }

@@ -5,15 +5,11 @@ import com.thespace.common.getList.GetListBoard;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.category.Category;
-import com.thespace.spaceweb.category.CategoryDTOs;
 import com.thespace.spaceweb.category.CategoryRepository;
-import com.thespace.spaceweb.community.Community;
-import com.thespace.spaceweb.community.CommunityDTOs;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserRoleService;
 import com.thespace.spaceweb.user.UserService;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,39 +48,6 @@ public class BoardService {
         return board;
     }
 
-    public BoardDTOs.Info readBoard(Board board) {
-        Community community = board.getCommunity();
-        Category category = board.getCategory();
-
-        List<String> fileNames = board.getFileSet().stream().sorted().map(boardFile ->
-            boardFile.getFileId() + "_" + boardFile.getFileName()).toList();
-
-        return BoardDTOs.Info.builder()
-            .bno(board.getBno())
-            .title(board.getTitle())
-            .content(board.getContent())
-            .writer(board.getUser().getName())
-            .writerUuid(board.getUser().getUuid())
-            .communityInfo(new CommunityDTOs.Info(community.getId(),
-                community.getName(),
-                community.getCreateDate(),
-                community.getModDate(),
-                community.getDescription()))
-            .categoryInfo(new CategoryDTOs.Info(category.getId(),
-                category.getName(),
-                category.getType(),
-                category.getCreateDate(),
-                category.getModDate(),
-                category.getCommunity().getId()))
-            .vote(board.getVote())
-            .viewCount(board.getViewCount())
-            .modDate(board.getModDate())
-            .createDate(board.getCreateDate())
-            .rCount(board.getRCount())
-            .fileNames(fileNames)
-            .build();
-    }
-
     public Long post(BoardDTOs.Post postDTO, Authentication authentication) {
         Board board = postBoard(postDTO, authentication);
         return boardRepository.save(board).getBno();
@@ -97,7 +60,7 @@ public class BoardService {
         board.setViewCount(board.getViewCount() + 1L);
         boardRepository.save(board);
 
-        return readBoard(board);
+        return BoardDTOs.Info.fromEntity(board);
     }
 
     public void modify(BoardDTOs.Modify modifyDTO) {

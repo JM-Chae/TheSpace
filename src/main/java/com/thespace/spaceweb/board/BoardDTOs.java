@@ -5,7 +5,9 @@ import com.thespace.spaceweb.board.BoardDTOs.Info;
 import com.thespace.spaceweb.board.BoardDTOs.Modify;
 import com.thespace.spaceweb.board.BoardDTOs.Post;
 import com.thespace.spaceweb.board.BoardDTOs.UploadFiles;
+import com.thespace.spaceweb.category.Category;
 import com.thespace.spaceweb.category.CategoryDTOs;
+import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityDTOs;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,6 +35,39 @@ sealed public interface BoardDTOs permits Info, FileInfo, Modify, Post,
         CommunityDTOs.Info communityInfo,
         CategoryDTOs.Info categoryInfo) implements BoardDTOs {
 
+        public static Info fromEntity(Board board) {
+            Community community = board.getCommunity();
+            Category category = board.getCategory();
+
+            return Info.builder()
+                .bno(board.getBno())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .writer(board.getUser().getName())
+                .writerUuid(board.getUser().getUuid())
+                .communityInfo(new CommunityDTOs.Info(community.getId(),
+                    community.getName(),
+                    community.getCreateDate(),
+                    community.getModDate(),
+                    community.getDescription()))
+                .categoryInfo(new CategoryDTOs.Info(category.getId(),
+                    category.getName(),
+                    category.getType(),
+                    category.getCreateDate(),
+                    category.getModDate(),
+                    category.getCommunity().getId()))
+                .vote(board.getVote())
+                .viewCount(board.getViewCount())
+                .modDate(board.getModDate())
+                .createDate(board.getCreateDate())
+                .rCount(board.getRCount())
+                .fileNames(board.getFileSet()
+                    .stream()
+                    .sorted()
+                    .map(boardFile -> boardFile.getFileId() + "_" + boardFile.getFileName())
+                    .toList())
+                .build();
+        }
     }
 
     @Builder

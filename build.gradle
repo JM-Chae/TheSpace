@@ -74,6 +74,14 @@ tasks.withType(JavaCompile).configureEach {
     options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs += file(querydslSrcDir)
+        }
+    }
+}
+
 ext {
     snippetsDir = file('build/generated-snippets')
 }

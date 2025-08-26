@@ -23,7 +23,10 @@ public class DataBaseCleaner implements InitializingBean {
     @PostConstruct
     public void findDatabaseTableNames() {
         List<String> tableNames = entityManager.createNativeQuery("SHOW TABLES").getResultList();
-            tables.addAll(tableNames);
+        List<String> filteredTableNames = tableNames.stream()
+            .filter(tableName -> !tableName.endsWith("_seq"))
+            .toList();
+        tables.addAll(filteredTableNames);
     }
 
     private void truncate() {
