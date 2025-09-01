@@ -233,7 +233,7 @@ public class MessageControllerTest {
         received.sort(Comparator.comparing(ChatMessage::getMessageId));
 
         for (ChatMessage message : received) {
-            System.out.printf("roomId: %s messageId: %d sender: %s content: %s type: %s sentAt: %s%n",
+            System.out.printf("roomId: %s messageId: %d senderNameAndUUID: %s content: %s type: %s sentAt: %s%n",
                 message.getRoomId(), message.getMessageId(), message.getSender(),
                 message.getContent(), message.getType(), message.getSentAt());
             System.out.println("----------------------");

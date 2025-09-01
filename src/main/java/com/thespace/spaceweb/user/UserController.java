@@ -59,8 +59,8 @@ public class UserController {
     }
 
     @GetMapping("/checkid")
-    public boolean check(@RequestParam("id") String id) {
-        return userService.checkId(id);
+    public ResponseEntity<Boolean> check(@RequestParam("id") String id) {
+        return ResponseEntity.ok(userService.checkId(id));
     }
 
     @GetMapping("/info")

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +23,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -71,18 +71,13 @@ public class SecurityConfig implements UserDetailsService {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.ignoringRequestMatchers(
-                new AntPathRequestMatcher("/user"),
-                new AntPathRequestMatcher("/user/login"),
-                new AntPathRequestMatcher("/user/logout"),
-                new AntPathRequestMatcher("/user/login/me"),
-                new AntPathRequestMatcher("/user//checkid")
-            ).csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-            .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
-                "/**").permitAll())
-            .exceptionHandling((exception) -> exception.accessDeniedHandler(accessDeniedHandler))
+    @Order(1)
+    public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/user", "/user/checkid", "/user/login", "/user/login/me", "/user/logout", "/user/info", "/api/fcm/token", "/error")
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(formLogin -> formLogin.loginPage("/user/login")
                 .usernameParameter("id")
@@ -97,7 +92,23 @@ public class SecurityConfig implements UserDetailsService {
                 .authenticationSuccessHandler(authSuccessHandler))
             .logout(logout -> logout.logoutUrl("/user/logout")
                 .logoutSuccessHandler(logoutSuccessHandler)
-                .invalidateHttpSession(true));
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID"));
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
+            .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
+                "/**").permitAll())
+            .exceptionHandling((exception) -> exception.accessDeniedHandler(accessDeniedHandler))
+            .sessionManagement(session -> session
+                .invalidSessionStrategy(new CustomInvalidSessionStrategy())
+                .maximumSessions(1)
+                .expiredSessionStrategy(new CustomSessionInformationExpiredStrategy()));
 
         return http.build();
     }
@@ -109,6 +120,7 @@ public class SecurityConfig implements UserDetailsService {
         return tokenRepository;
     }
 
+    @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         log.info(id);
         return userRepository.findById(id)

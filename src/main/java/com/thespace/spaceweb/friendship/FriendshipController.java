@@ -32,7 +32,13 @@ public class FriendshipController {
         friendshipService.deleteRequest((User) fromUser.getPrincipal(), fid);
     }
 
-    @PostMapping("/{fid}")
+    @DeleteMapping("/{fid}/reject")
+    public void rejectRequest(Authentication user, @PathVariable("fid") Long fid) {
+
+        friendshipService.reject((User) user.getPrincipal(), fid);
+    }
+
+    @PostMapping("/{fid}/accept")
     public void accept(Authentication user, @PathVariable("fid") Long fid) {
 
         friendshipService.accept((User) user.getPrincipal(), fid);
@@ -44,7 +50,7 @@ public class FriendshipController {
         friendshipService.block((User) fromUser.getPrincipal(), toUserUuid);
     }
 
-    @PutMapping ("/{fid}/block")
+    @PutMapping ("/{fid}/unblock")
     public void unblock(Authentication fromUser, @PathVariable("fid") Long fid) {
 
         friendshipService.unblock((User) fromUser.getPrincipal(), fid);

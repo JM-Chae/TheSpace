@@ -22,6 +22,10 @@ public class UserService {
     public final UserRoleService userRoleService;
     private final PasswordEncoder passwordEncoder;
 
+    public User getReferenceById(String id) {
+        return userRepository.getReferenceById(id);
+    }
+
     public User findById(String id) {
         return userRepository.findById(id).orElseThrow(UserNotFound::new);
     }

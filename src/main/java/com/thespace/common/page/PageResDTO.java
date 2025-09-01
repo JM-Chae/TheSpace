@@ -3,29 +3,26 @@ package com.thespace.common.page;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 public class PageResDTO<E>
   {
-    private int page;
-    private int size;
-    private int total;
+    private final int page;
+    private final int size;
+    private final int total;
 
-    private int start;
+    private final boolean prev;
+    private final boolean next;
+
+    private final int start;
     private int end;
 
-    private boolean prev;
-    private boolean next;
-
-    private List<E> dtoList;
+    private final List<E> dtoList;
 
     @Builder(builderMethodName = "PageResDTO")
     public PageResDTO(PageReqDTO pageReqDTO, List<E> dtoList, int total)
       {
-        if (total <= 0)
-          {
-            return;
-          }
         this.page = pageReqDTO.page();
         this.size = pageReqDTO.size();
 
@@ -41,4 +38,12 @@ public class PageResDTO<E>
         this.prev = this.start >1;
         this.next = total>this.end * this.size;
       }
+
+    public static <E> PageResDTO<E> from(PageReqDTO pageReqDTO, Page<E> page) {
+        return PageResDTO.<E>PageResDTO()
+            .pageReqDTO(pageReqDTO)
+            .dtoList(page.getContent())
+            .total((int) page.getTotalElements())
+            .build();
+    }
   }

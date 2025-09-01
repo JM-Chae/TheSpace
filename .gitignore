@@ -41,6 +41,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+src/main/resources/firebase/
+thespace-front/src/firebase**
+thespace-front/public/firebase**
+
+*.rdb
+
+
 ### STS ###
 .apt_generated
 .classpath
@@ -73,3 +80,4 @@ out/
 .vscode/
 
 /files/
+/src/main/resources/schema.sql

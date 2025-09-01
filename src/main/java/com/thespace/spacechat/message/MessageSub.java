@@ -23,7 +23,7 @@ public class MessageSub implements MessageListener {
             ChatMessage chatMessage =  objectMapper.readValue(json, ChatMessage.class);
             messagingTemplate.convertAndSend("/topic/chat/room/" + chatMessage.getRoomId(), chatMessage);
 
-            log.info("Received and forwarded chat message: roomId={}, mid={}, sender={}", chatMessage.getRoomId(), chatMessage.getMessageId(), chatMessage.getSender());
+            log.info("Received and forwarded chat message: roomId={}, mid={}, senderNameAndUUID={}", chatMessage.getRoomId(), chatMessage.getMessageId(), chatMessage.getSender());
         } catch (Exception e) {
             log.error("Failed to process Redis message", e);
         }

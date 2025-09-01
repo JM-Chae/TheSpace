@@ -95,10 +95,6 @@ public class ReplyService {
 
         Page<ReplyDTOs.Info> list = getListReply.getListReply(bno, pageable);
 
-        return PageResDTO.<ReplyDTOs.Info>PageResDTO()
-            .pageReqDTO(pageReqDTO)
-            .dtoList(list.getContent())
-            .total((int) list.getTotalElements())
-            .build();
+        return PageResDTO.from(pageReqDTO, list);
     }
 }

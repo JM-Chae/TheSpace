@@ -124,11 +124,7 @@ public class BoardService {
 
         Page<BoardDTOs.Info> list = getListBoard.getList(types, keyword, pageable, communityId, categoryId);
 
-        return PageResDTO.<BoardDTOs.Info>PageResDTO()
-            .pageReqDTO(pageReqDTO)
-            .dtoList(list.getContent())
-            .total((int) list.getTotalElements())
-            .build();
+        return PageResDTO.from(pageReqDTO, list);
     }
 }
 

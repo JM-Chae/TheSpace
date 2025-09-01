@@ -16,6 +16,7 @@ spring:
       location: "C:/Users/CJM/OneDrive/DeskTop/thespace/files"
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     properties:
@@ -29,6 +30,10 @@ spring:
     password: webuser
     url: jdbc:mariadb://localhost:3307/thespace
 
+  sql:
+    init:
+      mode: always
+
 logging:
   level:
     com:
@@ -41,3 +46,8 @@ com:
   thespace:
     upload:
       path: "C:/Users/CJM/OneDrive/DeskTop/thespace/files"
+
+server:
+  servlet:
+    session:
+      timeout: 30m

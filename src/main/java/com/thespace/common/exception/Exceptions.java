@@ -27,6 +27,35 @@ public final class Exceptions {
     }
 
     @Getter
+    public static class DataPayloadConvertError extends MainException {
+        public static final String message = "Failed to convert data payload";
+
+        public DataPayloadConvertError() {
+            super(message);
+        }
+
+        @Override
+        public int getStatusCode() {
+            return 400;
+        }
+    }
+
+    @Getter
+    public static class FcmTokenNotFound extends MainException {
+
+        public static final String message = "Could not find the FCM token for the target.";
+
+        public FcmTokenNotFound() {
+            super(message);
+        }
+
+        @Override
+        public int getStatusCode() {
+            return 404;
+        }
+    }
+
+    @Getter
     public static class AlreadyExists extends MainException {
 
         public static final String message = "This name already exists.";

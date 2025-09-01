@@ -15,21 +15,21 @@ public record PageReqDTO(int page,
     public PageReqDTO(int page, int size, String type, String keyword, Long communityId, Long categoryId) {
         this.page = page != 0 ? page : 1;
         this.size = size != 0 ? size : 1000000;
-        this.type = type;
+        this.type = type != null ? type : "";
         this.keyword = keyword != null ? keyword : "";
         this.communityId = communityId != null ? communityId : 0L;
         this.categoryId = categoryId != null ? categoryId : 0L;
     }
 
     public String[] getTypes() {
-        if (type == null || type.isEmpty()) {
+        if (type.isEmpty()) {
             return null;
         }
         return type.split("");
     }
 
     public Pageable getPageable(String... props) {
-        if ((Arrays.toString(props)).contains("bno")) {
+        if ((Arrays.toString(props)).contains("bno") || (Arrays.toString(props)).contains("nno")) {
             return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
         }
         return PageRequest.of(this.page - 1, this.size, Sort.by(props).ascending());

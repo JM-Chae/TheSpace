@@ -151,9 +151,6 @@ class BoardControllerTest {
             ),
             requestCookies(cookieWithName("JSESSIONID").description(
                 "Authenticated user session ID cookie")),
-            requestHeaders(headerWithName("_csrf").description("CSRF Token")),
-            requestCookies(cookieWithName("JSESSIONID").description(
-                "Authenticated user session ID cookie")),
             requestHeaders(headerWithName("_csrf").description("CSRF Token"))
         ));
     }

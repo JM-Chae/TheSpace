@@ -4,7 +4,7 @@ import {computed, onMounted, ref, watch} from "vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import router from "@/router";
 import {Link, Picture, Search} from '@element-plus/icons-vue'
-import type {CategoryInfo, CommunityInfo} from "@/types/domain";
+import type {Board, CategoryInfo, CommunityInfo, ListRes} from "@/types/domain";
 
 const getWidth = ref(window.innerWidth);
 
@@ -66,6 +66,11 @@ onMounted(() =>
 {
   getList()
 
+  watch(() => props.keyword, (newVal) => {
+    if (newVal) {
+      keyword.value = newVal;
+    }
+  });
   watch(type, (newValue) =>
   {
     if (newValue)
@@ -117,41 +122,11 @@ onMounted(() =>
 })
 })
 
-const dtoList = ref<dtoList>()
+const dtoList = ref<ListRes<Board>>()
 
 const moveRead = (row: any) =>
   {
     router.push({name: "read", state: {bno: row.bno, size: size.value, page: page.value}})
-  }
-
-interface dto
-  {
-    bno: number,
-    title: string,
-    content: string,
-    communityInfo: CommunityInfo,
-    writer: string,
-    writerUuid: string,
-    createDate: string,
-    modDate: string,
-    viewCount: number,
-    vote: number,
-    fileNames: string[],
-    thumbCheck: boolean,
-    categoryInfo: CategoryInfo,
-    rCount: number
-  }
-
-interface dtoList
-  {
-    page: number,
-    size: number,
-    total: number,
-    start: number,
-    end: number,
-    prev: boolean,
-    next: boolean,
-    dtoList: dto[]
   }
 
 const setPage = (val1: number, val2: number) =>
@@ -199,7 +174,7 @@ const sendSizeToParent = () =>
   function formatDate(dateString: string)
   {
     const date = new Date(dateString);
-    date.setHours(date.getHours() - 9);
+    date.setHours(date.getHours());
     const today = new Date();
 
     if (date.getFullYear() == today.getFullYear() && date.getMonth() == today.getMonth() && date.getDate() == today.getDate())
@@ -221,13 +196,13 @@ const thumbnails = ref();
 
 const imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'svg', 'ico', 'heic', 'heif'];
 
-const mouseLeave = function (rowData: dto)
+const mouseLeave = function (rowData: Board)
   {
     thumbnails.value = '';
     rowData.thumbCheck = false;
   }
 
-const extCheck = function (rowData: dto)
+const extCheck = function (rowData: Board)
   {
     return rowData?.fileNames.filter(file =>
     {
@@ -236,7 +211,7 @@ const extCheck = function (rowData: dto)
     }).toString() != ''
   }
 
-const mouseOver = async function (rowData: dto)
+const mouseOver = async function (rowData: Board)
   {
     rowData.thumbCheck = false;
 

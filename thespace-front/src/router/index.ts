@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import axios from "axios";
-import {ref} from "vue";
+import {storeToRefs} from "pinia";
 import {ElMessageBox} from "element-plus";
+import {useAuthStore} from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,7 +71,7 @@ const router = createRouter({
       component: () => import('../views/web/CommunityManagementView.vue'),
     },
     {
-      path: '/mypage/',
+      path: '/mypage',
       name: 'mypage',
       component: () => import('../views/web/MyPageView.vue'),
     }
@@ -79,50 +79,29 @@ const router = createRouter({
 })
 
 export default router
-async function getInfo()
-{
-  try
-  {
-    await axios.get("/user/info", {withCredentials: true})
-    .then(res =>
-    {
-      sessionStorage.setItem('login', 'true');
-      sessionStorage.setItem("userInfo", JSON.stringify(res.data));
-    });
-    login.value = sessionStorage.getItem('login') == 'true';
-  } catch (error)
-  {
-    return console.error("Error fetching user info" + error);
-  }
-}
 
-const login =  ref(sessionStorage.getItem('login') == 'true');
+router.beforeEach(async (to, from, next) => {
+      if (to.meta.login) {
 
-router.beforeEach((to, from, next) =>
-  {
-    if (to.meta.login)
-      {
-        if(sessionStorage.getItem('login')?.split('=')[0] === 'true')
-          {
-            next()
-          }else
-          {
-            ElMessageBox.alert('You must to login', 'Alert',
-                {
-                  confirmButtonText: 'OK',
-                  type: 'warning',
-                  dangerouslyUseHTMLString: true,
-                  center: true,
-                  customClass: '.el-message-box'
-                })
-            next('/user/login')
-          }
+        const { isLoggedIn } = storeToRefs(useAuthStore());
 
-      }else {
-        if(login.value) {
-        getInfo();
+        if (isLoggedIn.value) {
+          next()
+        } else {
+          await ElMessageBox.alert('You must to login', 'Alert',
+              {
+                confirmButtonText: 'OK',
+                type: 'warning',
+                dangerouslyUseHTMLString: true,
+                center: true,
+                customClass: '.el-message-box'
+              })
+          next('/user/login')
         }
-      next()
+
+      } else {
+
+        next()
+      }
     }
-  }
 )

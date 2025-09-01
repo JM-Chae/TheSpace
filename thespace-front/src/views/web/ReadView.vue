@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {Delete, Edit, Expand, Hide, View} from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
@@ -261,7 +261,7 @@ watch(getDto, (newValue) => {
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  date.setHours(date.getHours() - 9);
+  date.setHours(date.getHours());
   return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {
     hour12: true
   });
@@ -270,7 +270,6 @@ const formatDate = (dateString: string) => {
 const toggleNested = (index: number) => {
   isVisible.value[index] = !isVisible.value[index];
   isVisible.value = isVisible.value.map((_, i) => i === index);
-  replyContent.value = '';
   focused.value = false;
 }
 
@@ -282,34 +281,16 @@ const replyClose = ref<boolean>(true)
 const closeAllNestedReplies = () => {
   isVisible.value = isVisible.value.map(() => false);
   focused.value = true;
-  replyContent.value = '';
   nestedReply.value = 0;
   tag.value = '';
   tagRno.value = 0;
 };
 
-const handleOutsideClick = (event: MouseEvent) => {
-  const clickedElement = event.target as HTMLElement;
-
-  if (clickedElement.closest("#replyList")) {
-    tag.value = '';
-    tagRno.value = 0;
-    return;
-  }
-  if (clickedElement.closest("#nestedList")) {
-    return;
-  }
-  closeAllNestedReplies();
-}
-
 onMounted(() => {
   getRead()
   getReply()
-  window.addEventListener("click", handleOutsideClick);
 })
-onBeforeUnmount(() => {
-  window.removeEventListener("click", handleOutsideClick);
-});
+
 
 const tempSize = history.state.size;
 const tempPage = history.state.page;
@@ -437,7 +418,7 @@ function routing() {
                 <div style="display: grid;">
                   <div id="replyList">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
+                      <div style="flex-grow: 1; margin-bottom: auto; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
                         <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                           <template #reference>
                             <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
@@ -453,25 +434,25 @@ function routing() {
                         </el-popover>
                       </div>
                       <div style="text-align: left; margin-left: auto; flex-grow: 20">
-                        <el-text class="text">{{ rDto.replyContent }}</el-text>
+                        <el-text class="text" style="white-space: pre-wrap;">{{ rDto.replyContent }}</el-text>
                       </div>
-                      <div style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
+                      <div style="margin-left: 10px; margin-bottom: auto; text-align: right; flex-grow: 1; min-width: 160px">
                         <el-text class="text">{{ formatDate(rDto.replyDate) }}</el-text>
                       </div>
                     </div>
 
-                    <div class="pt-1" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pt-1" style="display: flex; justify-content: end; align-items: center;">
                       <div style="margin-left: 10.5em; display: inline-block;">
                         <el-text>Like: {{ rDto.vote }}</el-text>
                       </div>
                       <div style="display: inline-block;">
+                        <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 1em;" title="Like!"
+                                   @click="rLikeCount(rDto.rno, rDto)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
                         <el-button v-if="rDto.replyWriterUuid == user.uuid" round size="small" style="margin-left: 0.5em" title="Delete" type="danger"
                                    @click="deleteReplyAlert(rDto.rno, rDto.childCount > 0 ? 1 : 0);" @click.stop>
                           <el-icon size="15"><Delete /></el-icon>
                         </el-button>
-                        <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
-                                   @click="rLikeCount(rDto.rno, rDto)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
-                      </div>
+                        </div>
                     </div>
                   </div>
 
@@ -480,7 +461,7 @@ function routing() {
                         @click="tag = child.replyWriter + ' ' + child.replyWriterUuid + ' To'; tagRno = child.rno">
                       <div style="display: grid;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                          <div style="flex-grow: 1; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
+                          <div style="flex-grow: 1; margin-bottom: auto; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
                             <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
                               <template #reference>
                                 <el-button class="name" link style="display: inline-block; color: white; max-width: 10em;">
@@ -518,24 +499,24 @@ function routing() {
                                 </el-button>
                               </el-popover>
                             </el-text>
-                            <el-text class="text">{{ child.replyContent }}</el-text>
+                            <el-text class="text" style="white-space: pre-wrap;">{{ child.replyContent }}</el-text>
                           </div>
-                          <div style="margin-left: 10px; text-align: right; flex-grow: 1; min-width: 160px">
+                          <div style="margin-left: 10px; margin-bottom: auto; text-align: right; flex-grow: 1; min-width: 160px">
                             <el-text class="text">{{ formatDate(child.replyDate) }}</el-text>
                           </div>
                         </div>
-                        <div class="pt-1" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="pt-1" style="display: flex; justify-content: end; align-items: center;">
                           <div style="margin-left: 12.6em; display: inline-block;">
                             <el-text>Like: {{ child.vote }}</el-text>
                           </div>
                           <div style="display: inline-block;">
+                            <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 1em;" title="Like!"
+                                       @click="rLikeCount(child.rno, child)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
                             <el-button v-if="child.replyWriterUuid === user.uuid" round size="small" style="margin-left: 0.5em" title="Delete"
                                        type="danger" @click="deleteReplyAlert(child.rno, child.taggedCount)" @click.stop>
                               <el-icon size="15"><Delete /></el-icon>
                             </el-button>
-                            <el-button class="button" color="#ff25cf" round size="small" style="margin-left: 0.5em;" title="Like!"
-                                       @click="rLikeCount(child.rno, child)" @click.stop><svg fill="none" height="12px" viewBox="0 0 16 16" width="12px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.24264 8.24264L8 15L14.7574 8.24264C15.553 7.44699 16 6.36786 16 5.24264V5.05234C16 2.8143 14.1857 1 11.9477 1C10.7166 1 9.55233 1.55959 8.78331 2.52086L8 3.5L7.21669 2.52086C6.44767 1.55959 5.28338 1 4.05234 1C1.8143 1 0 2.8143 0 5.05234V5.24264C0 6.36786 0.44699 7.44699 1.24264 8.24264Z" fill="#ffffff"></path> </g></svg></el-button>
-                          </div>
+                            </div>
                         </div>
                       </div>
                     </li>
@@ -544,7 +525,10 @@ function routing() {
                   <div v-show="isVisible[index]" class="nestedReplyPost p-3 m-3 pb-2 pt-2 mt-2"
                        style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)"
                        @click.stop>
-                    <div class="mb-1" style="color:rgba(97,255,176,0.8)">{{ user.name }}</div>
+                    <div class="mb-1" style="display: flex">
+                      <el-text style="color:rgba(97,255,176,0.8)">{{ user.name }}</el-text>
+                      <el-button class="mb-1" link style="margin-left: auto" @click="closeAllNestedReplies()" >x</el-button>
+                    </div>
                     <el-input v-model="replyContent" :autosize="{minRows: 3}" type="textarea"
                               :placeholder="tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined"/>
                     <div style="text-align: end">

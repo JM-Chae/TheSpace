@@ -79,9 +79,7 @@ public class CommunityService {
 
         Page<CommunityDTOs.Info> list = getListCommunity.getList(types, keyword, pageable);
 
-        return PageResDTO.<CommunityDTOs.Info>PageResDTO()
-            .pageReqDTO(pageReqDTO).dtoList(list.getContent()).total((int) list.getTotalElements())
-            .build();
+        return PageResDTO.from(pageReqDTO, list);
     }
 
     public void delete(Long communityId, Authentication authentication) {

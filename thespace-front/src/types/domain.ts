@@ -6,6 +6,14 @@ export interface CommunityInfo {
   description: string;
 }
 
+export interface User {
+  signature: string,
+  name: string,
+  uuid: string,
+  introduce: string,
+  joinedOn: string
+}
+
 export interface CategoryInfo {
   id: number;
   name: string;
@@ -15,9 +23,51 @@ export interface CategoryInfo {
   communityId: number;
 }
 
-export interface friendshipInfo {
+export interface FriendshipInfo {
   fid: number,
   status: string,
   memo: string
   acceptedAt: string
+}
+
+export interface Board {
+  bno: number,
+  title: string,
+  content: string,
+  communityInfo: CommunityInfo,
+  writer: string,
+  writerUuid: string,
+  createDate: string,
+  modDate: string,
+  viewCount: number,
+  vote: number,
+  fileNames: string[],
+  thumbCheck: boolean,
+  categoryInfo: CategoryInfo,
+  rCount: number
+}
+
+export interface Notification {
+  nno: number,
+  title: string,
+  body: string,
+  url: string,
+  dataPayload: {
+    fid: number,
+    targetNameAndUUID: string
+    status: string
+  },
+  type: string,
+  sentAt: string
+}
+
+export interface ListRes<T> {
+  page: number,
+  size: number,
+  total: number,
+  start: number,
+  end: number,
+  prev: boolean,
+  next: boolean,
+  dtoList: T[]
 }

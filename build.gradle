@@ -27,6 +27,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+
     implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.20'
     implementation group: 'commons-io', name: 'commons-io', version: '2.17.0'
     implementation group: 'org.apache.commons', name: 'commons-fileupload2-jakarta-servlet6', version: '2.0.0-M2'

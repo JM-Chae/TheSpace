@@ -1,31 +1,58 @@
 <script lang = "ts" setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import axios from "axios";
 import router from "@/router";
-import {loadCsrfToken, setLogin} from "@/main";
+import {registerFcmToken} from '@/firebase'
+import {useRoute} from 'vue-router';
+import {useAuthStore} from '@/stores/auth';
+import {loadCsrfToken} from "@/stores/loadCsrfToken";
+
+const route = useRoute();
+ const errorMessage = ref('');
+
+onMounted(() => {
+     if (route.query.expired === 'true') {
+         errorMessage.value = 'Your session has expired. Please log in again.';
+     } else if (route.query.anotherLogin === 'true') {
+        errorMessage.value = 'Your current session has been terminated because you logged in from another location.';
+       }
+});
+
 
 const id = ref("")
 const pw = ref("")
 const remember = ref(false)
 
-const login = function () {
+const authStore = useAuthStore();
+
+const login = async function () {
   axios.post("user/login",
       {id: id.value, password: pw.value, remember: remember.value},
       {headers: {"Content-Type": "multipart/form-data"}, withCredentials: true})
-  .then(() => {
-    loadCsrfToken();
+  .then(async (res) => {
 
-    if (remember.value == true) {
+    if (remember.value) {
       document.cookie = 'isRemember=true; path=/; max-age=604800'
     }
 
-    getInfo().then(res => {
+    const userInfo = await getInfo().then(res => {
       sessionStorage.setItem("userInfo", JSON.stringify(res))
-
       sessionStorage.setItem("login", "true")
-      setLogin(true)
-      router.back()
+
+      return res;
     })
+
+    await loadCsrfToken();
+    await registerFcmToken();
+    await authStore.loginSuccess(userInfo)
+
+    const historyURL = history.state.back
+
+    if (historyURL == '/user/join' || historyURL == '/modify' || historyURL == '/user/login') {
+      await router.push({path: res.data.redirectUrl})
+    } else {
+      router.back()
+    }
   })
 
   async function getInfo() {

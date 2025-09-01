@@ -47,7 +47,7 @@ const getSizeValue = (value: number) => {
 function formatDate(dateString: string)
   {
     const date = new Date(dateString);
-    date.setHours(date.getHours() - 9);
+    date.setHours(date.getHours());
     
     return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('en-US', {
       hour12: true

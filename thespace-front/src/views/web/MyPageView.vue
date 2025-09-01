@@ -2,58 +2,85 @@
 import {Edit} from '@element-plus/icons-vue'
 import {onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {useRoute} from "vue-router";
+import {onBeforeRouteUpdate, useRoute} from "vue-router";
 import EmojiPicker from 'vue3-emoji-picker';
 import 'vue3-emoji-picker/css';
+import {useAuthStore} from "@/stores/auth";
 import {
   friendshipBlock,
   friendshipRequest,
   friendshipRequestDelete,
   friendshipUnblock,
   getFriendshipInfo
-} from '../../stores/Friendship';
-import type {friendshipInfo} from '@/types/domain'
+} from '@/stores/friendship';
+import type {FriendshipInfo, User} from '@/types/domain'
 
-function getMyPageInfo() {
+const uuid = ref(useRoute().query.uuid);
+
+const pageUserInfo = ref<User>();
+const friendshipInfo = ref<FriendshipInfo>();
+
+const fStatus = ref<string>();
+const fMemo = ref<string>();
+
+async function fetchData(uuid: string) {
+  if (!uuid) return;
+  // Fetch user info
   axios.get(`/user/${uuid}/mypage`).then((res) => {
-    pageUserInfo.value = res.data})
+    pageUserInfo.value = res.data;
+  });
+ // Fetch friendship info
+  friendshipInfo.value = await getFriendshipInfo(uuid);
 }
 
-interface user {
-  signature: string,
-  name: string,
-  uuid: string,
-  introduce: string,
-  joinedOn: string
+
+//Valid value
+function withValidUuid(action: (pageUserUUID: string) => void) {
+    const pageUserUUID = pageUserInfo.value?.uuid;
+    if (pageUserUUID) {
+      action(pageUserUUID);
+    } else {
+      console.error("UUID not found.");
+    }
 }
 
-const route = useRoute();
-const uuid = route.query.uuid;
-const pageUserInfo = ref<user>();
-const friendshipInfo = ref<friendshipInfo>();
-const fid = ref();
-const fStatus = ref();
-const fMemo = ref();
+function withValidUuidAndFid(action: (pageUserUUID: string, fid: number) => void) {
+  const pageUserUUID = pageUserInfo.value?.uuid;
+  const fid = friendshipInfo.value?.fid;
+  if (pageUserUUID && fid) {
+    action(pageUserUUID, fid);
+  } else {
+    console.error("UUID, FID not found.");
+  }
+}
 
+//Friendship control logic
 async function friendshipRequestHandler() {
-  friendshipInfo.value = await friendshipRequest(pageUserInfo.value?.uuid);
+  withValidUuid(async (pageUserUUID) => {
+    friendshipInfo.value = await friendshipRequest(pageUserUUID);
+  })
 }
 
 async function friendshipBlockHandler() {
-  friendshipInfo.value = await friendshipBlock(pageUserInfo.value?.uuid);
+  withValidUuid(async (pageUserUUID) => {
+    friendshipInfo.value = await friendshipBlock(pageUserUUID);
+  })
 }
 
 async function friendshipRequestDeleteHandler() {
-  friendshipInfo.value = await friendshipRequestDelete(pageUserInfo.value?.uuid, friendshipInfo.value?.fid);
+  withValidUuidAndFid(async (pageUserUUID, fid) => {
+    friendshipInfo.value = await friendshipRequestDelete(pageUserUUID, fid);
+  })
 }
 
 async function friendshipUnblockHandler() {
-  friendshipInfo.value = await friendshipUnblock(pageUserInfo.value?.uuid, friendshipInfo.value?.fid);
+  withValidUuidAndFid(async (pageUserUUID, fid) => {
+    friendshipInfo.value = await friendshipUnblock(pageUserUUID, fid);
+  })
 }
 
 watch(friendshipInfo, (newVal) => {
   if(newVal) {
-    fid.value = newVal.fid;
     fMemo.value = newVal.memo;
 
     if (newVal.status == "NONE") fStatus.value =  "Oh, Do you wanna be 'Friends' with them?"
@@ -63,17 +90,18 @@ watch(friendshipInfo, (newVal) => {
   }
 })
 
-const getInfo = sessionStorage.getItem("userInfo") || ""
-const currentUser = JSON.parse(getInfo)
+//CurrentUser == this page?
+const currentUser = useAuthStore().userInfo;
 
 let editIcon = false;
 let friendRequestButton = true;
 
-if (currentUser.uuid == uuid) {
+if (currentUser.uuid == useRoute().query.uuid) {
   editIcon = true;
   friendRequestButton = false;
 }
 
+//Board Page
 const tempPage = history.state.page
 const page = ref(tempPage ? tempPage : 1);
 
@@ -81,8 +109,7 @@ const getPageValue = (value: number) => {
   page.value = value;
 };
 
-function formatDate(dateString: any)
-{
+function formatDate(dateString: any) {
   const date = new Date(dateString);
   date.setHours(date.getHours() - 9);
 
@@ -91,13 +118,19 @@ function formatDate(dateString: any)
 
 onMounted(async () => {
 
-  getMyPageInfo();
-  friendshipInfo.value = await getFriendshipInfo(uuid)
+  await fetchData(uuid.value as string);
+});
+
+onBeforeRouteUpdate(async (to, from) => {
+  if (to.query.uuid !== from.query.uuid) {
+    await fetchData(to.query.uuid as string);
+    uuid.value = to.query.uuid;
+  }
 })
 
-const signature = ref('');
-
+//My page data
 const signatureModal = ref(false)
+const signature = ref('');
 const onSelect = (emoji : any) => {
   signature.value = emoji.i
 }
@@ -112,7 +145,7 @@ function updateInfo() {
     name: nickname.value,
     introduce: introduce.value
   }, {withCredentials: true}).then(() => {
-    getMyPageInfo()
+    fetchData(uuid.value as string);
   })
 
   signatureModal.value = false;
@@ -140,7 +173,7 @@ function updateInfo() {
               <el-text v-if="fMemo">{{fMemo}}</el-text>
               <el-text v-if="fStatus" class="fStatus">{{fStatus}}</el-text>
               <div>
-                <el-button v-if="fid == 0" round style="padding: 0 7px" type="primary" @click="friendshipRequestHandler()">
+                <el-button v-if="friendshipInfo?.fid == 0" round style="padding: 0 7px" type="primary" @click="friendshipRequestHandler()">
                   <!-- Friendship request -->
                   <svg height="18px" viewBox="-2 -1 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="11" cy="6" r="4"/><path d="M 3 21 A 8 8 0 0 1 11 13"/><path d="M 15 17 H 19 M 17 15 V 19"/></g></svg>
                 </el-button>
@@ -225,7 +258,7 @@ function updateInfo() {
         <div class="container content-gab">
           <div class="title">Their activities</div>
           <hr>
-          <ListView v-if="pageUserInfo" :keyword="uuid" :page="page" :show="false" :size="5" tableMin="272px" type="u" @sendPage="getPageValue"/>
+          <ListView v-if="pageUserInfo" :keyword="pageUserInfo.uuid" :page="page" :show="false" :size="5" tableMin="272px" type="u" @sendPage="getPageValue"/>
         </div>
       </div>
     </div>
