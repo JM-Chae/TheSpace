@@ -10,7 +10,7 @@ const { isLoggedIn, userInfo } = storeToRefs(useAuthStore());
 
 onMounted(async () => {
   await useAuthStore().initializeAuth();
-  await useNotificationsStore().initializeNotifications(1, 10);
+  if(isLoggedIn.value) await useNotificationsStore().initializeNotifications(1, 10);
 
 })
 </script>

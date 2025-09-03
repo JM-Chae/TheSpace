@@ -1,20 +1,101 @@
 <script lang="ts" setup>
-import {onMounted, ref, watch} from "vue";
-import {Delete, Edit, Expand, Hide, View} from '@element-plus/icons-vue'
+import type {CSSProperties} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
+import {
+  CaretRight,
+  ChatLineRound,
+  CloseBold,
+  Delete,
+  Edit,
+  Expand,
+  Hide,
+  SuccessFilled,
+  View
+} from '@element-plus/icons-vue'
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import router from "@/router";
 import type {CategoryInfo, CommunityInfo} from "@/types/domain";
 import {goMyPage} from "@/router/GoMyPage"
+import InfiniteLoading from "v3-infinite-loading";
+import "v3-infinite-loading/lib/style.css";
+import {Client} from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+
+
+const replyPostRef = ref<HTMLDivElement | null>(null);
+const isDragging = ref(false);
+const position = reactive({ x: 0, y: 0 });
+const dragOffset = reactive({ x: 0, y: 0 });
+const isMoved = ref(false);
+
+const draggableStyle = computed((): CSSProperties => {
+  if (isMoved.value) {
+    return {
+      position: 'fixed',
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+      width: '50%',
+      zIndex: 1000,
+      background: 'rgb(32,32,32)',
+      borderRadius: '0.5em',
+      border: '0.1em solid rgb(103,103,103)',
+      cursor: 'move'
+    };
+  }
+  return {
+    position: 'fixed',
+    bottom: '1em',
+    left: '25%',
+    width: '50%',
+    zIndex: 0,
+    background: 'rgb(32,32,32)',
+    borderRadius: '0.5em',
+    border: '0.1em solid rgb(103,103,103)'
+  };
+});
+
+const dragMouseDown = (event: MouseEvent) => {
+  isDragging.value = true;
+  isMoved.value = true;
+
+  const replyEl = replyPostRef.value;
+  if (replyEl) {
+    const rect = replyEl.getBoundingClientRect();
+    if (position.x === 0 && position.y === 0) {
+        position.x = rect.left;
+        position.y = rect.top;
+    }
+
+    dragOffset.x = event.clientX - position.x;
+    dragOffset.y = event.clientY - position.y;
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+};
+
+const onMouseMove = (event: MouseEvent) => {
+  if (isDragging.value) {
+    position.x = event.clientX - dragOffset.x;
+    position.y = event.clientY - dragOffset.y;
+  }
+};
+
+const onMouseUp = () => {
+  isDragging.value = false;
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+};
 
 function getRead() {
+
   axios.get(`/board/${bno}`)
   .then(res => {
     getDto.value = res.data
     community.value = getDto.value?.communityInfo
   })
   .catch(error => console.error(error));
-
 }
 
 function modify() {
@@ -31,31 +112,118 @@ function modify() {
   });
 }
 
-function getReply() {
-  axios.get(`/board/${bno}/reply`)
-  .then(res => rdtoList.value = res.data)
-  .then(() => {
-    if (rdtoList.value) {
-      rdtoList?.value
+async function getReply() {
+  try {
+    const res = await axios.get(`/board/${bno}/reply`, {params: {page: replyPage.value, size: 20}})
+    const incomingDtoList = res.data.dtoList;
+    if (!rdtoList.value?.dtoList) {
+      rdtoList.value = res.data
     }
-  })
-  .catch(error => console.error(error));
+    else {
+      incomingDtoList.forEach(incomingParent => {
+        const existingParent = rdtoList.value.dtoList.find(p => p.rno === incomingParent.rno);
+        if (existingParent) {
+          if (incomingParent.children && incomingParent.children.length > 0) {
+            if (!existingParent.children) {
+              existingParent.children = [];
+            }
+            const existingChildRnos = new Set(existingParent.children.map(c => c.rno));
+            const newUniqueChildren = incomingParent.children.filter(c => !existingChildRnos.has(c.rno));
+
+            if (newUniqueChildren.length > 0) {
+              existingParent.children.push(...newUniqueChildren);
+            }
+          }
+        } else {
+          rdtoList.value.dtoList.push(incomingParent);
+        }
+      });
+
+      rdtoList.value.total = res.data.total;
+    }
+  }
+  catch(error) {
+    console.error(error)
+  }
+}
+
+const infiniteHandler = async ($state: any) => {
+
+  if (sortedReplies.value && sortedReplies.value.dtoList.length >= sortedReplies.value.total) {
+    $state.complete();
+    return
+  }
+  const MAX_PAGES = 1000;
+  if (replyPage.value > MAX_PAGES) {
+    console.warn("Infinite loading stopped: Maximum page limit (${MAX_PAGES}) reached.");
+    $state.complete();
+    return;
+  }
+  try {
+    const lengthBefore = sortedReplies.value?.dtoList.length || 0;
+    await getReply();
+    const lengthAfter = sortedReplies.value?.dtoList.length || 0;
+
+    if (lengthAfter === lengthBefore) {
+      $state.complete();
+    } else {
+      replyPage.value += 1;
+      $state.loaded();
+    }
+  } catch (e) {
+    console.error(e);
+    $state.error();
+  }
 }
 
 function deleteReply(rno: number, isNR: number) {
   if (isNR == 0) {
-    axios.delete(`/board/${bno}/reply/${rno}`, {withCredentials: true})
-    .then(() => {
-      getReply()
-      if (getDto.value) {getDto.value.rCount--;}
+    axios.delete(`/board/${bno}/reply/${rno}`, {withCredentials: true}).then(() => {
+      if (!sortedReplies.value) return;
+
+      let parentIndex = -1;
+      let childIndex = -1;
+
+      for (let i = 0; i < sortedReplies.value.dtoList.length; i++) {
+        const p = sortedReplies.value.dtoList[i];
+        if (p.rno === rno) {
+          parentIndex = i;
+          break;
+        }
+        if (p.children) {
+            const j = p.children.findIndex(c => c.rno === rno);
+            if (j > -1) {
+              parentIndex = i;
+              childIndex = j;
+              break;
+            }
+        }
+      }
+      if (parentIndex > -1) {
+        if (childIndex > -1) {
+          sortedReplies.value.dtoList[parentIndex].children.splice(childIndex, 1);
+        } else {
+          sortedReplies.value.dtoList.splice(parentIndex, 1);
+          sortedReplies.value.total--;
+        }
+
+        replyAllUnselect()
+      }
+
+      if (getDto.value) {
+        getDto.value.rCount--;
+      }
     })
-  } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.', 'Delete Confirmation', // The goal is to prevent comment deletion, but instead, to add an API that allows for arbitrary modification of the comment's information.
+  } else ElMessageBox.alert('You cannot delete a reply that has a nested reply.',
+      'Delete Confirmation',
       {
         type: 'warning',
         dangerouslyUseHTMLString: true,
         center: true
       })
 }
+
+
 
 function boardDelete(isR: number) {
   if (isR == 0) {
@@ -133,7 +301,7 @@ interface rdto {
   childCount: number
   taggedCount: number,
   tagRno: number,
-  child?: rdto[]
+  children?: rdto[]
 }
 
 interface rdtos {
@@ -144,38 +312,19 @@ interface rdtos {
 const rdtoList = ref<rdtos>()
 const sortedReplies = ref<rdtos | null>(null)
 
-function sortReply(rdtoList: any): rdto[] {
-  const map = new Map<number, rdto>();
-  const roots: rdto[] = [];
-
-  rdtoList.forEach((reply: rdto) => {
-    map.set(reply.rno, {...reply, child: []});
-  });
-
-  map.forEach(reply => {
-    if (reply.parentRno === 0) {
-      roots.push(reply);
-    } else {
-      const parent = map.get(reply.parentRno);
-      if (parent) {
-        parent.child?.push(reply);
-      } else {
-        console.warn(`Parent not found for reply rno=${reply.rno}`);
-      }
-    }
-  });
-
-  return roots;
-}
-
 watch(rdtoList, (newVal) => {
   if (newVal?.dtoList) {
-    sortedReplies.value = {
-      total: newVal.total,
-      dtoList: sortReply(newVal.dtoList)
-    };
+    const newSortedData = JSON.parse(JSON.stringify(newVal));
+    newSortedData.dtoList.sort((a, b) => a.rno - b.rno);
+
+    newSortedData.dtoList.forEach(parent => {
+      if (parent.children && parent.children.length > 0) {
+        parent.children.sort((a, b) => a.rno - b.rno);
+      }
+    });
+    sortedReplies.value = newSortedData;
   }
-});
+}, { deep: true });
 
 const getInfo = sessionStorage.getItem("userInfo") || ""
 
@@ -197,12 +346,15 @@ else {
 
 const getDto = ref<dto | null>(null)
 
+const parentRno = ref(0)
 const tag = ref<string>('')
 const tagRno = ref<number>(0)
 const community = ref<CommunityInfo>()
 const bno: number = window.history.state.bno;
 
 const replyContent = ref<string>()
+const replySuccessModal = ref<boolean>()
+
 const reply = function (parentRno: number) {
   console.log(parentRno)
   axios.post(`/board/${bno}/reply`,
@@ -212,12 +364,11 @@ const reply = function (parentRno: number) {
         tag: tag.value,
         tagRno: tagRno.value
       }, {withCredentials: true})
-  .then(() => replyContent.value = "")
   .then(() => {
-    getReply();
-    if (getDto.value && getDto.value.rCount != undefined) {
-      getDto.value.rCount += 1;
-    }
+    replyContent.value = ""
+    replyAllUnselect()
+    showReplyInput.value = false
+    replySuccessModal.value = true
   })
 }
 
@@ -259,6 +410,15 @@ watch(getDto, (newValue) => {
   }
 })
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+watch(replySuccessModal, async () => {
+  if (replySuccessModal.value) {
+    await delay(3000);
+    replySuccessModal.value = false;
+  }
+})
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   date.setHours(date.getHours());
@@ -267,30 +427,102 @@ const formatDate = (dateString: string) => {
   });
 }
 
-const toggleNested = (index: number) => {
-  isVisible.value[index] = !isVisible.value[index];
-  isVisible.value = isVisible.value.map((_, i) => i === index);
-  focused.value = false;
+function toggleReplyEditor() {
+  showReplyInput.value = !showReplyInput.value;
 }
 
-const isVisible = ref<boolean[]>([]);
-const focused = ref<boolean>(true)
+function replyAllUnselect() {
+  childReplySelected.value = childReplySelected.value.map((i) => i.fill(false));
+  replySelected.value = replySelected.value.fill(false);
+  tag.value = '';
+  tagRno.value = 0;
+  parentRno.value = 0;
+}
+
+const toggleNested = (index: number, nestedRno: number) => {
+  if (replySelected.value[index]) {
+    replySelected.value = replySelected.value.fill(false);
+    parentRno.value = 0;
+  } else {
+    replySelected.value = replySelected.value.fill(false);
+    replySelected.value[index] = !replySelected.value[index];
+    childReplySelected.value = childReplySelected.value.map((i) => i.fill(false));
+    tag.value = '';
+    parentRno.value = nestedRno;
+  }
+}
+
+const toggleNestedByChild = (index: number, childIndex: number, nestedRno: number, child: rdto) => {
+  if (!sortedReplies.value?.dtoList) return;
+
+  const wasSelected = childReplySelected.value[index]?.[childIndex];
+
+  const newChildSelection = sortedReplies.value.dtoList.map(rDto =>
+    rDto.children ? rDto.children.map(() => false) : []
+  );
+
+  if (!wasSelected) {
+    if (newChildSelection[index]) {
+      newChildSelection[index][childIndex] = true;
+      tag.value = child.replyWriter + ' ' + child.replyWriterUuid + ' To';
+      tagRno.value = child.rno;
+      parentRno.value = nestedRno;
+    }
+  } else {
+    tag.value = '';
+    parentRno.value = 0;
+  }
+
+  childReplySelected.value = newChildSelection;
+  replySelected.value.fill(false);
+}
+
+const replySelected = ref<boolean[]>([]);
+const childReplySelected = ref<boolean[][]>([]);
+const showReplyInput = ref<boolean>(true)
 const nestedReply = ref<number>(0)
 const replyClose = ref<boolean>(true)
 
-const closeAllNestedReplies = () => {
-  isVisible.value = isVisible.value.map(() => false);
-  focused.value = true;
-  nestedReply.value = 0;
-  tag.value = '';
-  tagRno.value = 0;
-};
-
 onMounted(() => {
   getRead()
-  getReply()
+  connectWebSocket();
 })
 
+onUnmounted(() => {
+  if (stompClient) {
+    stompClient.deactivate();
+  }
+})
+
+let stompClient: Client | null = null;
+const connectWebSocket = () => {
+  stompClient = new Client({
+    webSocketFactory: () => new SockJS('http://localhost:8080/web'),
+    onConnect: () => {
+      console.log('websocket connected');
+      stompClient?.subscribe(`/topic/reply/${bno}`, (message) => {
+        const newReply: rdto = JSON.parse(message.body)
+        if (rdtoList.value && !rdtoList.value.dtoList.some(r => r.rno === newReply.rno)) {
+          if(newReply.parentRno == 0) {
+            rdtoList.value.dtoList.push(newReply);
+            sortedReplies.value.total = ++rdtoList.value.total;
+          } else {
+            rdtoList.value?.dtoList?.find(r => r.rno === newReply.parentRno)?.children?.push(newReply);
+          }
+          if (getDto.value && getDto.value.rCount != undefined) {
+            getDto.value.rCount += 1;
+          }
+        }
+      })
+    },
+    onStompError: (frame) => {
+      console.error('websocket error:', frame.headers['message'], frame.body);
+    }
+  })
+  stompClient.activate();
+}
+
+const replyPage = ref(1)
 
 const tempSize = history.state.size;
 const tempPage = history.state.page;
@@ -406,17 +638,21 @@ function routing() {
     </div>
 
     <hr style="background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
-    <div v-show="replyClose && sortedReplies?.total" class="reply">
+    <div v-if="replyClose && sortedReplies?.total" class="reply" @click.stop>
       <div class="replyList">
-        <div class="p-3 m-3 pt-4"
-             style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-
-          <el-space :size="20" fill="fill" style="display: flex;">
+        <div class="p-3 m-3 pt-4" style="width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+          <el-space fill="fill" style="display: flex; ">
             <ul v-for="(rDto, index) in sortedReplies?.dtoList" :key="rDto.rno" class="list"
-                style="padding-left: 0">
-              <li class="list" style="list-style-type: none;" @click="toggleNested(index); nestedReply = rDto.rno">
-                <div style="display: grid;">
-                  <div id="replyList">
+                style="padding-left: 0; ">
+              <li class="list" style="display: flex; position: relative; list-style-type: none;" @click="toggleNested(index, rDto.rno); nestedReply = rDto.rno">
+                <div v-if="replySelected[index]" class="pt-1" style="position: absolute; left: -3.5em;" @click.stop>
+                  <el-icon color="#00ffab" size="1.5em"><CaretRight /></el-icon>
+                </div>
+                <el-button v-if="replySelected[index]" link style="position: absolute; top: 2.5em; left: -2.9em; color: #ff9494; font-size: 1.2em" @click="replyAllUnselect" @click.stop>
+                  <el-icon><CloseBold /></el-icon>
+                </el-button>
+                <div style="display: grid; width: 100%;">
+                  <div id="replyList" >
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <div style="flex-grow: 1; margin-bottom: auto; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
                         <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
@@ -456,10 +692,16 @@ function routing() {
                     </div>
                   </div>
 
-                  <ul v-if="rDto.child?.length" class="p-2 m-3 mt-2 mb-0">
-                    <li v-for="(child) in rDto.child" id="nestedList" :key="child.rno" style="border-radius: 0.5em; border: 0.1em solid #494949; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(46,46,46); list-style-type: none;"
-                        @click="tag = child.replyWriter + ' ' + child.replyWriterUuid + ' To'; tagRno = child.rno">
-                      <div style="display: grid;">
+                  <ul v-if="rDto.children?.length" class="p-2 m-3 mt-2 mb-0" style="">
+                    <li v-for="(child, childIndex) in rDto.children" id="nestedList" :key="child.rno"
+                        style="display: flex; border-radius: 0.5em; border: 0.1em solid #494949; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(46,46,46); list-style-type: none;"  @click="toggleNestedByChild(index, childIndex, rDto.rno, child)" @click.stop>
+                      <div v-if="childReplySelected[index] && childReplySelected[index][childIndex]" class="nestedReplyPost pt-1" style="position: absolute; left: -3.5em;" @click.stop>
+                        <el-icon color="#00ffab" size="1.5em"><CaretRight /></el-icon>
+                      </div>
+                      <el-button v-if="childReplySelected[index] && childReplySelected[index][childIndex]" link style="position: absolute; padding-top: 2.3em; left: -2.9em; color: #ff9494; font-size: 1.2em" @click="replyAllUnselect" @click.stop>
+                        <el-icon><CloseBold /></el-icon>
+                      </el-button>
+                      <div style="display: grid; width: 100%">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                           <div style="flex-grow: 1; margin-bottom: auto; min-width: 10em; max-width: 10em; margin-right: 0.5em;">
                             <el-popover :width="10" placement="top" popper-style="text-align: center" title="UUID" trigger="hover">
@@ -521,21 +763,6 @@ function routing() {
                       </div>
                     </li>
                   </ul>
-
-                  <div v-show="isVisible[index]" class="nestedReplyPost p-3 m-3 pb-2 pt-2 mt-2"
-                       style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)"
-                       @click.stop>
-                    <div class="mb-1" style="display: flex">
-                      <el-text style="color:rgba(97,255,176,0.8)">{{ user.name }}</el-text>
-                      <el-button class="mb-1" link style="margin-left: auto" @click="closeAllNestedReplies()" >x</el-button>
-                    </div>
-                    <el-input v-model="replyContent" :autosize="{minRows: 3}" type="textarea"
-                              :placeholder="tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined"/>
-                    <div style="text-align: end">
-                      <el-button class="mt-2" round size="small" type="primary" @click="reply(rDto.rno)">Reply</el-button>
-                    </div>
-                  </div>
-
                   <div v-if="sortedReplies && sortedReplies.dtoList.length - 1 != index" class="mt-2" style="border-bottom: 1px dashed rgba(70,130,180,0.17);"></div>
                 </div>
               </li>
@@ -547,21 +774,50 @@ function routing() {
       </div>
     </div>
 
-    <div v-if="focused" class="replyPost p-3 m-3 pb-2 pt-2"
-         style="background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
-      <div class="mb-1" style="color:rgba(97,255,176,0.8)">{{ user.name }}</div>
-      <el-input v-model="replyContent" :autosize="{minRows: 3}" :disabled="inputPlaceholder != ''" :placeholder="inputPlaceholder" class="replyInput" type="textarea" @click.stop/>
-      <div style="text-align: end">
-        <el-button class="mt-2" round size="small" type="primary" @click="reply(0);">Reply</el-button>
-      </div>
+    <div style="text-align: center; margin-top: 2em;">
+      <InfiniteLoading @infinite="infiniteHandler">
+        <template #complete>
+          <span style="font-size: 1.2em; color: #00bd7e">
+            No more reply!
+          </span>
+        </template>
+      </InfiniteLoading>
     </div>
+
     <div>
       <el-button color="#00bd7e" round style="position: fixed; top: 3vh; right: 2vw" @click="returnBack()">Return Back</el-button>
     </div>
+
+    <div v-if="showReplyInput" ref="replyPostRef" :style="draggableStyle" class="replyPost p-3 m-3 pb-2 pt-2" @click.stop >
+      <div style="display: flex; cursor: move;" @mousedown="dragMouseDown">
+        <div class="mb-1" style="color:rgba(97,255,176,0.8)">{{ user.name }}</div>
+        <el-button class="mb-1" link style="margin-left: auto; cursor: pointer;" @click="toggleReplyEditor()" >x</el-button>
+      </div>
+      <el-input v-model="replyContent" :autosize="{minRows: 3}" :disabled="inputPlaceholder != ''" :placeholder="tag ? tag.split(' ')[2] + ' ' + tag.split(' ')[0] : undefined" class="replyInput" style="background-color: #2b2b2b;" type="textarea" @click.stop/>
+      <div style="text-align: end">
+        <el-button class="mt-2" round size="small" type="primary" @click="reply(parentRno);">Reply</el-button>
+      </div>
+    </div>
+    <div v-else>
+    <el-button round size="large" style="position: fixed; left: 1em; bottom: 1em; height: 3em; width: 4em;" type="primary" @click="toggleReplyEditor" @click.stop><el-icon style="font-size: 2em;"><ChatLineRound /></el-icon></el-button>
+    </div>
+    <Transition name="fade">
+      <div v-if="replySuccessModal" style="background-color: #202020; border-radius: 0.5em; border: 0.1em solid #979797; position: fixed; left: calc(50% - 225px); width: 450px; height: 4em; bottom: 5em; display: flex; justify-content: center; align-items: center;">
+        <el-text style="font-size: 1.5em; color: #9effc8;"><el-icon><SuccessFilled style="color: #ffbe8f"/></el-icon> Your reply was posted successfully!</el-text>
+      </div>
+    </Transition>
   </html>
 </template>
 
 <style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
 .replyInput {
   --el-disabled-bg-color: #00000000;
 }

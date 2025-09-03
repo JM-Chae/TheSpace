@@ -12,12 +12,6 @@ public class PageResDTO<E>
     private final int size;
     private final int total;
 
-    private final boolean prev;
-    private final boolean next;
-
-    private final int start;
-    private int end;
-
     private final List<E> dtoList;
 
     @Builder(builderMethodName = "PageResDTO")
@@ -28,15 +22,6 @@ public class PageResDTO<E>
 
         this.total = total;
         this.dtoList = dtoList;
-
-        this.end = (int)(Math.ceil(this.page/10.0)) * 10;
-        this.start = this.end -9;
-
-        int last = (int)(Math.ceil((total/(double)size)));
-
-        this.end = Math.min(end, last);
-        this.prev = this.start >1;
-        this.next = total>this.end * this.size;
       }
 
     public static <E> PageResDTO<E> from(PageReqDTO pageReqDTO, Page<E> page) {

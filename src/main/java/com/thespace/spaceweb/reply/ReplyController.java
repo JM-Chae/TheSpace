@@ -1,11 +1,13 @@
 package com.thespace.spaceweb.reply;
 
+import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.reply.ReplyDTOs.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +33,8 @@ public class ReplyController {
     }
 
     @GetMapping
-    public PageResDTO<Info> list(@PathVariable("bno") Long bno) {
+    public PageResDTO<Info> list(@PathVariable("bno") Long bno, @ModelAttribute PageReqDTO pageReqDTO) {
 
-        return replyService.getListReply(bno);
+        return replyService.getListReply(bno, pageReqDTO);
     }
 }

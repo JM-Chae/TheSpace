@@ -15,12 +15,17 @@ import ListViewAdmin from './views/web/ListViewAdmin.vue'
 import {setupAxiosInterceptors} from "@/axiosConfig";
 import {initializeFcmListener} from "@/firebase";
 
+import {initializeServiceWorkerListener} from './sw-listener';
+
+
 const app = createApp(App);
 app.use(createPinia());
+initializeServiceWorkerListener();
 
 app.use(router);
 app.use(ElementPlus);
 app.use(VueDOMPurifyHTML);
+
 app.component('ListView', ListView);
 app.component('ListViewAdmin', ListViewAdmin);
 

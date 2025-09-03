@@ -6,7 +6,9 @@ import com.thespace.spaceweb.reply.QReply;
 import com.thespace.spaceweb.reply.Reply;
 import com.thespace.spaceweb.reply.ReplyDTOs.Info;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,41 +24,82 @@ public class GetListReply {
     public Page<Info> getListReply(Long bno, Pageable pageable) {
         QReply reply = QReply.reply;
 
-        JPAQuery<Reply> query = queryFactory
+        // Only top level replies (parentRno = 0).
+        JPAQuery<Reply> parentQuery = queryFactory
             .selectFrom(reply)
-            .where(reply.board.bno.eq(bno))
-            .distinct();
+            .where(reply.board.bno.eq(bno).and(reply.parentRno.eq(0L)));
 
-        List<Reply> replyList = QuerydslUtils.applyPagination(query, pageable, reply)
+        List<Reply> parentReplies = QuerydslUtils.applyPagination(parentQuery, pageable, reply)
             .fetch();
 
         long totalCount = Optional.ofNullable(queryFactory
-            .select(reply.countDistinct())
+            .select(reply.count())
             .from(reply)
-            .where(reply.board.bno.eq(bno))
+            .where(reply.board.bno.eq(bno).and(reply.parentRno.eq(0L)))
             .fetchOne())
             .orElse(0L);
 
-        return returnList(replyList, pageable, totalCount);
+        // Searching children replies with searched top-revel replies.
+        List<Long> parentRnos = parentReplies.stream()
+            .map(Reply::getRno)
+            .toList();
+
+        List<Reply> childReplies = List.of();
+        if (!parentRnos.isEmpty()) {
+            childReplies = queryFactory
+                .selectFrom(reply)
+                .where(reply.parentRno.in(parentRnos))
+                .orderBy(reply.createDate.asc())
+                .fetch();
+        }
+
+        List<Info> resultDTOs = mapToDTOs(parentReplies, childReplies);
+
+        return new PageImpl<>(resultDTOs, pageable, totalCount);
     }
 
-    public Page<Info> returnList(List<Reply> replyList, Pageable pageable, long totalCount) {
+    // List of children to grouping by parents no.
+    private List<Info> mapToDTOs(List<Reply> parents, List<Reply> children) {
+        Map<Long, List<Info>> childrenDtoMap = children.stream()
+            .map(this::convertToInfoDTO)
+            .collect(Collectors.groupingBy(Info::parentRno));
 
-        List<Info> rdtoList = replyList.stream().map(reply1 ->
-            Info.builder()
-                .rno(reply1.getRno())
-                .replyWriterUuid(reply1.getUser().getUuid())
-                .replyContent(reply1.getReplyContent())
-                .replyWriter(reply1.getUser().getName())
-                .childCount(reply1.getChildCount())
-                .taggedCount(reply1.getTaggedCount())
-                .tag(reply1.getTag())
-                .replyDate(reply1.getCreateDate())
-                .parentRno(reply1.getParentRno())
-                .tagRno(reply1.getTagRno())
-                .vote(reply1.getVote())
-                .build()).toList();
+        return parents.stream()
+            .map(parent -> {
+                List<Info> childDTOs = childrenDtoMap.getOrDefault(parent.getRno(), List.of());
+                return Info.builder()
+                    .rno(parent.getRno())
+                    .replyContent(parent.getReplyContent())
+                    .replyWriter(parent.getUser().getName())
+                    .replyWriterUuid(parent.getUser().getUuid())
+                    .tag(parent.getTag())
+                    .replyDate(parent.getCreateDate())
+                    .childCount(parent.getChildCount())
+                    .taggedCount(parent.getTaggedCount())
+                    .parentRno(parent.getParentRno())
+                    .tagRno(parent.getTagRno())
+                    .vote(parent.getVote())
+                    .children(childDTOs)
+                    .build();
+            })
+            .toList();
+    }
 
-        return new PageImpl<>(rdtoList, pageable, totalCount);
+    // A child reply cannot have its own children, so an empty list is assigned to its children field.
+    private Info convertToInfoDTO(Reply reply) {
+        return Info.builder()
+            .rno(reply.getRno())
+            .replyWriterUuid(reply.getUser().getUuid())
+            .replyContent(reply.getReplyContent())
+            .replyWriter(reply.getUser().getName())
+            .childCount(reply.getChildCount())
+            .taggedCount(reply.getTaggedCount())
+            .tag(reply.getTag())
+            .replyDate(reply.getCreateDate())
+            .parentRno(reply.getParentRno())
+            .tagRno(reply.getTagRno())
+            .vote(reply.getVote())
+            .children(List.of()) // 자식의 자식은 표현하지 않으므로 빈 리스트로 설정
+            .build();
     }
 }

@@ -74,8 +74,8 @@ public class SecurityConfig implements UserDetailsService {
     @Order(1)
     public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/user", "/user/checkid", "/user/login", "/user/login/me", "/user/logout", "/user/info", "/api/fcm/token", "/error")
-            .csrf(AbstractHttpConfigurer::disable)
+            .securityMatcher("/user", "/user/checkid", "/user/csrf", "/user/login", "/user/login/me", "/user/logout", "/user/info", "/api/fcm/token", "/error")
+            .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
             .httpBasic(AbstractHttpConfigurer::disable)

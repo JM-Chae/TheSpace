@@ -1,5 +1,8 @@
 package com.thespace.spaceweb.reply;
 
+import static com.thespace.spaceweb.reply.ReplyDTOs.Info;
+import static com.thespace.spaceweb.reply.ReplyDTOs.Register;
+
 import com.thespace.common.exception.Exceptions.HasChild;
 import com.thespace.common.exception.Exceptions.NotRegisterUser;
 import com.thespace.common.exception.Exceptions.PostNotFound;
@@ -10,9 +13,11 @@ import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.board.BoardRepository;
 import com.thespace.spaceweb.user.User;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +26,32 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReplyService {
 
+    private final SimpMessagingTemplate messagingTemplate;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
     private final GetListReply getListReply;
 
-    Reply dtoToEntity(ReplyDTOs.Register dto, User user, Board board) {
+    Reply dtoToEntity(Register dto, User user, Board board) {
         return new Reply(dto.tagRno(), dto.parentRno(), dto.replyContent(), user, dto.tag(), board);
     }
 
+    Info entityToDTO(Reply reply) {
+        return new Info(reply.getRno(),
+            reply.getReplyContent(),
+            reply.getUser().getName(),
+            reply.getUser().getUuid(),
+            reply.getTag(),
+            reply.getCreateDate(),
+            reply.getChildCount(),
+            reply.getTaggedCount(),
+            reply.getParentRno(),
+            reply.getTagRno(),
+            reply.getVote(),
+            new ArrayList<>());
+    }
+
     @Transactional
-    public void register(Long bno, ReplyDTOs.Register replyRegisterDTO, Authentication authentication) {
+    public void register(Long bno, Register replyRegisterDTO, Authentication authentication) {
         Board board = boardRepository.findById(bno).orElseThrow(PostNotFound::new);
         Long replyCount = board.getRCount() + 1L;
         board.setRCount(replyCount);
@@ -52,7 +73,12 @@ public class ReplyService {
 
         Reply reply = dtoToEntity(replyRegisterDTO, user, board);
 
-        replyRepository.save(reply);
+        Info replyDTO = entityToDTO(replyRepository.save(reply));
+        replyWSPush(replyDTO, bno);
+    }
+
+    void replyWSPush(Info dto, Long bno) {
+        messagingTemplate.convertAndSend("/topic/reply/" + bno, dto);
     }
 
     @Transactional
@@ -84,16 +110,14 @@ public class ReplyService {
         boardRepository.save(board);
     }
 
-    public PageResDTO<ReplyDTOs.Info> getListReply(Long bno) {
+    public PageResDTO<Info> getListReply(Long bno, PageReqDTO pageReqDTO) {
         if (!boardRepository.existsById(bno)) {
             throw new PostNotFound();
         }
 
-        PageReqDTO pageReqDTO = new PageReqDTO(1, 0, "", "", 0L, 0L);
-
         Pageable pageable = pageReqDTO.getPageable("rno");
 
-        Page<ReplyDTOs.Info> list = getListReply.getListReply(bno, pageable);
+        Page<Info> list = getListReply.getListReply(bno, pageable);
 
         return PageResDTO.from(pageReqDTO, list);
     }
