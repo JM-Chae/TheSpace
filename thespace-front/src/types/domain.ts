@@ -74,6 +74,7 @@ export interface Friend {
   fsignature: string,
   fname: string,
   fuuid: string,
+  fintro: string,
   note: string,
   acceptedAt: string
 }

@@ -13,7 +13,7 @@ import {ElMessage} from "element-plus";
 import {storeToRefs} from "pinia";
 
 const {friendsList} = storeToRefs(useFriendsStore());
-const popupRef = ref<HTMLElement | null>(null);
+const infoHoverRef = ref<HTMLElement | null>(null);
 
 const page = ref(2);
 const size = ref(10);
@@ -45,9 +45,28 @@ const infiniteHandler = async ($state: any) => {
 }
 
 const menuPosition = ref({top: '0px', left: '0px'});
+const infoHoverPosition = ref({top: '0px', left: '0px'});
 const menuVisible = ref(false);
 const selectedFriend = ref<Friend>();
+const hoveredFriend = ref<Friend>();
 const menuRef = ref<HTMLElement>();
+const info_hover = ref<boolean>(false);
+const hideTimeout = ref<number | null>(null);
+
+function clearHideTimeout() {
+  if (hideTimeout.value) {
+    clearTimeout(hideTimeout.value);
+    hideTimeout.value = null;
+  }
+}
+
+function offInfoHover() {
+  clearHideTimeout();
+  hideTimeout.value = window.setTimeout(() => {
+    info_hover.value = false;
+    hoveredFriend.value = undefined;
+  }, 200);
+}
 
 const closeMenu = () => {
   menuVisible.value = false;
@@ -118,6 +137,34 @@ const handleMenuClick = (action: 'profile' | 'message' | 'block' | 'note') => {
   closeMenu();
 };
 
+async function handleInfoHover(f: Friend, event: MouseEvent) {
+  clearHideTimeout();
+  infoHoverPosition.value = { top: `${event.clientY}` + 'px', left: `${event.clientX}` + 'px' };
+  info_hover.value = true;
+  hoveredFriend.value = f;
+
+  await nextTick();
+
+  const infoHoverElement = infoHoverRef.value;
+  if (!infoHoverElement) return;
+
+  const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
+  const { offsetWidth: infoHoverWidth, offsetHeight: infoHoverHeight } = infoHoverElement;
+
+  let newLeft = event.clientX;
+  let newTop = event.clientY;
+
+  if (newLeft + infoHoverWidth > windowWidth) {
+    newLeft = windowWidth - infoHoverWidth - 10;
+  }
+
+  if (newTop + infoHoverHeight > windowHeight) {
+    newTop = windowHeight - infoHoverHeight - 10;
+  }
+
+  infoHoverPosition.value = { top: `${newTop}` + "px", left: `${newLeft}` + "px" };
+}
+
 const showFriendList = ref(false);
 </script>
 <template>
@@ -140,31 +187,33 @@ const showFriendList = ref(false);
       </div>
       <div class="scroll">
         <ul v-if="friendsList" class="friends" @contextmenu.prevent>
-          <li v-for="friend in friendsList.dtoList" class="friends-item" @dblclick="routToFriendMypage(friend)">
-            <div class="fList" @contextmenu.prevent="handleContextmenu(friend, $event)">
-              <el-text class="signature">{{friend.fsignature}}</el-text>
-              <div class="fInfo">
-                <el-text class="fContent name" >{{friend.fname}}#{{friend.fuuid}}</el-text>
-                <el-text class="fContent note">{{friend.note}}</el-text>
-                <el-text class="fContent date">Since, {{formatDate(friend.acceptedAt)}}</el-text>
+          <li v-for="(friend) in friendsList.dtoList" :key="friend.fid" class="friends-item" @dblclick="routToFriendMypage(friend)">
+              <div class="fList" @mouseleave="offInfoHover()" @mousemove="handleInfoHover(friend, $event)" @contextmenu.prevent="handleContextmenu(friend, $event)">
+                <el-text class="signature">{{friend.fsignature}}</el-text>
+                <div class="fInfo">
+                  <el-text class="fContent name" >{{friend.fname}}#{{friend.fuuid}}</el-text>
+                  <el-text class="fContent intro" line-clamp="4">{{friend.fintro}}</el-text>
+                </div>
               </div>
-            </div>
           </li>
         </ul>
+        <infinite-loading v-if="showFriendList" @infinite="infiniteHandler">
+          <template #complete><span> </span></template>
+        </infinite-loading>
      </div>
     </div>
   </transition>
-
-  <infinite-loading v-if="showFriendList" @infinite="infiniteHandler">
-    <template #complete><span> </span></template>
-  </infinite-loading>
 
   <div v-if="menuVisible" ref="menuRef" :style="{ top: menuPosition.top, left: menuPosition.left }" class="context-menu">
     <div class="context-menu-item" @click="handleMenuClick('profile')">Move to Profile</div>
     <div class="context-menu-item" @click="handleMenuClick('message')">Send message</div>
     <div class="context-menu-item" @click="handleMenuClick('note')">Memo</div>
     <div class="context-menu-item" @click="handleMenuClick('block')">Block</div>
+  </div>
 
+  <div v-if="info_hover && hoveredFriend" ref="infoHoverRef" :style="infoHoverPosition" class="info-hover" @mouseenter="clearHideTimeout" @mouseleave="offInfoHover">
+    <el-text class="fContent note">Note: {{hoveredFriend?.note}}</el-text>
+    <el-text class="fContent date">Since, {{formatDate(hoveredFriend?.acceptedAt)}}</el-text>
   </div>
 
 </template>
@@ -192,6 +241,7 @@ const showFriendList = ref(false);
 .friends-item:hover {
   background: #404040;
 }
+
 .context-menu {
   position: fixed;
   display: flex;
@@ -219,6 +269,18 @@ const showFriendList = ref(false);
   line-height: normal;
 }
 
+.info-hover {
+  position: fixed;
+  display: flex;
+  z-index: 9999;
+  background-color: #191919;
+  border-radius: 5px;
+  box-shadow: 0 2px 12px 0 rgba(115, 115, 115, 0.5);
+  padding: 1em 0;
+  min-width: 150px;
+  gap: 10px;
+  flex-direction: column;
+}
 
 .fList {
   display: flex;
@@ -226,23 +288,35 @@ const showFriendList = ref(false);
 }
 .signature {
   font-size: 3em;
+  width: 3em;
 }
 .fContent {
   align-self: flex-start;
   margin-left: 1em;
 }
-.name {
-  font-size: 1.1em;
-  font-weight: bold;
-  color: #4e9bff;
-}
+
 .note, .date {
   font-size: 0.9em;
   color: #bfbfbf
+}
+.note {
+  max-width: 15ch;
 }
 .fInfo {
   display: flex;
   flex-direction: column;
   gap: 0.2em;
+}
+.name {
+  font-size: 1.1em;
+  margin-left: 14px;
+  font-weight: bold;
+  color: #4e9bff;
+}
+.intro {
+  color: #b5b5b5;
+  overflow: hidden;
+  width: 17em;
+  height: 6em;
 }
 </style>

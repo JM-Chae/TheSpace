@@ -120,7 +120,6 @@ const formattedBody = (notification: Notification) => {
 .scroll {
   flex: 1;
   overflow-y: auto;
-  height: max-content;
 }
 .notifications {
   padding: 0;

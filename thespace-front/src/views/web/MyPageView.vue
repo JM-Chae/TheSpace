@@ -363,8 +363,11 @@ function updateInfo() {
   .introduce {
     display: block;
     white-space: pre-line;
-    height: 10em;
-    top: -0.3em
+    height: max-content;
+    top: -0.3em;
+    width: 20ch;
+    overflow-wrap: break-word;
+    word-break: break-all;
   }
 
   .container {

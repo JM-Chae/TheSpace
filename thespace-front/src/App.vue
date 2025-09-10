@@ -17,8 +17,16 @@ onMounted(async () => {
   await useAuthStore().initializeAuth();
   watchEffect(async () => {
     if (isLoggedIn.value && showMoreButton.value) {
-      await useNotificationsStore().initializeNotifications();
-      await useFriendsStore().initializeFriends();
+      const notificationStore = useNotificationsStore();
+      if (!notificationStore.notificationList.dtoList ||
+          notificationStore.notificationList.dtoList.length === 0) {
+        await useNotificationsStore().initializeNotifications();
+      }
+      const friendsStore = useFriendsStore();
+      if (!friendsStore.friendsList.dtoList ||
+          friendsStore.friendsList.dtoList.length === 0) {
+        await useFriendsStore().initializeFriends();
+      }
     }
   })
 })

@@ -62,6 +62,7 @@ public class GetListFriend {
             friendship.getTo().getSignature(),
             friendship.getTo().getName(),
             friendship.getTo().getUuid(),
+            friendship.getTo().getIntroduce(),
             friendship.getNote(),
             friendship.getAcceptedAt()
         );

@@ -116,6 +116,7 @@ export async function acceptRequest(notification: Notification) {
     //update already notification.
     const updatedNotification = notification;
     updatedNotification.dataPayload.status = 'ACCEPTED'
+    updatedNotification.isRead = true;
     useNotificationsStore().updateNotification(updatedNotification);
   })
 }
@@ -125,6 +126,7 @@ export async function rejectRequest(notification: Notification) {
     //update already notification.
     const updatedNotification = notification;
     updatedNotification.dataPayload.status = 'REJECTED'
+    updatedNotification.isRead = true;
     useNotificationsStore().updateNotification(updatedNotification);
   })
 }
