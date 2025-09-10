@@ -8,6 +8,7 @@ export const useNotificationsStore = defineStore('notifications', {
         notificationList: {} as ListRes<Notification>,
         page: 1 as number,
         size: 10 as number,
+        showNotification: false as boolean
         /*isRead: boolean*/
       }),
       actions: {

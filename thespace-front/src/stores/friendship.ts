@@ -10,7 +10,8 @@ export const useFriendsStore = defineStore('friends', {
     friendsList: {} as ListRes<Friend>,
     page: 1 as number,
     size: 10 as number,
-    keyword: "" as string
+    keyword: "" as string,
+    showFriendList: false as boolean
   }),
   actions: {
     async initializeFriends() {

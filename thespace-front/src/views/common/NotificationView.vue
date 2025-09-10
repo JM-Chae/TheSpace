@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref} from "vue";
-import {BellFilled, CloseBold, Select} from '@element-plus/icons-vue'
+import {CloseBold, Select} from '@element-plus/icons-vue'
 import {
   formatDate,
   readNotification,
@@ -12,7 +12,7 @@ import type {Notification} from '@/types/domain';
 import {lowerCase} from "lodash-es";
 import {acceptRequest, rejectRequest} from "@/stores/friendship"
 
-const { notificationList } = storeToRefs(useNotificationsStore());
+const { notificationList, showNotification } = storeToRefs(useNotificationsStore());
 
 const size = ref(10);
 
@@ -51,8 +51,6 @@ const rowStyle = (row : Notification ) => {
   return {};
 }
 
-const showNotification = ref<boolean>(false);
-
 const formattedBody = (notification: Notification) => {
   //if notification type is Friendship
   if (notification.type === 'FRIENDSHIP_REQUEST' || notification.type === 'FRIENDSHIP_ACCEPT') {
@@ -70,17 +68,10 @@ const formattedBody = (notification: Notification) => {
 </script>
 
 <template>
-
-<!-- showNotification button -->
   <div style="display: flex; flex-direction: column; align-items: end;">
-    <transition name="fade">
-      <div v-if="!showNotification" style="z-index: 9997; position: fixed; bottom: 1em; right: calc(40px + 4em); border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; height: 4em; width: 4em; padding: 0; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);" >
-      <el-button link style="display: flex; width: 4em; height: 4em; margin: 0;" @click="showNotification = true"><el-icon style="font-size: 2em; position: absolute; right: 16px; top: 16px;"><BellFilled /></el-icon></el-button>
-      </div>
-    </transition>
 <!-- Notification popup -->
     <transition name="pop">
-      <div v-if="showNotification" style="z-index: 9999; display: flex; flex-direction: column; position: fixed; right: 20px; bottom: 1em; width: 25em; height: 80vh; border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);">
+      <div v-if="showNotification" style="z-index: 9999; display: flex; flex-direction: column; position: fixed; right: 20px; bottom: 6em; width: 25em; height: 80vh; border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);">
         <div style="display: flex; justify-content: center; border-bottom: 1px solid #434343; padding-bottom: 0.4em">
           <el-text style="font-size: 1.3em; font-weight: bold; color: #00DE64;">Notification</el-text>
   <!-- Popup close button -->

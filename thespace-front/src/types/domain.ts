@@ -78,3 +78,8 @@ export interface Friend {
   note: string,
   acceptedAt: string
 }
+// Long roomId, String name, UserDTOs.Info manager, String description, List<UserDTOs.Info> members,
+// LocalDateTime createdAt, LocalDateTime modifiedAt
+export interface ChatRoom {
+
+}

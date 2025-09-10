@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import {UserFilled} from "@element-plus/icons-vue";
 import {nextTick, ref, watch} from "vue";
 import {
   formatDate,
@@ -12,7 +11,7 @@ import type {Friend} from "@/types/domain";
 import {ElMessage} from "element-plus";
 import {storeToRefs} from "pinia";
 
-const {friendsList} = storeToRefs(useFriendsStore());
+const {friendsList, showFriendList} = storeToRefs(useFriendsStore());
 const infoHoverRef = ref<HTMLElement | null>(null);
 
 const page = ref(2);
@@ -164,22 +163,11 @@ async function handleInfoHover(f: Friend, event: MouseEvent) {
 
   infoHoverPosition.value = { top: `${newTop}` + "px", left: `${newLeft}` + "px" };
 }
-
-const showFriendList = ref(false);
 </script>
 <template>
-  <!-- show button -->
-  <div style="display: flex; flex-direction: column; align-items: end;">
-    <transition name="fade">
-      <div v-if="!showFriendList" style="z-index: 9997; position: fixed; bottom: 1em; right: calc(60px + 8em); border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; height: 4em; width: 4em; padding: 0; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);" >
-        <el-button link style="display: flex; width: 4em; height: 4em; margin: 0;" @click="showFriendList = true"><el-icon style="font-size: 2em; position: absolute; right: 16px; top: 16px;"><UserFilled /></el-icon></el-button>
-      </div>
-    </transition>
-  </div>
-
   <!-- pop-up list -->
   <transition name="pop">
-    <div v-if="showFriendList" style="z-index: 9999; display: flex; flex-direction: column; position: fixed; bottom: 1em; right: 20px; width: 25em; height: 80vh; border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);">
+    <div v-if="showFriendList" style="z-index: 9999; display: flex; flex-direction: column; position: fixed; bottom: 6em; right: 20px; width: 25em; height: 80vh; border-radius: 0.5em; box-shadow: 0.1em 0.1em 1em 0.1em #878787; padding: 1em; margin: 0.5em 0 0.5em 0; background-color: rgb(18,18,18);">
       <div style="display: flex; justify-content: center; border-bottom: 1px solid #434343; padding-bottom: 0.4em">
         <el-text style="font-size: 1.3em; font-weight: bold; color: #00DE64;">Friend</el-text>
         <!-- Popup close button -->

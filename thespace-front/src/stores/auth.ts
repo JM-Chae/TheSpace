@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia';
 import type {User} from "@/types/domain"
-import {useNotificationsStore} from "@/stores/notification";
 import axios from "axios";
 import {loadCsrfToken} from "@/stores/loadCsrfToken";
 import {registerFcmToken} from "@/firebase"; // API 호출용
@@ -52,7 +51,6 @@ export const useAuthStore = defineStore('auth', {
       this.isLoggedIn = true;
       this.userInfo = userInfo;
 
-      await useNotificationsStore().initializeNotifications(1, 10);
       console.log("login success.");
     },
 
