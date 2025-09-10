@@ -1,4 +1,4 @@
-package com.thespace.common.getList;
+package com.thespace.common;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;

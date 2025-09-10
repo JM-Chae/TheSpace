@@ -4,8 +4,8 @@ import static com.thespace.common.notification.DataPayload.forFinalFriendShipSta
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thespace.common.exception.Exceptions.NotFoundFriendship;
+import com.thespace.common.exception.Exceptions.NotFoundNotification;
 import com.thespace.common.fcm.FcmService;
-import com.thespace.common.getList.GetListNotification;
 import com.thespace.common.notification.NotificationDTOs.DTO;
 import com.thespace.common.notification.NotificationDTOs.ToFriendship_accept;
 import com.thespace.common.notification.NotificationDTOs.ToFriendship_request;
@@ -13,11 +13,14 @@ import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserService;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -78,6 +81,7 @@ public class NotificationService {
         }
 
         notification.updateDataPayload(forFinalFriendShipStatus(targetNameAndUUID, status));
+        notification.read(true);
         notificationRepository.save(notification);
     }
 
@@ -88,6 +92,21 @@ public class NotificationService {
         Page<DTO> list = getListNotification.getList(user, /*isRead,*/ pageable);
 
         return PageResDTO.from(pageReqDTO, list);
+    }
+
+    @Transactional
+    public void changeToRead(User user, Long nno) {
+        if (nno == 0L) {
+            List<Notification> list = notificationRepository.findByUserIdAndIsRead(user.getId(), false);
+            for (Notification notification : list) {
+                notification.read(true);
+            }
+        } else {
+            Notification notification = notificationRepository.findById(nno).orElseThrow(NotFoundNotification::new);
+            if (Objects.equals(notification.getUser().getId(), user.getId())) {
+                notification.read(true);
+            }
+        }
     }
 }
 

@@ -1,0 +1,40 @@
+.pop-enter-active {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+  transform-origin: center;
+}
+
+.pop-enter-from {
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.pop-leave-active {
+  transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+  transform-origin: center;
+}
+
+.pop-leave-to {
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-in-right-enter-active,
+.slide-in-right-leave-active {
+  transition: transform 0.6s ease
+}
+
+.slide-in-right-enter-from,
+.slide-in-right-leave-to {
+  transform: translateX(100%);
+}
+

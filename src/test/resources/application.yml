@@ -19,11 +19,16 @@ spring:
       location: "/static/files/"
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: "true"
+
+  sql:
+    init:
+     mode: always
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver

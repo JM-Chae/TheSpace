@@ -1,10 +1,10 @@
-package com.thespace.common.getList;
+package com.thespace.spaceweb.reply;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thespace.spaceweb.reply.QReply;
-import com.thespace.spaceweb.reply.Reply;
+import com.thespace.common.QuerydslUtils;
 import com.thespace.spaceweb.reply.ReplyDTOs.Info;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,13 +53,13 @@ public class GetListReply {
                 .fetch();
         }
 
-        List<Info> resultDTOs = mapToDTOs(parentReplies, childReplies);
+        List<Info> resultDTOs = returnList(parentReplies, childReplies);
 
         return new PageImpl<>(resultDTOs, pageable, totalCount);
     }
 
     // List of children to grouping by parents no.
-    private List<Info> mapToDTOs(List<Reply> parents, List<Reply> children) {
+    private List<Info> returnList(List<Reply> parents, List<Reply> children) {
         Map<Long, List<Info>> childrenDtoMap = children.stream()
             .map(this::convertToInfoDTO)
             .collect(Collectors.groupingBy(Info::parentRno));
@@ -67,39 +67,29 @@ public class GetListReply {
         return parents.stream()
             .map(parent -> {
                 List<Info> childDTOs = childrenDtoMap.getOrDefault(parent.getRno(), List.of());
-                return Info.builder()
-                    .rno(parent.getRno())
-                    .replyContent(parent.getReplyContent())
-                    .replyWriter(parent.getUser().getName())
-                    .replyWriterUuid(parent.getUser().getUuid())
-                    .tag(parent.getTag())
-                    .replyDate(parent.getCreateDate())
-                    .childCount(parent.getChildCount())
-                    .taggedCount(parent.getTaggedCount())
-                    .parentRno(parent.getParentRno())
-                    .tagRno(parent.getTagRno())
-                    .vote(parent.getVote())
-                    .children(childDTOs)
-                    .build();
+                return mapToDTO(parent)
+                    .setChildren(childDTOs);
             })
             .toList();
     }
 
     // A child reply cannot have its own children, so an empty list is assigned to its children field.
     private Info convertToInfoDTO(Reply reply) {
-        return Info.builder()
-            .rno(reply.getRno())
-            .replyWriterUuid(reply.getUser().getUuid())
-            .replyContent(reply.getReplyContent())
-            .replyWriter(reply.getUser().getName())
-            .childCount(reply.getChildCount())
-            .taggedCount(reply.getTaggedCount())
-            .tag(reply.getTag())
-            .replyDate(reply.getCreateDate())
-            .parentRno(reply.getParentRno())
-            .tagRno(reply.getTagRno())
-            .vote(reply.getVote())
-            .children(List.of()) // 자식의 자식은 표현하지 않으므로 빈 리스트로 설정
-            .build();
+        return mapToDTO(reply);
+    }
+
+    public Info mapToDTO(Reply reply) {
+        return new Info(reply.getRno(),
+            reply.getReplyContent(),
+            reply.getUser().getName(),
+            reply.getUser().getUuid(),
+            reply.getTag(),
+            reply.getCreateDate(),
+            reply.getChildCount(),
+            reply.getTaggedCount(),
+            reply.getParentRno(),
+            reply.getTagRno(),
+            reply.getVote(),
+            new ArrayList<>());
     }
 }

@@ -13,6 +13,10 @@ sealed public interface ReplyDTOs permits Info, Register {
     record Info(Long rno, String replyContent, String replyWriter,
                 String replyWriterUuid, String tag, LocalDateTime replyDate, Long childCount, Long taggedCount,
                 Long parentRno, Long tagRno, Long vote, List<Info> children) implements ReplyDTOs {
+        public Info setChildren(List<Info> children) {
+            return new Info(this.rno, this.replyContent, this.replyWriter, this.replyWriterUuid, this.tag, this.replyDate,
+                (long) children.size(), this.taggedCount, this.parentRno, this.tagRno, this.vote, children);
+        }
 
     }
 

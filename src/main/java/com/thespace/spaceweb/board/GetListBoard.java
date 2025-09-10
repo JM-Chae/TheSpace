@@ -1,18 +1,18 @@
-package com.thespace.common.getList;
+package com.thespace.spaceweb.board;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.thespace.common.QuerydslUtils;
 import com.thespace.common.exception.Exceptions.CommunityNotFound;
-import com.thespace.spaceweb.board.Board;
 import com.thespace.spaceweb.board.BoardDTOs.Info;
-import com.thespace.spaceweb.board.QBoard;
 import com.thespace.spaceweb.category.Category;
 import com.thespace.spaceweb.category.CategoryRepository;
 import com.thespace.spaceweb.community.Community;
 import com.thespace.spaceweb.community.CommunityRepository;
 import com.thespace.spaceweb.reply.QReply;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class GetListBoard {
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if ((types != null && types.length > 0) && keyword != null) {
+        if ((types != null && types.length > 0) && !Objects.equals(keyword, "")) {
             for (String type : types) {
                 switch (type) {
                     case "t":

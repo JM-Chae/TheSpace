@@ -18,13 +18,14 @@ public sealed interface NotificationDTOs permits ToToken, ToChat_topic,
 
     record ToFriendship_accept(String accepterNameAndUUID, String receiverId) implements NotificationDTOs {}
 
-    record DTO(Long nno, String title, String body, String url, DataPayload dataPayload, NotificationType type, LocalDateTime sentAt) implements NotificationDTOs {
+    record DTO(Long nno, String title, String body, String url, boolean isRead, DataPayload dataPayload, NotificationType type, LocalDateTime sentAt) implements NotificationDTOs {
         public static DTO fromEntity(Notification entity) {
             return new DTO(
                 entity.getNno(),
                 entity.getTitle(),
                 entity.getBody(),
                 entity.getUrl(),
+                entity.is_read(),
                 entity.getDataPayload(),
                 entity.getType(),
                 entity.getCreateDate()

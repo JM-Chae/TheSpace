@@ -31,7 +31,7 @@ public class Friendship {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    private String memo;
+    private String note;
 
     private LocalDateTime acceptedAt;
 
@@ -48,8 +48,8 @@ public class Friendship {
         this.acceptedAt = LocalDateTime.now();
     }
 
-    public void changeMemo(String memo) {
-        this.memo = memo;
+    public void changeNote(String note) {
+        this.note = note;
     }
 
     public void changeStatus(Status status) {

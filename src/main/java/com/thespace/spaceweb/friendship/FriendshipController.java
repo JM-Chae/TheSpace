@@ -1,11 +1,15 @@
 package com.thespace.spaceweb.friendship;
 
+import com.thespace.common.page.PageReqDTO;
+import com.thespace.common.page.PageResDTO;
+import com.thespace.spaceweb.friendship.FriendshipDTOs.Friend;
 import com.thespace.spaceweb.friendship.FriendshipDTOs.Info;
 import com.thespace.spaceweb.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,15 +60,21 @@ public class FriendshipController {
         friendshipService.unblock((User) fromUser.getPrincipal(), fid);
     }
 
-    @PutMapping("/{fid}/memo")
-    public void memo(Authentication fromUser, @PathVariable("fid") Long fid, @RequestParam("memo") String memo) {
+    @PutMapping("/{fid}/note")
+    public void note(Authentication fromUser, @PathVariable("fid") Long fid, @RequestParam("note") String note) {
 
-        friendshipService.memo((User) fromUser.getPrincipal(), fid, memo);
+        friendshipService.note((User) fromUser.getPrincipal(), fid, note);
     }
 
     @GetMapping
     public Info getFriendship(Authentication fromUser, @RequestParam("toUserUuid") String toUserUuid) {
 
         return friendshipService.getInfo((User) fromUser.getPrincipal(), toUserUuid);
+    }
+
+    @GetMapping("/list")
+    public PageResDTO<Friend> getListFriends(Authentication user, @ModelAttribute PageReqDTO pageReqDTO) {
+
+        return friendshipService.getFriendList((User) user.getPrincipal(), pageReqDTO);
     }
 }

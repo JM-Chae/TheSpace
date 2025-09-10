@@ -1,11 +1,10 @@
-package com.thespace.common.getList;
+package com.thespace.common.notification;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thespace.common.notification.Notification;
+import com.thespace.common.QuerydslUtils;
 import com.thespace.common.notification.NotificationDTOs.DTO;
-import com.thespace.common.notification.QNotification;
 import com.thespace.spaceweb.user.User;
 import java.util.List;
 import java.util.Optional;

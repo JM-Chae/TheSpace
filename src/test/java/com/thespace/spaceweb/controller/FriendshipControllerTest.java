@@ -10,6 +10,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
 import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -18,6 +19,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.thespace.common.page.PageReqDTO;
 import com.thespace.config.DataBaseCleaner;
 import com.thespace.spaceweb.friendship.Friendship;
 import com.thespace.spaceweb.friendship.FriendshipRepository;
@@ -236,23 +238,23 @@ class FriendshipControllerTest {
     void memo() throws Exception {
         //given
         Long fid = friendshipRepository.save(new Friendship(user1, user2, Status.ACCEPTED)).getFid();
-        String memo = "memo";
+        String memo = "note";
 
         //when
-        ResultActions result = mockMvc.perform(put("/friend/{fid}/memo", fid)
-                .queryParam("memo", memo)
+        ResultActions result = mockMvc.perform(put("/friend/{fid}/note", fid)
+                .queryParam("note", memo)
             .header("_csrf", "dummyCsrfToken")
             .cookie(new Cookie("JSESSIONID", "example-session-id"))
             .contentType(MediaType.APPLICATION_JSON));
 
         //then
         result.andExpect(status().isOk()).andDo(print());
-        Assertions.assertEquals(memo, friendshipRepository.findByFromAndTo(user1, user2).get().getMemo());
+        Assertions.assertEquals(memo, friendshipRepository.findByFromAndTo(user1, user2).get().getNote());
 
         //docs
         result.andDo(write().document(
             pathParameters(parameterWithName("fid").description("Id of the target friendship.")),
-            queryParameters(parameterWithName("memo").description("content of memo.")),
+            queryParameters(parameterWithName("note").description("content of note.")),
             requestHeaders(headerWithName("_csrf").description("CSRF Token")),
             responseBody(),
             requestBody(),
@@ -262,5 +264,26 @@ class FriendshipControllerTest {
             requestCookies(
                 cookieWithName("JSESSIONID").description("Authenticated user session ID cookie(Requesting user)"))
         ));
+    }
+
+    @Test
+    @WithUserDetails(value = "testerUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void getListFriend() throws Exception {
+        //given
+        friendshipRepository.save(new Friendship(user2, user1, Status.ACCEPTED));
+        friendshipRepository.save(new Friendship(user1, user2, Status.ACCEPTED));
+        PageReqDTO pageReqDTO = new PageReqDTO(1, 10, "", "", null, null);
+
+        //when
+        ResultActions result = mockMvc.perform(get("/friend/list")
+            .queryParam("page", "1")
+            .queryParam("size", "10")
+            .header("_csrf", "dummyCsrfToken")
+            .cookie(new Cookie("JSESSIONID", "example-session-id")));
+
+        //then
+        result.andExpect(status().isOk()).andDo(print());
+
+        //docs
     }
 }

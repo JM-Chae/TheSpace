@@ -28,7 +28,7 @@ public class QFriendship extends EntityPathBase<Friendship> {
 
     public final com.thespace.spaceweb.user.QUser from;
 
-    public final StringPath memo = createString("memo");
+    public final StringPath note = createString("note");
 
     public final EnumPath<Status> status = createEnum("status", Status.class);
 

@@ -17,8 +17,6 @@ import {ElMessageBox} from "element-plus";
 import router from "@/router";
 import type {CategoryInfo, CommunityInfo} from "@/types/domain";
 import {goMyPage} from "@/router/GoMyPage"
-import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -120,8 +118,8 @@ async function getReply() {
       rdtoList.value = res.data
     }
     else {
-      incomingDtoList.forEach(incomingParent => {
-        const existingParent = rdtoList.value.dtoList.find(p => p.rno === incomingParent.rno);
+      incomingDtoList.forEach((incomingParent: rdto) => {
+        const existingParent = rdtoList.value?.dtoList.find(p => p.rno === incomingParent.rno);
         if (existingParent) {
           if (incomingParent.children && incomingParent.children.length > 0) {
             if (!existingParent.children) {
@@ -135,7 +133,7 @@ async function getReply() {
             }
           }
         } else {
-          rdtoList.value.dtoList.push(incomingParent);
+          rdtoList.value?.dtoList.push(incomingParent);
         }
       });
 
@@ -201,10 +199,14 @@ function deleteReply(rno: number, isNR: number) {
       }
       if (parentIndex > -1) {
         if (childIndex > -1) {
-          sortedReplies.value.dtoList[parentIndex].children.splice(childIndex, 1);
+          sortedReplies.value?.dtoList[parentIndex]?.children?.splice(childIndex, 1);
         } else {
           sortedReplies.value.dtoList.splice(parentIndex, 1);
           sortedReplies.value.total--;
+          if (rdtoList.value) {
+            rdtoList.value.dtoList.splice(parentIndex, 1);
+            rdtoList.value.total--;
+          }
         }
 
         replyAllUnselect()
@@ -315,11 +317,11 @@ const sortedReplies = ref<rdtos | null>(null)
 watch(rdtoList, (newVal) => {
   if (newVal?.dtoList) {
     const newSortedData = JSON.parse(JSON.stringify(newVal));
-    newSortedData.dtoList.sort((a, b) => a.rno - b.rno);
+    newSortedData.dtoList.sort((a: rdto, b: rdto) => a.rno - b.rno);
 
-    newSortedData.dtoList.forEach(parent => {
+    newSortedData.dtoList.forEach((parent: rdto) => {
       if (parent.children && parent.children.length > 0) {
-        parent.children.sort((a, b) => a.rno - b.rno);
+        parent.children.sort((a: rdto, b: rdto) => a.rno - b.rno);
       }
     });
     sortedReplies.value = newSortedData;
@@ -440,6 +442,7 @@ function replyAllUnselect() {
 }
 
 const toggleNested = (index: number, nestedRno: number) => {
+  showReplyInput.value = true;
   if (replySelected.value[index]) {
     replySelected.value = replySelected.value.fill(false);
     parentRno.value = 0;
@@ -455,8 +458,8 @@ const toggleNested = (index: number, nestedRno: number) => {
 const toggleNestedByChild = (index: number, childIndex: number, nestedRno: number, child: rdto) => {
   if (!sortedReplies.value?.dtoList) return;
 
+  showReplyInput.value = true;
   const wasSelected = childReplySelected.value[index]?.[childIndex];
-
   const newChildSelection = sortedReplies.value.dtoList.map(rDto =>
     rDto.children ? rDto.children.map(() => false) : []
   );
@@ -501,24 +504,38 @@ const connectWebSocket = () => {
     onConnect: () => {
       console.log('websocket connected');
       stompClient?.subscribe(`/topic/reply/${bno}`, (message) => {
-        const newReply: rdto = JSON.parse(message.body)
-        if (rdtoList.value && !rdtoList.value.dtoList.some(r => r.rno === newReply.rno)) {
-          if(newReply.parentRno == 0) {
-            rdtoList.value.dtoList.push(newReply);
-            sortedReplies.value.total = ++rdtoList.value.total;
-          } else {
-            rdtoList.value?.dtoList?.find(r => r.rno === newReply.parentRno)?.children?.push(newReply);
-          }
-          if (getDto.value && getDto.value.rCount != undefined) {
-            getDto.value.rCount += 1;
+        const newReply: rdto = JSON.parse(message.body);
+
+        if (!rdtoList.value) {
+          rdtoList.value = { total: 0, dtoList: [] };
+        }
+
+        if (rdtoList.value.dtoList.some(r => r.rno === newReply.rno)) {
+          return;
+        }
+
+        if (newReply.parentRno == 0) {
+          rdtoList.value.dtoList.push(newReply);
+          rdtoList.value.total++;
+        } else {
+          const parent = rdtoList.value.dtoList.find(r => r.rno === newReply.parentRno);
+          if (parent) {
+            if (!parent.children) {
+              parent.children = [];
+            }
+            parent.children.push(newReply);
           }
         }
-      })
+
+        if (getDto.value && getDto.value.rCount != undefined) {
+          getDto.value.rCount += 1;
+        }
+      });
     },
     onStompError: (frame) => {
       console.error('websocket error:', frame.headers['message'], frame.body);
     }
-  })
+  });
   stompClient.activate();
 }
 
@@ -640,7 +657,7 @@ function routing() {
     <hr style="background: rgba(70,130,180,0.17); height: 0.01em; border-width: 0">
     <div v-if="replyClose && sortedReplies?.total" class="reply" @click.stop>
       <div class="replyList">
-        <div class="p-3 m-3 pt-4" style="width: fit-content; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
+        <div class="p-3 m-3 pt-4" style="min-width: 525px; background: rgba(255,255,255,0.06); border-radius: 0.5em; border: 0.1em solid rgba(186,186,186,0.24)">
           <el-space fill="fill" style="display: flex; ">
             <ul v-for="(rDto, index) in sortedReplies?.dtoList" :key="rDto.rno" class="list"
                 style="padding-left: 0; ">
@@ -775,13 +792,13 @@ function routing() {
     </div>
 
     <div style="text-align: center; margin-top: 2em;">
-      <InfiniteLoading @infinite="infiniteHandler">
+      <infinite-loading @infinite="infiniteHandler">
         <template #complete>
           <span style="font-size: 1.2em; color: #00bd7e">
             No more reply!
           </span>
         </template>
-      </InfiniteLoading>
+      </infinite-loading>
     </div>
 
     <div>
@@ -810,14 +827,6 @@ function routing() {
 </template>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 1s ease;
-}
-
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-
 .replyInput {
   --el-disabled-bg-color: #00000000;
 }

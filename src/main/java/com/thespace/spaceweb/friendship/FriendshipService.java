@@ -6,6 +6,9 @@ import com.thespace.common.notification.FriendshipNotificationStatus;
 import com.thespace.common.notification.NotificationDTOs.ToFriendship_accept;
 import com.thespace.common.notification.NotificationDTOs.ToFriendship_request;
 import com.thespace.common.notification.NotificationService;
+import com.thespace.common.page.PageReqDTO;
+import com.thespace.common.page.PageResDTO;
+import com.thespace.spaceweb.friendship.FriendshipDTOs.Friend;
 import com.thespace.spaceweb.friendship.FriendshipDTOs.Info;
 import com.thespace.spaceweb.user.User;
 import com.thespace.spaceweb.user.UserService;
@@ -13,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +28,7 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final GetListFriend getListFriend;
 
     void acceptFriendship(Friendship friendship) {
         friendship.changeStatus(Status.ACCEPTED);
@@ -123,12 +129,12 @@ public class FriendshipService {
     }
 
     @Transactional
-    public void memo(User user, Long fid, String memo) {
+    public void note(User user, Long fid, String note) {
 
         Friendship friendship = friendshipRepository.findById(fid).orElseThrow(NotFoundFriendship::new);
         if (!Objects.equals(friendship.getFrom(), user)) throw new NotOwnerFriendship();
 
-        friendship.changeMemo(memo);
+        friendship.changeNote(note);
 
         friendshipRepository.save(friendship);
     }
@@ -140,9 +146,18 @@ public class FriendshipService {
             .map(friendship -> new Info(
                 friendship.getFid(),
                 friendship.getStatus().name(),
-                friendship.getMemo(),
+                friendship.getNote(),
                 friendship.getAcceptedAt()))
             .orElse(new Info(0L, Status.NONE.name(), "", LocalDateTime.MIN));
+    }
+
+    public PageResDTO<Friend> getFriendList(User user, PageReqDTO pageReqDTO) {
+
+        Pageable pageable = pageReqDTO.getPageable("acceptedAt");
+
+        Page<Friend> list = getListFriend.getListFriend(user, pageable, pageReqDTO.keyword());
+
+        return PageResDTO.from(pageReqDTO, list);
     }
 
     Optional<Friendship> findFriendshipByFromAndTo(User fromUser, User toUser) {

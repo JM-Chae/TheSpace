@@ -27,6 +27,20 @@ public final class Exceptions {
     }
 
     @Getter
+    public static class NotFoundNotification extends MainException {
+        public static final String message = "Not Found Notification.";
+
+        public NotFoundNotification() {
+            super(message);
+        }
+
+        @Override
+        public int getStatusCode() {
+            return 404;
+        }
+    }
+
+    @Getter
     public static class DataPayloadConvertError extends MainException {
         public static final String message = "Failed to convert data payload";
 

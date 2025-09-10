@@ -52,6 +52,7 @@ export interface Notification {
   title: string,
   body: string,
   url: string,
+  isRead: boolean,
   dataPayload: {
     fid: number,
     targetNameAndUUID: string
@@ -65,9 +66,14 @@ export interface ListRes<T> {
   page: number,
   size: number,
   total: number,
-  start: number,
-  end: number,
-  prev: boolean,
-  next: boolean,
   dtoList: T[]
+}
+
+export interface Friend {
+  fid: number,
+  fsignature: string,
+  fname: string,
+  fuuid: string,
+  note: string,
+  acceptedAt: string
 }

@@ -7,7 +7,6 @@ import com.thespace.common.exception.Exceptions.HasChild;
 import com.thespace.common.exception.Exceptions.NotRegisterUser;
 import com.thespace.common.exception.Exceptions.PostNotFound;
 import com.thespace.common.exception.Exceptions.ReplyNotFound;
-import com.thespace.common.getList.GetListReply;
 import com.thespace.common.page.PageReqDTO;
 import com.thespace.common.page.PageResDTO;
 import com.thespace.spaceweb.board.Board;
@@ -35,7 +34,7 @@ public class ReplyService {
         return new Reply(dto.tagRno(), dto.parentRno(), dto.replyContent(), user, dto.tag(), board);
     }
 
-    Info entityToDTO(Reply reply) {
+    public Info entityToDTO(Reply reply) {
         return new Info(reply.getRno(),
             reply.getReplyContent(),
             reply.getUser().getName(),

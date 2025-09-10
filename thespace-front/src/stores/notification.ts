@@ -5,11 +5,14 @@ import type {ListRes, Notification} from "@/types/domain";
 
 export const useNotificationsStore = defineStore('notifications', {
       state: () => ({
-        notificationList: {} as ListRes<Notification>
+        notificationList: {} as ListRes<Notification>,
+        page: 1 as number,
+        size: 10 as number,
+        /*isRead: boolean*/
       }),
       actions: {
-        async initializeNotifications(/*isRead: boolean*/ page: number, size: number) {
-          this.notificationList = await getNotifications(page, size)
+        async initializeNotifications() {
+          this.notificationList = await getNotifications(this.page, this.size)
         },
         prependNotification(newNotification: Notification) {
           this.notificationList.dtoList.unshift(newNotification);
@@ -20,6 +23,16 @@ export const useNotificationsStore = defineStore('notifications', {
                       if (index !== -1) {
                         this.notificationList.dtoList[index] = notificationToUpdate;
           }
+        },
+        async updateList() {
+          this.page++;
+          const nextPage = await getNotifications(this.page, this.size)
+          if (nextPage.dtoList && nextPage.dtoList.length > 0) {
+            this.notificationList.dtoList.push(...nextPage.dtoList)
+            this.notificationList.total = nextPage.total;
+          }
+
+          return nextPage.dtoList.length;
         }
       }
 })
@@ -31,10 +44,13 @@ async function getNotifications(/*isRead: boolean*/ page: number, size: number) 
   })
 }
 
-export async function routToURL(row: any) {
+export async function routToUrlAndMarkAsRead(row: Notification) {
   if (!row.url) return;
 
   const [path, queryString] = row.url.split('?');
+  await readNotification(row.nno)
+
+  row.isRead = true;
 
   if (queryString) {
     const query = Object.fromEntries(new URLSearchParams(queryString));
@@ -42,6 +58,10 @@ export async function routToURL(row: any) {
   } else {
     await router.push({ path: path });
   }
+}
+
+export async function readNotification(nno: number) {
+  await axios.patch(`/notification/read`, null, {params: {nno: nno}})
 }
 
 export const formatDate = (dateString: string) => {

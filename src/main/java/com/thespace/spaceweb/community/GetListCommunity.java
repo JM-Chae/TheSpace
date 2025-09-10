@@ -1,13 +1,13 @@
-package com.thespace.common.getList;
+package com.thespace.spaceweb.community;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thespace.spaceweb.community.Community;
+import com.thespace.common.QuerydslUtils;
 import com.thespace.spaceweb.community.CommunityDTOs.Info;
-import com.thespace.spaceweb.community.QCommunity;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class GetListCommunity {
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if ((types != null && types.length > 0) && keyword != null) {
+        if ((types != null && types.length > 0) && !Objects.equals(keyword, "")) {
 //            for (String type : types) Currently, only one type is allowed.
 //              {
             if (types[0].equals("n")) {
