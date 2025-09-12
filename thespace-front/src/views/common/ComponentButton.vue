@@ -87,6 +87,7 @@ function toggleModal(modal: string) {
   flex-direction: column;
   gap: 20px;
   box-sizing: border-box;
+  height: 0;
 }
 
 .show-button {

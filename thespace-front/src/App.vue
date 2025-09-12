@@ -32,7 +32,7 @@ onMounted(async () => {
 </script>
 
 <template >
-  <ComponentButton></ComponentButton>
+  <ComponentButton style="position: fixed; height: 0;"></ComponentButton>
 
   <header>
     <div class="wrapper pb-5" style="height: 10vh">
